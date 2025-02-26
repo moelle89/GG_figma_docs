@@ -41,7 +41,7 @@
             --hover-color: #1f1f1f;
             --purple-accent: #e89e4f;
             --bg-color: #1A1A1A;
-            --sidebar-bg: #050714;
+            --sidebar-bg: #1C1C1C;
             --category-bg: #1C1C1C;
             --category-header-bg: #121212;
             --active-category-bg: #121212;
@@ -290,6 +290,66 @@
 
         /* For mobile devices */
         @media screen and (max-width: 768px) {
+            /* Move the sidebar toggle to the bottom right */
+            .sidebar-toggle {
+                display: block;
+                position: fixed;
+                bottom: 20px;
+                right: 15px;
+                top: auto;
+                left: auto;
+                z-index: 1001;
+                background: var(--bg-color);
+                border: none;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                box-shadow: 0 0 10px var(--shadow-color);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--text-color);
+                transition: background-color 0.3s ease, color 0.3s ease;
+                font-size: 20px;
+            }
+
+            /* Move the theme switch container to the left of the sidebar toggle */
+            .theme-switch-container {
+                position: fixed;
+                bottom: 25px;
+                right: 80px;
+                top: auto;
+                z-index: 1010;
+                display: flex;
+                align-items: center;
+                background: var(--bg-color);
+                padding: 8px;
+                border-radius: 25px;
+                box-shadow: 0 0 10px var(--shadow-color);
+            }
+
+            /* Hide the theme icons on mobile */
+            .theme-switch-container .theme-icon {
+                display: none;
+            }
+
+            /* Adjust theme switch size for mobile */
+            .theme-switch {
+                width: 50px;
+                height: 25px;
+            }
+
+            .theme-slider:before {
+                height: 17px;
+                width: 17px;
+            }
+
+            input:checked + .theme-slider:before {
+                transform: translateX(25px);
+            }
+
+            /* Fix sidebar positioning */
             .sidebar {
                 left: -280px;
                 box-shadow: none;
@@ -305,26 +365,6 @@
                 padding: 20px;
             }
 
-            .sidebar-toggle {
-                display: block;
-                position: fixed;
-                top: 15px;
-                left: 15px;
-                z-index: 1001;
-                background: var(--sidebar-bg);
-                border: none;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                box-shadow: 0 0 10px var(--shadow-color);
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: var(--text-color);
-                transition: background-color 0.3s ease, color 0.3s ease;
-            }
-
             body.sidebar-open::after {
                 content: "";
                 position: fixed;
@@ -335,13 +375,7 @@
                 background: rgba(0, 0, 0, 0.3);
                 z-index: 999;
             }
-
-            .theme-switch-container {
-                top: 15px;
-                right: 15px;
-            }
         }
-
         /* Loading indicator */
         .loading {
             display: none;
