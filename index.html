@@ -36,6 +36,7 @@
             <!-- Content will be loaded here -->
         </div>
     </div>
+    <script src="js/app.js"></script>
     <script>
         let toggle = true;
         // Menu structure data
@@ -310,29 +311,93 @@
         }, 100); // Small delay to ensure DOM is updated
     }
 
-    // Function to save component data to localStorage
+    // Function to save component data to downloadable JSON file
     function saveComponentRepository() {
+        // Save to localStorage as a backup/cache
         localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
-        console.log('Component repository saved to localStorage');
-    }
 
-    // Function to load component data from localStorage
-    function loadComponentRepository() {
-        const storedData = localStorage.getItem('componentRepository');
-        if (storedData) {
-            // Merge the stored data with our default data (to ensure we have entries for new components)
-            const loadedData = JSON.parse(storedData);
+        // Create formatted JSON string
+        const jsonData = JSON.stringify(componentRepository, null, 2);
+
+        // Create a blob containing the JSON data
+        const blob = new Blob([jsonData], { type: 'application/json' });
+
+        // Create a URL for the blob
+        const url = URL.createObjectURL(blob);
+
+        // Create a link element for downloading
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'components.json';
+
+        // Append link to body, click it, and remove it
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Clean up the URL object
+        URL.revokeObjectURL(url);
+
+        console.log('Component repository saved to downloadable JSON file');
+
+        // Display instructions for the user
+        alert('Component data has been saved as components.json. To make this data available for future visits, please replace the components.json file in your project\'s data directory with this downloaded file.');
+    }
+    // Function to load component data from JSON file
+    async function loadComponentRepository() {
+        try {
+            // Fetch the JSON file
+            const response = await fetch('data/components.json');
+
+            if (!response.ok) {
+                throw new Error(`Failed to load component data: ${response.status}`);
+            }
+
+            const loadedData = await response.json();
+
+            // Merge the loaded data with our default data
             Object.assign(componentRepository, loadedData);
-            console.log('Component repository loaded from localStorage');
+            console.log('Component repository loaded from JSON file');
+
+            // Also save to localStorage as a backup/cache
+            localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
+        } catch (error) {
+            console.error('Error loading component repository from file:', error);
+
+            // Fall back to localStorage if available
+            const storedData = localStorage.getItem('componentRepository');
+            if (storedData) {
+                try {
+                    const localData = JSON.parse(storedData);
+                    Object.assign(componentRepository, localData);
+                    console.log('Component repository loaded from localStorage fallback');
+                } catch (e) {
+                    console.error('Error parsing localStorage data:', e);
+                }
+            }
+        } finally {
+            // Ensure we have entries for all components by populating missing ones
+            populateComponentRepository();
         }
     }
 
-    // Add component management UI
     function createComponentManager() {
         const managerHtml = `
         <div class="component-manager">
             <h2>Component Data Manager</h2>
             <p>Use this tool to manage component descriptions and Figma links.</p>
+
+            <div class="info-box">
+                <h3>How Data Storage Works</h3>
+                <p>Data is loaded from <code>data/components.json</code> when the page loads.</p>
+                <p>Changes you make here are saved to your browser's local storage temporarily.</p>
+                <p>To permanently save changes, click "Export Data" and replace your project's components.json file with the downloaded file.</p>
+            </div>
+
+            <div class="data-actions">
+                <button id="export-components" class="export-button">Export Data (components.json)</button>
+                <button id="import-components" class="import-button">Import Data</button>
+            </div>
 
             <div class="component-selector">
                 <label for="component-select">Select Component:</label>
@@ -382,6 +447,8 @@
         const componentFigmaLink = document.getElementById('component-figma-link');
         const componentButtonText = document.getElementById('component-button-text');
         const saveButton = document.getElementById('save-component');
+        const exportButton = document.getElementById('export-components');
+        const importButton = document.getElementById('import-components');
 
         // Handle component selection
         componentSelect.addEventListener('change', function () {
@@ -418,14 +485,17 @@
                 };
 
                 // Save to localStorage
-                saveComponentRepository();
+                localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
 
                 // Provide feedback
-                alert(`Component "${componentName.value}" data saved!`);
+                alert(`Component "${componentName.value}" data saved to local storage. To permanently save this data, click "Export Data".`);
             }
         });
-    }
 
+        // Add export/import functionality
+        exportButton.addEventListener('click', saveComponentRepository);
+        importButton.addEventListener('click', importComponentRepository);
+    }
         // Add event listeners to category headers - updated to close other categories and activate first item
         document.querySelectorAll('.category-header').forEach(header => {
             header.addEventListener('click', () => {
@@ -625,26 +695,19 @@
                 });
             });
         }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        // First load existing data
-        loadComponentRepository();
-
-        // Then populate any missing components
-        populateComponentRepository();
-
-        // Save the combined data to ensure it's complete
-        saveComponentRepository();
-
-        // REMOVE THIS LINE - it's trying to load index.html which doesn't exist
-        // const initialPageName = window.location.pathname.split('/').pop() || 'index';
-        // loadContent(initialPageName);
+    // Initialize the application
+    async function initializeApp() {
+        // First try to load data from the JSON file
+        await loadComponentRepository();
 
         // Only call loadContent once with the default component
         loadContent('ui-setup-component-search');
 
         // Initialize video functionality
         initializeVideos();
+
+        // Set up theme toggle functionality
+        setupThemeToggle();
 
         // Add Component Manager to the "First Steps" category
         setTimeout(() => {
@@ -700,7 +763,7 @@
                 }
             }
         }, 400);
-
+    };
         // Theme Toggle Functionality
         const themeToggle = document.getElementById('theme-toggle');
 
@@ -723,7 +786,8 @@
                 localStorage.setItem('theme', 'light');
             }
         });
-    });
+
+    window.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>

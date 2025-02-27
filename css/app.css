@@ -733,6 +733,35 @@
             border-color: var(--border-color-dark, #555);
         }
 
+        .data-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .export-button, .import-button {
+            padding: 8px 16px;
+            background-color: var(--primary-color, #4a6cf7);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .export-button:hover, .import-button:hover {
+            background-color: var(--primary-hover-color, #3a5ce7);
+        }
+
+        .import-button {
+            background-color: var(--secondary-color, #6c757d);
+        }
+
+        .import-button:hover {
+            background-color: var(--secondary-hover-color, #5a6268);
+        }
+
         /* For mobile devices */
         @media screen and (max-width: 768px) {
             .grid-2-col {
