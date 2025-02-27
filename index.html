@@ -185,8 +185,6 @@
     // Define a central repository of component information
     const componentRepository = {
         // Example structure - you'll need to populate this with your actual data
-
-        // ... more components
     };
 
     // Function to populate the component repository from navigation data
@@ -203,13 +201,14 @@
                         name: item,
                         description: "", // Empty by default
                         figmaLink: "", // Empty by default
-                        figmaButtonText: item
+                        figmaButtonText: item,
+                        imagePath1: "", // Empty by default - for first image
+                        imagePath2: ""  // Empty by default - for second image
                     };
                 }
             });
         });
     }
-
     async function loadContent(pageName) {
         try {
             // Show loading indicator
@@ -260,7 +259,7 @@
         }
     }
 
-    // Function to inject component information into the loaded page
+ // Function to inject component information into the loaded page
     function injectComponentInfo(pageName) {
         // Add a small delay to ensure DOM is ready
         setTimeout(() => {
@@ -307,6 +306,28 @@
                 }
             } else {
                 console.log('Figma link element not found in the DOM');
+            }
+
+            // Find and update images if paths are provided
+            if (componentData.imagePath1 || componentData.imagePath2) {
+                console.log('Found image paths, searching for image elements');
+
+                // Find all images in grid layout
+                const gridImages = document.querySelectorAll('.grid-2-col .grid-item img');
+
+                // Update first image if found
+                if (gridImages.length > 0 && componentData.imagePath1) {
+                    console.log('Updating first image src');
+                    gridImages[0].setAttribute('src', componentData.imagePath1);
+                    gridImages[0].setAttribute('alt', `${componentData.name} - diagram 1`);
+                }
+
+                // Update second image if found
+                if (gridImages.length > 1 && componentData.imagePath2) {
+                    console.log('Updating second image src');
+                    gridImages[1].setAttribute('src', componentData.imagePath2);
+                    gridImages[1].setAttribute('alt', `${componentData.name} - diagram 2`);
+                }
             }
         }, 100); // Small delay to ensure DOM is updated
     }
@@ -383,59 +404,69 @@
 
     function createComponentManager() {
         const managerHtml = `
-        <div class="component-manager">
-            <h2>Component Data Manager</h2>
-            <p>Use this tool to manage component descriptions and Figma links.</p>
+    <div class="component-manager">
+        <h2>Component Data Manager</h2>
+        <p>Use this tool to manage component descriptions, Figma links, and images.</p>
 
-            <div class="info-box">
-                <h3>How Data Storage Works</h3>
-                <p>Data is loaded from <code>data/components.json</code> when the page loads.</p>
-                <p>Changes you make here are saved to your browser's local storage temporarily.</p>
-                <p>To permanently save changes, click "Export Data" and replace your project's components.json file with the downloaded file.</p>
-            </div>
+        <div class="info-box">
+            <h3>How Data Storage Works</h3>
+            <p>Data is loaded from <code>data/components.json</code> when the page loads.</p>
+            <p>Changes you make here are saved to your browser's local storage temporarily.</p>
+            <p>To permanently save changes, click "Export Data" and replace your project's components.json file with the downloaded file.</p>
+        </div>
 
-            <div class="data-actions">
-                <button id="export-components" class="export-button">Export Data (components.json)</button>
-                <button id="import-components" class="import-button">Import Data</button>
-            </div>
+        <div class="data-actions">
+            <button id="export-components" class="export-button">Export Data (components.json)</button>
+            <button id="import-components" class="import-button">Import Data</button>
+        </div>
 
-            <div class="component-selector">
-                <label for="component-select">Select Component:</label>
-                <select id="component-select" class="component-select">
-                    <option value="">-- Select a component --</option>
-                    ${Object.keys(componentRepository).map(key =>
+        <div class="component-selector">
+            <label for="component-select">Select Component:</label>
+            <select id="component-select" class="component-select">
+                <option value="">-- Select a component --</option>
+                ${Object.keys(componentRepository).map(key =>
             `<option value="${key}">${componentRepository[key].name}</option>`
         ).join('')}
-                </select>
+            </select>
+        </div>
+
+        <div class="component-form" id="component-form" style="display: none;">
+            <div class="form-group">
+                <label for="component-name">Component Name:</label>
+                <input type="text" id="component-name" class="form-input">
             </div>
 
-            <div class="component-form" id="component-form" style="display: none;">
-                <div class="form-group">
-                    <label for="component-name">Component Name:</label>
-                    <input type="text" id="component-name" class="form-input">
-                </div>
+            <div class="form-group">
+                <label for="component-description">Description:</label>
+                <textarea id="component-description" class="form-textarea" rows="4"></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label for="component-description">Description:</label>
-                    <textarea id="component-description" class="form-textarea" rows="4"></textarea>
-                </div>
+            <div class="form-group">
+                <label for="component-figma-link">Figma Link:</label>
+                <input type="text" id="component-figma-link" class="form-input">
+            </div>
 
-                <div class="form-group">
-                    <label for="component-figma-link">Figma Link:</label>
-                    <input type="text" id="component-figma-link" class="form-input">
-                </div>
+            <div class="form-group">
+                <label for="component-button-text">Button Text:</label>
+                <input type="text" id="component-button-text" class="form-input">
+            </div>
 
-                <div class="form-group">
-                    <label for="component-button-text">Button Text:</label>
-                    <input type="text" id="component-button-text" class="form-input">
-                </div>
+            <div class="form-group">
+                <label for="component-image-path1">Image Path 1:</label>
+                <input type="text" id="component-image-path1" class="form-input" placeholder="e.g., assets/prop_table/component_name.jpg">
+            </div>
 
-                <div class="form-actions">
-                    <button id="save-component" class="save-button">Save Component Data</button>
-                </div>
+            <div class="form-group">
+                <label for="component-image-path2">Image Path 2:</label>
+                <input type="text" id="component-image-path2" class="form-input" placeholder="e.g., assets/img/component_name.jpg">
+            </div>
+
+            <div class="form-actions">
+                <button id="save-component" class="save-button">Save Component Data</button>
             </div>
         </div>
-    `;
+    </div>
+`;
 
         contentContainer.innerHTML = managerHtml;
 
@@ -446,6 +477,8 @@
         const componentDescription = document.getElementById('component-description');
         const componentFigmaLink = document.getElementById('component-figma-link');
         const componentButtonText = document.getElementById('component-button-text');
+        const componentImagePath1 = document.getElementById('component-image-path1');
+        const componentImagePath2 = document.getElementById('component-image-path2');
         const saveButton = document.getElementById('save-component');
         const exportButton = document.getElementById('export-components');
         const importButton = document.getElementById('import-components');
@@ -462,6 +495,8 @@
                 componentDescription.value = data.description || '';
                 componentFigmaLink.value = data.figmaLink || '';
                 componentButtonText.value = data.figmaButtonText || '';
+                componentImagePath1.value = data.imagePath1 || '';
+                componentImagePath2.value = data.imagePath2 || '';
 
                 // Show form
                 componentForm.style.display = 'block';
@@ -481,7 +516,9 @@
                     name: componentName.value,
                     description: componentDescription.value,
                     figmaLink: componentFigmaLink.value,
-                    figmaButtonText: componentButtonText.value
+                    figmaButtonText: componentButtonText.value,
+                    imagePath1: componentImagePath1.value,
+                    imagePath2: componentImagePath2.value
                 };
 
                 // Save to localStorage

@@ -27,50 +27,50 @@ function exportComponentRepository() {
    console.log('Component repository exported to file');
 }
 
-// Function to import component repository from a JSON file
+// Function to import component data from a user-selected file
 function importComponentRepository() {
    // Create a file input element
    const fileInput = document.createElement('input');
    fileInput.type = 'file';
    fileInput.accept = '.json';
 
-   // Handle file selection
-   fileInput.addEventListener('change', (event) => {
+   // When a file is selected
+   fileInput.addEventListener('change', function (event) {
       const file = event.target.files[0];
+      if (!file) return;
 
-      if (file) {
-         const reader = new FileReader();
+      const reader = new FileReader();
+      reader.onload = function (e) {
+         try {
+            const data = JSON.parse(e.target.result);
 
-         reader.onload = (e) => {
-            try {
-               // Parse the JSON data
-               const importedData = JSON.parse(e.target.result);
+            // Merge imported data with existing repository
+            Object.assign(componentRepository, data);
 
-               // Update the component repository
-               Object.assign(componentRepository, importedData);
+            // Save to localStorage
+            localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
 
-               // Save to localStorage as backup
-               localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
-
-               console.log('Component repository imported from file');
-               alert('Component data imported successfully!');
-
-               // Refresh the component manager if it's open
-               if (document.querySelector('.component-manager')) {
-                  createComponentManager();
-               }
-            } catch (error) {
-               console.error('Error parsing imported data:', error);
-               alert('Error importing component data. Please ensure the file contains valid JSON.');
+            // Update the component select dropdown
+            const componentSelect = document.getElementById('component-select');
+            if (componentSelect) {
+               componentSelect.innerHTML = `
+                        <option value="">-- Select a component --</option>
+                        ${Object.keys(componentRepository).map(key =>
+                  `<option value="${key}">${componentRepository[key].name}</option>`
+               ).join('')}
+                    `;
             }
-         };
 
-         reader.readAsText(file);
-      }
+            alert('Component data imported successfully!');
+         } catch (error) {
+            console.error('Error parsing imported file:', error);
+            alert('Error importing file. Please make sure it is a valid JSON file.');
+         }
+      };
+
+      reader.readAsText(file);
    });
 
-   // Programmatically click the file input
-   document.body.appendChild(fileInput);
+   // Trigger the file selection dialog
    fileInput.click();
-   document.body.removeChild(fileInput);
 }
