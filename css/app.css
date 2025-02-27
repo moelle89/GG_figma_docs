@@ -391,6 +391,7 @@
             .sidebar.active {
                 left: +100%;
                 margin-left: -280px;
+                width: 100%;
                 box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             }
              body.sidebar-open .theme-switch-container,body.sidebar-open .sidebar-toggle {
@@ -404,7 +405,7 @@
 
             .content {
                 margin-left: 0;
-                padding: 20px;
+                padding: 15px;
             }
 
             body.sidebar-open::after {
@@ -657,6 +658,7 @@
 
         .component-select {
             width: 100%;
+            margin-top: 15px;
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
@@ -667,9 +669,8 @@
 
         .component-form {
             background-color: var(--card-background);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0px;
+            border-radius: 0px;
         }
 
         .form-group {
@@ -678,7 +679,7 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             font-weight: 500;
             color: var(--label-color, #555);
         }
@@ -744,6 +745,7 @@
             border: 1px solid var(--info-border-color, #a8d7ff);
             border-radius: 4px;
             padding: 15px;
+            margin-top: 15px;
             margin-bottom: 20px;
             color: var(--info-text-color, #0066cc);
         }
@@ -755,7 +757,7 @@
         }
 
         .info-box h3 {
-            margin-top: 0;
+            margin-top: 0px;
             margin-bottom: 10px;
             font-size: 16px;
         }
@@ -803,6 +805,9 @@
         }
         /* For mobile devices */
         @media screen and (max-width: 768px) {
+            .component-manager {
+                padding: 0px;
+            }
             .grid-2-col {
                 grid-template-columns: 1fr;
             }
@@ -819,6 +824,9 @@
         /* For small mobile devices */
         @media screen and (max-width: 480px) {
 
+        * {
+            margin: 2px;
+        }
             .grid-3-col,
             .grid-4-col {
                 grid-template-columns: 1fr;
