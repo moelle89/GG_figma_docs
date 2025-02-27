@@ -626,9 +626,7 @@
             });
         }
 
-    // Modify your initialization code
     window.addEventListener('DOMContentLoaded', () => {
-        // Add click event to FAB
         // First load existing data
         loadComponentRepository();
 
@@ -638,13 +636,15 @@
         // Save the combined data to ensure it's complete
         saveComponentRepository();
 
-        // Load initial content using an optimized approach that avoids unnecessary operations and improves performance.
-        const initialPageName = window.location.pathname.split('/').pop() || 'index';
-        loadContent(initialPageName);
+        // REMOVE THIS LINE - it's trying to load index.html which doesn't exist
+        // const initialPageName = window.location.pathname.split('/').pop() || 'index';
+        // loadContent(initialPageName);
 
-        // Optimize video loading by observing the viewport and managing playback without relying on auto-play policies.
-        initializeVideos();
+        // Only call loadContent once with the default component
         loadContent('ui-setup-component-search');
+
+        // Initialize video functionality
+        initializeVideos();
 
         // Add Component Manager to the "First Steps" category
         setTimeout(() => {
@@ -666,9 +666,9 @@
                     managerItem.setAttribute('data-item', 'Component Manager');
                     managerItem.setAttribute('data-page', 'component-manager');
                     managerItem.innerHTML = `
-                    Component Data Manager
-                    <span class="category-item-indicator"></span>
-                `;
+                Component Data Manager
+                <span class="category-item-indicator"></span>
+            `;
 
                     // Add click event
                     managerItem.addEventListener('click', (e) => {
@@ -699,7 +699,7 @@
                     itemsContainer.appendChild(managerItem);
                 }
             }
-        }, 500);
+        }, 400);
 
         // Theme Toggle Functionality
         const themeToggle = document.getElementById('theme-toggle');
