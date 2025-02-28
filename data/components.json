@@ -4,439 +4,479 @@
     "description": "A badge is an indicator or label that provides additional information about a specific element or action. It's often used to highlight important details, provide contextual clues, or convey status updates.",
     "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3134-20925&t=Cb4kDB8ZcoJQHo4X-4",
     "figmaButtonText": "Badge",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/badge.jpg",
+    "imagePath2": "assets/prop_table/badge.jpg"
   },
   "button": {
     "name": "Button",
     "description": "A button is a visual element that allows users to trigger an action or event with a single click. It's often used for calls-to-action, navigation, or form submission.",
     "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=123-456&t=Example",
     "figmaButtonText": "Button",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/button.jpg",
+    "imagePath2": "assets/prop_table/button.jpg"
   },
   "Divider": {
     "name": "Test",
     "description": "A divider is a visual element used to separate content or sections within a layout. It can be used to create visual hierarchy, emphasize important information, or improve readability.",
     "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=123-456&t=Example",
     "figmaButtonText": "Test",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/divider.jpg",
+    "imagePath2": "assets/prop_table/divider.jpg"
   },
   "ui-setup-component-search": {
     "name": "UI setup component search",
     "description": "A UI setup component search is a feature that allows users to quickly find and access specific components or elements within a design system.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "UI setup component search",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/ui-setup-component-search.jpg",
+    "imagePath2": "assets/prop_table/ui-setup-component-search.jpg"
   },
   "button-group": {
     "name": "Button Group",
     "description": "A button group is a collection of buttons that are grouped together to perform related actions. It's often used for navigation, form submission, or other tasks.",
     "figmaLink": "rsgergerstger",
     "figmaButtonText": "Button Group",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/button-group.jpg",
+    "imagePath2": "assets/prop_table/button-group.jpg"
   },
   "button-close": {
     "name": "Button close",
     "description": "A button close is a visual element that allows users to dismiss or close a modal, overlay, or other interactive elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Button close",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/button-close.jpg",
+    "imagePath2": "assets/prop_table/button-close.jpg"
   },
   "button-with-icon-only": {
     "name": "Button with icon only",
     "description": "A button with icon only is a visual element that uses an icon as the primary visual cue, without any text or other content.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Button with icon only",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/button-with-icon-only.jpg",
+    "imagePath2": "assets/prop_table/button-with-icon-only.jpg"
   },
   "social-button": {
     "name": "Social button",
     "description": "A social button is a visual element that allows users to share content or interact with social media platforms directly from the application.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Social button",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/social-button.jpg",
+    "imagePath2": "assets/prop_table/social-button.jpg"
   },
   "store-badges": {
     "name": "Store badges",
     "description": "Store badges are visual elements used to represent specific achievements, milestones, or accomplishments within a store or marketplace.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Store badges",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/store-badges.jpg",
+    "imagePath2": "assets/prop_table/store-badges.jpg"
   },
   "checkbox": {
     "name": "Checkbox",
     "description": "A checkbox is an interactive element that allows users to select one or more options from a list. It's often used for form submission, filtering, or other tasks.",
     "figmaLink": "asdsads",
     "figmaButtonText": "Checkbox",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/checkbox.jpg",
+    "imagePath2": "assets/prop_table/checkbox.jpg"
   },
   "checkbox-label": {
     "name": "Checkbox label",
     "description": "A checkbox label is the text that accompanies a checkbox, providing context and clarity for users. It's often used to describe the option being selected.",
     "figmaLink": "sadsadsad",
     "figmaButtonText": "Checkbox label",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/checkbox-label.jpg",
+    "imagePath2": "assets/prop_table/checkbox-label.jpg"
   },
   "content-frames": {
     "name": "Content Frames",
     "description": "Content frames are visual elements that group related content together, creating a clear and organized layout. They can be used to emphasize important information or create visual hierarchy.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Content Frames",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/content-frames.jpg",
+    "imagePath2": "assets/prop_table/content-frames.jpg"
   },
   "content-slots": {
     "name": "Content Slots",
     "description": "Content slots are areas within a design where content can be inserted. They provide a flexible and modular way to display different types of content.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Content Slots",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/content-slots.jpg",
+    "imagePath2": "assets/prop_table/content-slots.jpg"
   },
   "content-header": {
     "name": "Content Header",
     "description": "A content header is a visual element that provides context and information about the content within a section or page. It can include titles, subtitles, or other metadata.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Content Header",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/content-header.jpg",
+    "imagePath2": "assets/prop_table/content-header.jpg"
   },
   "content-slot": {
     "name": "Content Slot",
     "description": "A content slot is an area within a design where specific types of content can be inserted. It provides a flexible and modular way to display different types of content.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Content Slot",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/content-slot.jpg",
+    "imagePath2": "assets/prop_table/content-slot.jpg"
   },
   "divider": {
     "name": "Divider",
     "description": "A divider is a visual element used to separate content or sections within a layout. It can be used to create visual hierarchy, emphasize important information, or improve readability.",
     "figmaLink": "fhgsdfgd",
     "figmaButtonText": "Divider",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/divider.jpg",
+    "imagePath2": "assets/prop_table/divider.jpg"
   },
   "drop-down-box": {
     "name": "Drop-Down Box",
     "description": "A drop-down box is an interactive element that allows users to select one option from a list. It's often used for form submission, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Drop-Down Box",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/drop-down-box.jpg",
+    "imagePath2": "assets/prop_table/drop-down-box.jpg"
   },
   "drop-down-menu": {
     "name": "Drop-Down Menu",
     "description": "A drop-down menu is an interactive element that allows users to select one option from a list. It's often used for form submission, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Drop-Down Menu",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/drop-down-menu.jpg",
+    "imagePath2": "assets/prop_table/drop-down-menu.jpg"
   },
   "empty-state": {
     "name": "Empty state",
     "description": "An empty state is a visual representation of an interface when there is no content to display. It can be used to provide context, instructions, or entertainment.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Empty state",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/empty-state.jpg",
+    "imagePath2": "assets/prop_table/empty-state.jpg"
   },
   "empty-state-graphic": {
     "name": "Empty state graphic",
     "description": "An empty state graphic is a visual representation of an interface when there is no content to display. It can be used to provide context, instructions, or entertainment.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Empty state graphic",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/empty-state-graphic.jpg",
+    "imagePath2": "assets/prop_table/empty-state-graphic.jpg"
   },
   "icons": {
     "name": "Icons",
     "description": "An icon is a small visual representation of an object, concept, or action. It's often used to provide visual cues, convey meaning, or create visual hierarchy.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Icons",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/icons.jpg",
+    "imagePath2": "assets/prop_table/icons.jpg"
   },
   "info-card": {
     "name": "Info card",
     "description": "An info card is a visual element that provides information about an object, concept, or action. It can include text, images, or other metadata.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Info card",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/info-card.jpg",
+    "imagePath2": "assets/prop_table/info-card.jpg"
   },
   "content---inbox---classic": {
     "name": "Content / Inbox / Classic",
     "description": "A content inbox is a visual element that displays a list of messages, notifications, or other items. It's often used for communication, reminders, or alerts.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Content / Inbox / Classic",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/content---inbox---classic.jpg",
+    "imagePath2": "assets/prop_table/content---inbox---classic.jpg"
   },
   "content---inbox---compact": {
     "name": "Content / Inbox / Compact",
     "description": "A content inbox is a visual element that displays a list of messages, notifications, or other items. It's often used for communication, reminders, or alerts.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Content / Inbox / Compact",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/content---inbox---compact.jpg",
+    "imagePath2": "assets/prop_table/content---inbox---compact.jpg"
   },
   "mail-navigation-list-item": {
     "name": "Mail navigation list item",
     "description": "A mail navigation list item is a visual element that represents an individual message, notification, or other item within a content inbox.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Mail navigation list item",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/mail-navigation-list-item.jpg",
+    "imagePath2": "assets/prop_table/mail-navigation-list-item.jpg"
   },
   "check-list-item": {
     "name": "Check list item",
     "description": "A check list item is an interactive element that allows users to select one option from a list. It's often used for form submission, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Check list item",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/check-list-item.jpg",
+    "imagePath2": "assets/prop_table/check-list-item.jpg"
   },
   "class-list-item": {
     "name": "Class list item",
     "description": "A class list item is an interactive element that allows users to select one option from a list. It's often used for form submission, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Class list item",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/class-list-item.jpg",
+    "imagePath2": "assets/prop_table/class-list-item.jpg"
   },
   "gglogo": {
     "name": "GGLOGO",
     "description": "The GG logo is a visual representation of the company's identity. It can be used as a standalone element or in conjunction with other design elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "GGLOGO",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/gglogo.jpg",
+    "imagePath2": "assets/prop_table/gglogo.jpg"
   },
   "gg_logo_icon": {
     "name": "GG_LOGO_ICON",
     "description": "The GG logo icon is a visual representation of the company's identity. It can be used as a standalone element or in conjunction with other design elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "GG_LOGO_ICON",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/gg_logo_icon.jpg",
+    "imagePath2": "assets/prop_table/gg_logo_icon.jpg"
   },
   "gg_logo_mark": {
     "name": "GG_LOGO_MARK",
     "description": "The GG logo mark is a visual representation of the company's identity. It can be used as a standalone element or in conjunction with other design elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "GG_LOGO_MARK",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/gg_logo_mark.jpg",
+    "imagePath2": "assets/prop_table/gg_logo_mark.jpg"
   },
   "modal-header": {
     "name": "Modal header",
     "description": "A modal header is a visual element that provides context and information about the content within a modal window. It can include titles, subtitles, or other metadata.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Modal header",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/modal-header.jpg",
+    "imagePath2": "assets/prop_table/modal-header.jpg"
   },
   "modal-actions": {
     "name": "Modal actions",
     "description": "Modal actions are visual elements that allow users to interact with the content within a modal window. They can include buttons, links, or other interactive elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Modal actions",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/modal-actions.jpg",
+    "imagePath2": "assets/prop_table/modal-actions.jpg"
   },
   "pagination": {
     "name": "Pagination",
     "description": "A pagination is an interactive element that allows users to navigate between different pages of content. It can include buttons, links, or other interactive elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Pagination",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/pagination.jpg",
+    "imagePath2": "assets/prop_table/pagination.jpg"
   },
   "pagination-dots": {
     "name": "Pagination dots",
     "description": "A pagination dot is an interactive element that allows users to navigate between different pages of content. It's often used in conjunction with other design elements, such as buttons or links.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Pagination dots",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/pagination-dots.jpg",
+    "imagePath2": "assets/prop_table/pagination-dots.jpg"
   },
   "linear-loader": {
     "name": "Linear loader",
     "description": "A linear loader is an animated visual element that provides feedback to the user while a task is being performed. It can be used for loading, processing, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Linear loader",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/linear-loader.jpg",
+    "imagePath2": "assets/prop_table/linear-loader.jpg"
   },
   "linear-loader-(looping)": {
     "name": "Linear loader (looping)",
     "description": "A linear loader (looping) is an animated visual element that provides feedback to the user while a task is being performed. It can be used for loading, processing, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Linear loader (looping)",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/linear-loader-looping.jpg",
+    "imagePath2": "assets/prop_table/linear-loader-looping.jpg"
   },
   "radial-loader": {
     "name": "Radial loader",
     "description": "A radial loader is an animated visual element that provides feedback to the user while a task is being performed. It can be used for loading, processing, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Radial loader",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/radial-loader.jpg",
+    "imagePath2": "assets/prop_table/radial-loader.jpg"
   },
   "radial-loader-(looping)": {
     "name": "Radial loader (looping)",
     "description": "A radial loader (looping) is an animated visual element that provides feedback to the user while a task is being performed. It can be used for loading, processing, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Radial loader (looping)",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/radial-loader-looping.jpg",
+    "imagePath2": "assets/prop_table/radial-loader-looping.jpg"
   },
   "radio-button": {
     "name": "Radio Button",
     "description": "A radio button is an interactive element that allows users to select one option from a list. It's often used for form submission, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Radio Button",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/radio-button.jpg",
+    "imagePath2": "assets/prop_table/radio-button.jpg"
   },
   "radio-button-group": {
     "name": "Radio Button Group",
     "description": "A radio button group is an interactive element that allows users to select one option from a list. It's often used for form submission, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Radio Button Group",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/radio-button-group.jpg",
+    "imagePath2": "assets/prop_table/radio-button-group.jpg"
   },
   "toggle-switch": {
     "name": "Toggle switch",
     "description": "A toggle switch is an interactive element that allows users to select one option from a list. It's often used for form submission, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Toggle switch",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/toggle-switch.jpg",
+    "imagePath2": "assets/prop_table/toggle-switch.jpg"
   },
   "toggle-label": {
     "name": "Toggle label",
     "description": "A toggle label is the text that accompanies a toggle switch, providing context and clarity for users. It's often used to describe the option being selected.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Toggle label",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/toggle-label.jpg",
+    "imagePath2": "assets/prop_table/toggle-label.jpg"
   },
   "horizontal-tabs": {
     "name": "Horizontal tabs",
     "description": "Horizontal tabs are an interactive element that allows users to navigate between different sections of content. It's often used for navigation, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Horizontal tabs",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/horizontal-tabs.jpg",
+    "imagePath2": "assets/prop_table/horizontal-tabs.jpg"
   },
   "vertical-tabs": {
     "name": "Vertical tabs",
     "description": "Vertical tabs are an interactive element that allows users to navigate between different sections of content. It's often used for navigation, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Vertical tabs",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/vertical-tabs.jpg",
+    "imagePath2": "assets/prop_table/vertical-tabs.jpg"
   },
   "tab-button": {
     "name": "Tab button",
     "description": "A tab button is an interactive element that allows users to navigate between different sections of content. It's often used for navigation, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Tab button",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/tab-button.jpg",
+    "imagePath2": "assets/prop_table/tab-button.jpg"
   },
   "accordion": {
     "name": "Accordion",
     "description": "An accordion is an interactive element that allows users to expand and collapse sections of content. It's often used for navigation, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Accordion",
-    "imagePath1": "assets/img/avatar.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/accordion.jpg",
+    "imagePath2": "assets/prop_table/accordion.jpg"
   },
   "accordion-item": {
     "name": "Accordion item",
     "description": "An accordion item is a section of content within an accordion that can be expanded and collapsed. It's often used for navigation, filtering, or other tasks.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Accordion item",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/accordion-item.jpg",
+    "imagePath2": "assets/prop_table/accordion-item.jpg"
   },
   "card-header": {
     "name": "Card header",
     "description": "A card header is a visual element that provides context and information about the content within a card. It can include titles, subtitles, or other metadata.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Card header",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/card-header.jpg",
+    "imagePath2": "assets/prop_table/card-header.jpg"
   },
   "page-header": {
     "name": "Page header",
     "description": "A page header is a visual element that provides context and information about the content within a page. It can include titles, subtitles, or other metadata.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Page header",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/page-header.jpg",
+    "imagePath2": "assets/prop_table/page-header.jpg"
   },
   "section-header": {
     "name": "Section header",
     "description": "A section header is a visual element that provides context and information about the content within a section. It can include titles, subtitles, or other metadata.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Section header",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/section-header.jpg",
+    "imagePath2": "assets/prop_table/section-header.jpg"
   },
   "login-sections": {
     "name": "Login sections",
     "description": "A login section is an interactive element that allows users to log in to a system. It can include forms, buttons, or other interactive elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Login sections",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/login-sections.jpg",
+    "imagePath2": "assets/prop_table/login-sections.jpg"
   },
   "signup-sections": {
     "name": "Signup sections",
     "description": "A signup section is an interactive element that allows users to sign up for a system. It can include forms, buttons, or other interactive elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Signup sections",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/signup-sections.jpg",
+    "imagePath2": "assets/prop_table/signup-sections.jpg"
   },
   "avatar": {
     "name": "Avatar",
     "description": "An avatar is a visual representation of a user's identity or profile. It can be used to represent the user in various contexts, such as chat windows or profiles.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Avatar",
-    "imagePath1": "assets/img/avatar.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/avatar.jpg",
+    "imagePath2": "assets/prop_table/avatar.jpg"
   },
   "avatar-labeled": {
     "name": "Avatar labeled",
     "description": "An avatar labeled is a visual representation of a user's identity or profile that includes additional information, such as name or email address.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Avatar labeled",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/avatar-labeled.jpg",
+    "imagePath2": "assets/prop_table/avatar-labeled.jpg"
   },
   "avatar-stack": {
     "name": "Avatar stack",
     "description": "An avatar stack is an interactive element that allows users to view multiple avatars in a compact format. It's often used for displaying profiles or contact information.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Avatar stack",
-    "imagePath1": "assets/img/accordion_img.jpg",
-    "imagePath2": "assets/img/accordion_img.jpg"
+    "imagePath1": "assets/prop_table/avatar-stack.jpg",
+    "imagePath2": "assets/prop_table/avatar-stack.jpg"
+  },
+  "radial-loader-(looping)-2": {
+    "name": "Radial Loader (Looping) 2",
+    "description": "",
+    "figmaLink": "",
+    "figmaButtonText": "Radial Loader (Looping) 2",
+    "imagePath1": "",
+    "imagePath2": ""
+  },
+  "checklist-item": {
+    "name": "Checklist Item",
+    "description": "",
+    "figmaLink": "",
+    "figmaButtonText": "Checklist Item",
+    "imagePath1": "",
+    "imagePath2": ""
+  },
+  "gg-logo": {
+    "name": "GG Logo",
+    "description": "",
+    "figmaLink": "",
+    "figmaButtonText": "GG Logo",
+    "imagePath1": "",
+    "imagePath2": ""
+  },
+  "gg-logo-icon": {
+    "name": "GG Logo Icon",
+    "description": "",
+    "figmaLink": "",
+    "figmaButtonText": "GG Logo Icon",
+    "imagePath1": "",
+    "imagePath2": ""
+  },
+  "gg-logo-mark": {
+    "name": "GG Logo Mark",
+    "description": "",
+    "figmaLink": "",
+    "figmaButtonText": "GG Logo Mark",
+    "imagePath1": "",
+    "imagePath2": ""
   }
 }
