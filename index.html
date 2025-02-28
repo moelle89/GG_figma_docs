@@ -312,8 +312,8 @@
             if (componentData.imagePath1 || componentData.imagePath2) {
                 console.log('Found image paths, searching for image elements');
 
-                // Find all images in grid layout
-                const gridImages = document.querySelectorAll('.grid-2-col .grid-item img');
+                // Find only images with the data-prop-img attribute in grid layout
+                const gridImages = document.querySelectorAll('.grid-2-col .grid-item img[data-prop-img]');
 
                 // Update first image if found
                 if (gridImages.length > 0 && componentData.imagePath1) {
@@ -533,45 +533,57 @@
         exportButton.addEventListener('click', saveComponentRepository);
         importButton.addEventListener('click', importComponentRepository);
     }
+
+        // Add this function to ensure consistent sidebar closing behavior
+            function closeSidebarOnMobile() {
+                if (window.innerWidth <= 768) {
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.classList.remove('active');
+                    document.body.classList.remove('sidebar-open');
+                }
+            }
         // Add event listeners to category headers - updated to close other categories and activate first item
         document.querySelectorAll('.category-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const parent = header.parentElement;
-                const toggleIcon = header.querySelector('.toggle-icon');
-                const isActive = parent.classList.contains('active');
+        header.addEventListener('click', () => {
+            const parent = header.parentElement;
+            const toggleIcon = header.querySelector('.toggle-icon');
+            const isActive = parent.classList.contains('active');
 
-                // Close all categories first
-                document.querySelectorAll('.category').forEach(cat => {
-                    cat.classList.remove('active');
-                    cat.querySelector('.toggle-icon').textContent = '○';
-                });
-
-                // Remove active class from all items
-                document.querySelectorAll('.category-item').forEach(i => {
-                    i.classList.remove('active');
-                });
-
-                // If the clicked category wasn't active, make it active
-                if (!isActive) {
-                    parent.classList.add('active');
-                    toggleIcon.textContent = '⬤';
-
-                    // Find and activate the first item in this category
-                    const firstItem = parent.querySelector('.category-item');
-                    if (firstItem) {
-                        firstItem.classList.add('active');
-
-                        // Get page name from the first item
-                        const pageName = firstItem.getAttribute('data-page');
-
-                        // Load the content of the first item
-                        loadContent(pageName);
-                        // Scroll to top
-                        scrollToTop();
-                    }
-                }
+            // Close all categories first
+            document.querySelectorAll('.category').forEach(cat => {
+                cat.classList.remove('active');
+                cat.querySelector('.toggle-icon').textContent = '○';
             });
+
+            // Remove active class from all items
+            document.querySelectorAll('.category-item').forEach(i => {
+                i.classList.remove('active');
+            });
+
+            // If the clicked category wasn't active, make it active
+            if (!isActive) {
+                parent.classList.add('active');
+                toggleIcon.textContent = '⬤';
+
+                // Find and activate the first item in this category
+                const firstItem = parent.querySelector('.category-item');
+                if (firstItem) {
+                    firstItem.classList.add('active');
+
+                    // Get page name from the first item
+                    const pageName = firstItem.getAttribute('data-page');
+
+                    // Load the content of the first item
+                    loadContent(pageName);
+                    // Scroll to top
+                    scrollToTop();
+
+                    // Close sidebar on mobile after selection
+                    closeSidebarOnMobile();
+                }
+            }
         });
+    });
 
         // Add event listeners for sidebar toggle on mobile
         const sidebarToggle = document.getElementById('sidebar-toggle');
@@ -593,35 +605,32 @@
             }
         });
 
-        // Handle category item clicks
-        document.querySelectorAll('.category-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
+        // Update the category item click event
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
 
-                // Remove active class from all items
-                document.querySelectorAll('.category-item').forEach(i => {
-                    i.classList.remove('active');
+                    // Remove active class from all items
+                    document.querySelectorAll('.category-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+
+                    // Add active class to clicked item
+                    item.classList.add('active');
+
+                    // Get page name
+                    const pageName = item.getAttribute('data-page');
+
+                    // Load the content
+                    loadContent(pageName);
+
+                    // Scroll to top
+                    scrollToTop();
+
+                    // Close sidebar on mobile
+                    closeSidebarOnMobile();
                 });
-
-                // Add active class to clicked item
-                item.classList.add('active');
-
-                // Get page name
-                const pageName = item.getAttribute('data-page');
-
-                // Load the content
-                loadContent(pageName);
-
-                // Scroll to top
-                scrollToTop();
-
-                // For mobile: close sidebar after selection
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('active');
-                    document.body.classList.remove('sidebar-open');
-                }
             });
-        });
 
         // Function to initialize video viewport observers
         function initializeVideos() {
@@ -788,11 +797,8 @@
                         // Scroll to top
                         scrollToTop();
 
-                        // For mobile: close sidebar after selection
-                        if (window.innerWidth <= 768) {
-                            sidebar.classList.remove('active');
-                            document.body.classList.remove('sidebar-open');
-                        }
+                        // Close sidebar on mobile
+                        closeSidebarOnMobile();
                     });
 
                     // Add to the container
