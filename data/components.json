@@ -15,6 +15,14 @@
     "imagePath1": "assets/prop_table/button.jpg",
     "imagePath2": "assets/prop_table/button.jpg"
   },
+  "input": {
+    "name": "Input",
+    "description": "An input is a user interface element that allows users to enter and edit text-based information, such as names, addresses, or comments. It's a fundamental component of forms and interactive content, facilitating data input and user interactions.",
+    "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=123-456&t=Example",
+    "figmaButtonText": "Input",
+    "imagePath1": "assets/prop_table/input.jpg",
+    "imagePath2": "assets/prop_table/input.jpg"
+  },
   "Divider": {
     "name": "Test",
     "description": "A divider is a visual element used to separate content or sections within a layout. It can be used to create visual hierarchy, emphasize important information, or improve readability.",
@@ -215,29 +223,29 @@
     "imagePath1": "assets/prop_table/class-list-item.jpg",
     "imagePath2": "assets/prop_table/class-list-item.jpg"
   },
-  "gglogo": {
-    "name": "GG_LOGO",
+  "gg-logo": {
+    "name": "GG LOGO",
     "description": "The GG logo is a visual representation of the company's identity. It can be used as a standalone element or in conjunction with other design elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "GGLOGO",
-    "imagePath1": "assets/prop_table/gglogo.jpg",
-    "imagePath2": "assets/prop_table/gglogo.jpg"
+    "imagePath1": "assets/prop_table/gg-logo.jpg",
+    "imagePath2": "assets/prop_table/gg-logo.jpg"
   },
-  "gg_logo_icon": {
-    "name": "GG_LOGO_ICON",
+  "gg-logo-icon": {
+    "name": "GG LOGO ICON",
     "description": "The GG logo icon is a visual representation of the company's identity. It can be used as a standalone element or in conjunction with other design elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "GG_LOGO_ICON",
-    "imagePath1": "assets/prop_table/gg_logo_icon.jpg",
-    "imagePath2": "assets/prop_table/gg_logo_icon.jpg"
+    "imagePath1": "assets/prop_table/gg-logo-icon.jpg",
+    "imagePath2": "assets/prop_table/gg-logo-icon.jpg"
   },
-  "gg_logo_mark": {
+  "gg-logo-mark": {
     "name": "GG_LOGO_MARK",
     "description": "The GG logo mark is a visual representation of the company's identity. It can be used as a standalone element or in conjunction with other design elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "GG_LOGO_MARK",
-    "imagePath1": "assets/prop_table/gg_logo_mark.jpg",
-    "imagePath2": "assets/prop_table/gg_logo_mark.jpg"
+    "imagePath1": "assets/prop_table/gg-logo-mark.jpg",
+    "imagePath2": "assets/prop_table/gg-logo-mark.jpg"
   },
   "modal-header": {
     "name": "Modal header",
@@ -428,8 +436,8 @@
     "description": "An avatar labeled is a visual representation of a user's identity or profile that includes additional information, such as name or email address.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "Avatar labeled",
-    "imagePath1": "assets/prop_table/avatar-labeled.jpg",
-    "imagePath2": "assets/prop_table/avatar-labeled.jpg"
+    "imagePath1": "assets/prop_table/avatar-labelled.jpg",
+    "imagePath2": "assets/prop_table/avatar-labelled.jpg"
   },
   "avatar-stack": {
     "name": "Avatar stack",
@@ -452,30 +460,6 @@
     "description": "",
     "figmaLink": "",
     "figmaButtonText": "Checklist Item",
-    "imagePath1": "",
-    "imagePath2": ""
-  },
-  "gg-logo": {
-    "name": "GG Logo",
-    "description": "",
-    "figmaLink": "",
-    "figmaButtonText": "GG Logo",
-    "imagePath1": "",
-    "imagePath2": ""
-  },
-  "gg-logo-icon": {
-    "name": "GG Logo Icon",
-    "description": "",
-    "figmaLink": "",
-    "figmaButtonText": "GG Logo Icon",
-    "imagePath1": "",
-    "imagePath2": ""
-  },
-  "gg-logo-mark": {
-    "name": "GG Logo Mark",
-    "description": "",
-    "figmaLink": "",
-    "figmaButtonText": "GG Logo Mark",
     "imagePath1": "",
     "imagePath2": ""
   }
