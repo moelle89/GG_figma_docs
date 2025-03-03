@@ -10,7 +10,7 @@
   "button": {
     "name": "Button",
     "description": "A button is a visual element that allows users to trigger an action or event with a single click. It's often used for calls-to-action, navigation, or form submission.",
-    "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=123-456&t=Example",
+    "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3010-9168",
     "figmaButtonText": "Button",
     "imagePath1": "assets/prop_table/button.jpg",
     "imagePath2": "assets/prop_table/button.jpg"
@@ -42,7 +42,7 @@
   "button-group": {
     "name": "Button Group",
     "description": "A button group is a collection of buttons that are grouped together to perform related actions. It's often used for navigation, form submission, or other tasks.",
-    "figmaLink": "rsgergerstger",
+    "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3025-10795",
     "figmaButtonText": "Button Group",
     "imagePath1": "assets/prop_table/button-group.jpg",
     "imagePath2": "assets/prop_table/button-group.jpg"
@@ -50,7 +50,7 @@
   "button-close": {
     "name": "Button close",
     "description": "A button close is a visual element that allows users to dismiss or close a modal, overlay, or other interactive elements.",
-    "figmaLink": "https://www.figma.com/",
+    "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2715-231067&t=OaCX3hbgJH9gzTAw-4",
     "figmaButtonText": "Button close",
     "imagePath1": "assets/prop_table/button-close.jpg",
     "imagePath2": "assets/prop_table/button-close.jpg"
@@ -58,7 +58,7 @@
   "button-with-icon-only": {
     "name": "Button with icon only",
     "description": "A button with icon only is a visual element that uses an icon as the primary visual cue, without any text or other content.",
-    "figmaLink": "https://www.figma.com/",
+    "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2715-231116&t=OaCX3hbgJH9gzTAw-4",
     "figmaButtonText": "Button with icon only",
     "imagePath1": "assets/prop_table/button-with-icon-only.jpg",
     "imagePath2": "assets/prop_table/button-with-icon-only.jpg"
@@ -66,7 +66,7 @@
   "social-button": {
     "name": "Social button",
     "description": "A social button is a visual element that allows users to share content or interact with social media platforms directly from the application.",
-    "figmaLink": "https://www.figma.com/",
+    "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2715-231417&t=OaCX3hbgJH9gzTAw-4",
     "figmaButtonText": "Social button",
     "imagePath1": "assets/prop_table/social-button.jpg",
     "imagePath2": "assets/prop_table/social-button.jpg"
@@ -74,7 +74,7 @@
   "store-badges": {
     "name": "Store badges",
     "description": "Store badges are visual elements used to represent specific achievements, milestones, or accomplishments within a store or marketplace.",
-    "figmaLink": "https://www.figma.com/",
+    "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2715-231598&t=OaCX3hbgJH9gzTAw-4",
     "figmaButtonText": "Store badges",
     "imagePath1": "assets/prop_table/store-badges.jpg",
     "imagePath2": "assets/prop_table/store-badges.jpg"
