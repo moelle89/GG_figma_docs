@@ -216,7 +216,7 @@
     "imagePath2": "assets/prop_table/class-list-item.jpg"
   },
   "gglogo": {
-    "name": "GGLOGO",
+    "name": "GG_LOGO",
     "description": "The GG logo is a visual representation of the company's identity. It can be used as a standalone element or in conjunction with other design elements.",
     "figmaLink": "https://www.figma.com/",
     "figmaButtonText": "GGLOGO",

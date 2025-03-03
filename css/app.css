@@ -310,7 +310,7 @@
             border-width: 0;
             z-index: 9999999;
             font-size: 35px;
-            line-height: 50px;
+            /*line-height: 50px;*/
         }
 
         /* For mobile devices */
