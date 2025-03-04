@@ -13,6 +13,8 @@
             --active-category-bg: white;
             --button-bg: white;
             --fab-bg: #C27327;
+            --sortfab-bg: white;
+            --fab-border: var(--scrollbar-thumb);
             --fab-fg: #ffffff;
             --button-bg-hover: #f9f7fe;
             --button-comp-accent: #8638E5;
@@ -43,6 +45,8 @@
             --sidebar-bg: #1A1A1A;
             --category-bg: #1C1C1C;
             --fab-bg: #121212;
+            --sortfab-bg: var(--button-bg);
+            --fab-border: var(--scrollbar-thumb-hover);
             --fab-fg: #ffffff;
             --category-header-bg: #121212;
             --active-category-bg: #121212;
@@ -320,13 +324,13 @@
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            background-color: var(--fab-bg);
-            color: #ffffffea;
+            background-color: var(--sortfab-bg);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             cursor: pointer;
             border-width: 2px;
-            border-color: var(--scrollbar-thumb-hover);
+            border-color: var(--fab-border);
             border-style: solid;
             z-index: 9999999;
             font-size: 29px;
@@ -336,14 +340,43 @@
             background-color: var(--purple-accent);
             color: var(--fab-fg);
             border-width: 2px;
-            border-color: var(--primary-color);
+            border-color: var(--purple-accent);
             border-style: solid;
-            /*line-height: 50px;*/
+            transition: all 0.3s ease, all 0.3s ease;
         }
 
         .sortFab svg {
             scale: .6;
         }
+
+        .sort-fab-container {
+            position: relative;
+            display: inline-block;
+        }
+
+    .sortFab-tooltip {
+        visibility: hidden;
+        position: absolute;
+        bottom: 5%;
+        left: 130%;
+        background-color: #333;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 10px;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s, visibility 0.3s;
+        white-space: nowrap;
+        font-size: 0.8rem;
+        pointer-events: none;
+        margin-bottom: 5px;
+    }
+
+    .sortFab:hover .sortFab-tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
         /* Add this to your existing CSS file */
         .sidebar-sort-toggle {
             display:none;
@@ -427,6 +460,25 @@
             .sortFab:hover {
                 border-width: 0px;
                 transition: all 0.3s ease, all 0.3s ease;
+            }
+            .sortFab-tooltip {
+                visibility: hidden;
+                position: absolute;
+                bottom: -400%;
+                left: auto;
+                right: 0%;
+                background-color: #333;
+                color: white;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px 10px;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s, visibility 0.3s;
+                white-space: nowrap;
+                font-size: 0.8rem;
+                pointer-events: none;
+                margin-bottom: 5px;
             }
             /* Move the sidebar toggle to the bottom right */
             .sidebar-toggle {
