@@ -434,6 +434,19 @@
             stroke: var(--text-color-inverse);
             transform: rotate(90deg);
         }
+
+        .content {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .content.fade-out {
+            opacity: 0;
+        }
+
+        .content.fade-in {
+            opacity: 1;
+        }
+
         /* For mobile devices */
         @media screen and (max-width: 768px) {
             .sortFab {

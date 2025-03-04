@@ -361,10 +361,18 @@
             });
         });
     }
+
+    // Updated loadContent function with fade transition
     async function loadContent(pageName) {
         try {
             // Show loading indicator
             loadingIndicator.classList.add('active');
+
+            // Prepare content container for fade out
+            contentContainer.classList.add('fade-out');
+
+            // Wait a short moment to allow fade out to be visible
+            await new Promise(resolve => setTimeout(resolve, 200));
 
             // Fetch the content file
             const response = await fetch(`pages/${pageName}.html`);
@@ -388,6 +396,19 @@
             // Update content
             contentContainer.innerHTML = contentHeader + html;
 
+            // Trigger reflow to ensure fade in works
+            contentContainer.offsetWidth;
+
+            // Remove fade out, add fade in
+            contentContainer.classList.remove('fade-out');
+            contentContainer.classList.add('fade-in');
+
+            // Wait for animation to complete
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // Remove fade in class to reset for next transition
+            contentContainer.classList.remove('fade-in');
+
             // Wait for the DOM to update before injecting component info
             requestAnimationFrame(() => {
                 // After content is loaded, inject component information
@@ -399,6 +420,7 @@
         } catch (error) {
             console.error('Error loading content:', error);
             loadingIndicator.classList.remove('active');
+            contentContainer.classList.remove('fade-out');
             contentContainer.innerHTML = `
             <div class="content-header">
                 <h1 class="content-title">${pageName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h1>
