@@ -428,8 +428,8 @@
     "description": "A signup section is an interactive element that allows users to sign up for a system. It can include forms, buttons, or other interactive elements.",
     "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2765-103297&t=OaCX3hbgJH9gzTAw-4",
     "figmaButtonText": "Signup sections",
-    "imagePath1": "assets/prop_table/signup-sections.jpg",
-    "imagePath2": "assets/prop_table/signup-sections.jpg"
+    "imagePath1": "assets/prop_table/signup-section.jpg",
+    "imagePath2": "assets/prop_table/signup-section.jpg"
   },
   "avatar": {
     "name": "Avatar",
