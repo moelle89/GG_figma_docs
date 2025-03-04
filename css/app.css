@@ -313,8 +313,121 @@
             /*line-height: 50px;*/
         }
 
+        .sortFab {
+            position: fixed;
+            top: 20px;
+            left: 250px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background-color: var(--fab-bg);
+            color: #ffffffea;
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            border-width: 2px;
+            border-color: var(--scrollbar-thumb-hover);
+            border-style: solid;
+            z-index: 9999999;
+            font-size: 29px;
+            transition: all 0.3s ease, all 0.3s ease;
+        }
+        .sortFab:hover {
+            background-color: var(--purple-accent);
+            color: var(--fab-fg);
+            border-width: 2px;
+            border-color: var(--primary-color);
+            border-style: solid;
+            /*line-height: 50px;*/
+        }
+
+        .sortFab svg {
+            scale: .6;
+        }
+        /* Add this to your existing CSS file */
+        .sidebar-sort-toggle {
+            display:none;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--sidebar-background);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sort-toggle-icon {
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.3s ease;
+        }
+
+        .sort-toggle-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .sort-toggle-icon:active {
+            transform: scale(0.95);
+        }
+
+        .sort-toggle-fab {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sort-toggle-fab svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-color);
+            transition: transform 0.3s ease;
+        }
+
+        .sort-toggle-fab:hover {
+            background-color: var(--background-tertiary);
+        }
+
+        .sort-toggle-fab.active {
+            background-color: var(--primary-color);
+        }
+
+        .sort-toggle-fab.active svg {
+            stroke: var(--text-color-inverse);
+            transform: rotate(90deg);
+        }
         /* For mobile devices */
         @media screen and (max-width: 768px) {
+            .sortFab {
+                bottom: -150px;
+                left: auto;
+                top: auto;
+                right: 15px;
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                background-color: var(--fab-bg);
+                color: #ffffffea;
+                display: flex;
+                justify-content: center;
+                cursor: pointer;
+                border-width: 0px;
+                border-color: var(--scrollbar-thumb-hover);
+                border-style: solid;
+                z-index: 9999999;
+                font-size: 29px;
+                transition: all 0.3s ease, all 0.3s ease;
+            }
+            .sortFab:hover {
+                border-width: 0px;
+                transition: all 0.3s ease, all 0.3s ease;
+            }
             /* Move the sidebar toggle to the bottom right */
             .sidebar-toggle {
                 display: block;
@@ -407,6 +520,10 @@
             }
              body.sidebar-open .fab {
                 bottom: -160px;
+                transition: all 0.3s ease-out, all 0.3s ease;
+            }
+             body.sidebar-open .sortFab {
+                bottom: +40px;
                 transition: all 0.3s ease-out, all 0.3s ease;
             }
 

@@ -16,6 +16,9 @@
             </div>
         </div>
         <button class="fab" id="fabButton" onclick="createComponentManager()">+</button>
+        <button class="sortFab" id="sortFab" onclick="toggleSidebarSorting()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10.24,14.02c-.44,0-.84.15-1.12.44l-1.34,1.33V4.93c0-.3-.12-.6-.35-.83-.28-.28-.67-.44-1.09-.44h-.02c-.77.01-1.42.59-1.41,1.26v10.85l-1.33-1.3c-.3-.32-.7-.5-1.09-.5h0c-.36,0-.72.13-1,.36-.28.23-.45.52-.48.82-.03.33.12.68.42.95h0s3.85,3.8,3.85,3.8c.39.37.81.42,1.03.42.17,0,.74-.03,1.16-.46l2.64-2.6-.05.02,1.23-1.18c.37-.35.47-.87.27-1.31-.18-.38-.64-.77-1.29-.78ZM21.08,7.48h-8.96c-.5,0-.99-.21-1.33-.59s-.5-.86-.45-1.36h0c.08-.91.93-1.62,1.92-1.62h8.95c.5,0,.98.21,1.32.58.34.37.51.86.46,1.37-.08.9-.92,1.61-1.91,1.61ZM21.22,13.78h-6.56c-.98,0-1.78-.8-1.78-1.78s.8-1.78,1.78-1.78h6.56c.98,0,1.78.8,1.78,1.78s-.8,1.78-1.78,1.78ZM22.54,17.1c.34.37.51.86.46,1.37-.08.91-.93,1.62-1.92,1.62h-4.78c-.5,0-.98-.21-1.32-.58-.34-.37-.5-.86-.46-1.37.08-.91.92-1.62,1.92-1.62h4.78c.5,0,.98.21,1.32.58Z" />
+        </svg></button>
         <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
         <!-- Theme Toggle Switch -->
         <div class="theme-switch-container">
@@ -139,6 +142,145 @@
             }
 
         ];
+
+        // Add this to your existing JavaScript, right after the menuData definition
+
+        // Flag to track current sorting mode
+        let isAlphabeticalSort = false;
+
+        // Function to sort menu data alphabetically
+        function sortMenuDataAlphabetically(data) {
+            return [...data].sort((a, b) => a.category.localeCompare(b.category));
+        }
+
+    function regenerateSidebarMenu(sortedData) {
+        // Find the currently active item's data
+        const currentActiveItem = document.querySelector('.category-item.active');
+        const currentActiveItemName = currentActiveItem ? currentActiveItem.getAttribute('data-item') : null;
+        const currentActiveItemPage = currentActiveItem ? currentActiveItem.getAttribute('data-page') : null;
+
+        const sidebarMenu = document.getElementById('sidebar-menu');
+
+        // Clear existing menu items, but keep the sort toggle
+        const sortToggle = document.getElementById('sort-toggle-icon');
+        sidebarMenu.innerHTML = ''; // Clear everything
+
+        // Re-add the sort toggle as the first child
+        sidebarMenu.appendChild(sortToggle.parentElement);
+
+        // Regenerate menu with the provided data
+        sortedData.forEach((menuItem) => {
+            const categoryElement = document.createElement('div');
+            categoryElement.className = 'category';
+
+            categoryElement.innerHTML = `
+        <div class="category-header">
+            ${menuItem.category}
+            <span class="toggle-icon">○</span>
+        </div>
+        <div class="category-items">
+            ${menuItem.items.map(item => {
+                const itemId = item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
+                const isActive = item === currentActiveItemName ? "active" : "";
+
+                return `
+                    <a href="#" class="category-item ${isActive}" data-item="${item}" data-page="${itemId}">
+                        ${item}
+                        <span class="category-item-indicator"></span>
+                    </a>
+                `;
+            }).join('')}
+        </div>
+    `;
+            sidebarMenu.appendChild(categoryElement);
+
+            // Update the category's active state based on the active item
+            if (menuItem.items.includes(currentActiveItemName)) {
+                categoryElement.classList.add('active');
+                categoryElement.querySelector('.toggle-icon').textContent = '⬤';
+            }
+        });
+
+        // Re-add event listeners to category headers
+        document.querySelectorAll('.category-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const parent = header.parentElement;
+                const toggleIcon = header.querySelector('.toggle-icon');
+                const isActive = parent.classList.contains('active');
+
+                // Close all categories first
+                document.querySelectorAll('.category').forEach(cat => {
+                    cat.classList.remove('active');
+                    cat.querySelector('.toggle-icon').textContent = '○';
+                });
+
+                document.querySelectorAll('.category-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+
+                if (!isActive) {
+                    parent.classList.add('active');
+                    toggleIcon.textContent = '⬤';
+
+                    const firstItem = parent.querySelector('.category-item');
+                    if (firstItem) {
+                        firstItem.classList.add('active');
+                        const pageName = firstItem.getAttribute('data-page');
+                        loadContent(pageName);
+                        scrollToTop();
+                        closeSidebarOnMobile();
+                    }
+                }
+            });
+        });
+
+        // Re-add click listeners to category items
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                document.querySelectorAll('.category-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+
+                item.classList.add('active');
+                const pageName = item.getAttribute('data-page');
+                loadContent(pageName);
+                scrollToTop();
+                closeSidebarOnMobile();
+            });
+        });
+
+        // If we had an active item before, load its content
+        if (currentActiveItemPage) {
+            loadContent(currentActiveItemPage);
+        }
+    }
+
+
+        // Function to sort menu data alphabetically
+        function sortMenuDataAlphabetically(data) {
+            return [...data].sort((a, b) => a.category.localeCompare(b.category));
+        }
+
+        // Function to toggle sorting
+        function toggleSidebarSorting() {
+            isAlphabeticalSort = !isAlphabeticalSort;
+
+            // Update menu based on sorting mode
+            if (isAlphabeticalSort) {
+                // Sort menu alphabetically
+                const sortedMenuData = sortMenuDataAlphabetically(menuData);
+                regenerateSidebarMenu(sortedMenuData);
+            } else {
+                // Revert to original order
+                regenerateSidebarMenu(menuData);
+            }
+
+            // Update the sorting toggle icon
+            const sortToggleIcon = document.getElementById('sort-toggle-icon');
+            sortToggleIcon.textContent = isAlphabeticalSort ? '🔤' : '📋';
+        }
 
         // Generate menu
         const sidebarMenu = document.getElementById('sidebar-menu');
@@ -747,6 +889,24 @@
         }
     // Initialize the application
     async function initializeApp() {
+        // Add sorting toggle to the sidebar
+        const sidebarMenu = document.getElementById('sidebar-menu');
+        const sortFabBtn = document.getElementById('sortFab');
+        const sortToggleContainer = document.createElement('div');
+        sortToggleContainer.className = 'sidebar-sort-toggle';
+        sortToggleContainer.innerHTML = `
+        <span id="sort-toggle-icon" class="sort-toggle-icon">📋</span>
+    `;
+
+        // Ensure the sort toggle is the first child of the sidebar menu
+        sidebarMenu.insertBefore(sortToggleContainer, sidebarMenu.firstChild);
+
+        // Get the sort toggle icon
+        const sortToggleIcon = document.getElementById('sort-toggle-icon');
+
+        // Add click event to toggle sorting
+        sortToggleIcon.addEventListener('click', toggleSidebarSorting);
+
         // First try to load data from the JSON file
         await loadComponentRepository();
 
