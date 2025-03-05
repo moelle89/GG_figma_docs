@@ -74,3 +74,80 @@ function importComponentRepository() {
    // Trigger the file selection dialog
    fileInput.click();
 }
+
+function initializeImageSliders() {
+   // Select all image sliders in the current content
+   const sliders = document.querySelectorAll('.image-slider');
+
+   sliders.forEach(slider => {
+      // Ensure we don't initialize a slider twice
+      if (slider.dataset.initialized) return;
+
+      const images = slider.querySelectorAll('.slider-image');
+      const prevBtn = slider.querySelector('.slider-nav.prev');
+      const nextBtn = slider.querySelector('.slider-nav.next');
+      const indicators = slider.querySelectorAll('.indicator');
+
+      let currentIndex = 0;
+
+      // Ensure at least one image exists before setting up
+      if (images.length === 0) return;
+
+      // Initially hide all images except the first
+      images.forEach((img, index) => {
+         img.style.opacity = index === 0 ? '1' : '0';
+         img.style.position = index === 0 ? 'relative' : 'absolute';
+         img.style.top = '0';
+         img.style.left = '0';
+         img.style.width = '100%';
+      });
+
+      // Set up indicators if they exist
+      if (indicators.length > 0) {
+         indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+               showSlide(index);
+            });
+         });
+      }
+
+      function showSlide(index) {
+         // Normalize the index
+         const normalizedIndex = (index + images.length) % images.length;
+
+         // Hide current slide
+         images[currentIndex].style.opacity = '0';
+         images[currentIndex].style.position = 'absolute';
+
+         // Show new slide
+         images[normalizedIndex].style.opacity = '1';
+         images[normalizedIndex].style.position = 'relative';
+
+         // Update indicators if they exist
+         if (indicators.length > 0) {
+            indicators[currentIndex].classList.remove('active');
+            indicators[normalizedIndex].classList.add('active');
+         }
+
+         // Update current index
+         currentIndex = normalizedIndex;
+      }
+
+      // Set up navigation buttons if they exist
+      if (prevBtn) {
+         prevBtn.addEventListener('click', () => {
+            showSlide(currentIndex - 1);
+         });
+      }
+
+      if (nextBtn) {
+         nextBtn.addEventListener('click', () => {
+            showSlide(currentIndex + 1);
+         });
+      }
+
+      // Mark as initialized to prevent duplicate setup
+      slider.dataset.initialized = 'true';
+   });
+}
+
