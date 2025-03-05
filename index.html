@@ -4,6 +4,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/fav/favicon.svg" />
 <link rel="shortcut icon" href="assets/fav/favicon.ico" />
 <link rel="apple-touch-icon" sizes="180x180" href="assets/fav/apple-touch-icon.png" />
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
     <div class="main-container">
@@ -22,12 +24,12 @@
             </div>
         </div>
         <button class="fab" id="fabButton" onclick="createComponentManager()">+</button>
-    <button class="sortFab" id="sortFab" onclick="toggleSidebarSorting()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10.24,14.02c-.44,0-.84.15-1.12.44l-1.34,1.33V4.93c0-.3-.12-.6-.35-.83-.28-.28-.67-.44-1.09-.44h-.02c-.77.01-1.42.59-1.41,1.26v10.85l-1.33-1.3c-.3-.32-.7-.5-1.09-.5h0c-.36,0-.72.13-1,.36-.28.23-.45.52-.48.82-.03.33.12.68.42.95h0s3.85,3.8,3.85,3.8c.39.37.81.42,1.03.42.17,0,.74-.03,1.16-.46l2.64-2.6-.05.02,1.23-1.18c.37-.35.47-.87.27-1.31-.18-.38-.64-.77-1.29-.78ZM21.08,7.48h-8.96c-.5,0-.99-.21-1.33-.59s-.5-.86-.45-1.36h0c.08-.91.93-1.62,1.92-1.62h8.95c.5,0,.98.21,1.32.58.34.37.51.86.46,1.37-.08.9-.92,1.61-1.91,1.61ZM21.22,13.78h-6.56c-.98,0-1.78-.8-1.78-1.78s.8-1.78,1.78-1.78h6.56c.98,0,1.78.8,1.78,1.78s-.8,1.78-1.78,1.78ZM22.54,17.1c.34.37.51.86.46,1.37-.08.91-.93,1.62-1.92,1.62h-4.78c-.5,0-.98-.21-1.32-.58-.34-.37-.5-.86-.46-1.37.08-.91.92-1.62,1.92-1.62h4.78c.5,0,.98.21,1.32.58Z" />
-        </svg>
-        <span class="sortFab-tooltip">Default Category Sorting</span>
-    </button>
+        <button class="sortFab" id="sortFab" onclick="toggleSidebarSorting()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10.24,14.02c-.44,0-.84.15-1.12.44l-1.34,1.33V4.93c0-.3-.12-.6-.35-.83-.28-.28-.67-.44-1.09-.44h-.02c-.77.01-1.42.59-1.41,1.26v10.85l-1.33-1.3c-.3-.32-.7-.5-1.09-.5h0c-.36,0-.72.13-1,.36-.28.23-.45.52-.48.82-.03.33.12.68.42.95h0s3.85,3.8,3.85,3.8c.39.37.81.42,1.03.42.17,0,.74-.03,1.16-.46l2.64-2.6-.05.02,1.23-1.18c.37-.35.47-.87.27-1.31-.18-.38-.64-.77-1.29-.78ZM21.08,7.48h-8.96c-.5,0-.99-.21-1.33-.59s-.5-.86-.45-1.36h0c.08-.91.93-1.62,1.92-1.62h8.95c.5,0,.98.21,1.32.58.34.37.51.86.46,1.37-.08.9-.92,1.61-1.91,1.61ZM21.22,13.78h-6.56c-.98,0-1.78-.8-1.78-1.78s.8-1.78,1.78-1.78h6.56c.98,0,1.78.8,1.78,1.78s-.8,1.78-1.78,1.78ZM22.54,17.1c.34.37.51.86.46,1.37-.08.91-.93,1.62-1.92,1.62h-4.78c-.5,0-.98-.21-1.32-.58-.34-.37-.5-.86-.46-1.37.08-.91.92-1.62,1.92-1.62h4.78c.5,0,.98.21,1.32.58Z" />
+            </svg>
+            <span class="sortFab-tooltip">Default Category Sorting</span>
+        </button>
         <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
         <!-- Theme Toggle Switch -->
         <div class="theme-switch-container">
@@ -162,109 +164,109 @@
             return [...data].sort((a, b) => a.category.localeCompare(b.category));
         }
 
-    function regenerateSidebarMenu(sortedData) {
-        // Find the currently active item's data
-        const currentActiveItem = document.querySelector('.category-item.active');
-        const currentActiveItemName = currentActiveItem ? currentActiveItem.getAttribute('data-item') : null;
-        const currentActiveItemPage = currentActiveItem ? currentActiveItem.getAttribute('data-page') : null;
+        function regenerateSidebarMenu(sortedData) {
+            // Find the currently active item's data
+            const currentActiveItem = document.querySelector('.category-item.active');
+            const currentActiveItemName = currentActiveItem ? currentActiveItem.getAttribute('data-item') : null;
+            const currentActiveItemPage = currentActiveItem ? currentActiveItem.getAttribute('data-page') : null;
 
-        const sidebarMenu = document.getElementById('sidebar-menu');
+            const sidebarMenu = document.getElementById('sidebar-menu');
 
-        // Clear existing menu items, but keep the sort toggle
-        const sortToggle = document.getElementById('sort-toggle-icon');
-        sidebarMenu.innerHTML = ''; // Clear everything
+            // Clear existing menu items, but keep the sort toggle
+            const sortToggle = document.getElementById('sort-toggle-icon');
+            sidebarMenu.innerHTML = ''; // Clear everything
 
-        // Re-add the sort toggle as the first child
-        sidebarMenu.appendChild(sortToggle.parentElement);
+            // Re-add the sort toggle as the first child
+            sidebarMenu.appendChild(sortToggle.parentElement);
 
-        // Regenerate menu with the provided data
-        sortedData.forEach((menuItem) => {
-            const categoryElement = document.createElement('div');
-            categoryElement.className = 'category';
+            // Regenerate menu with the provided data
+            sortedData.forEach((menuItem) => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'category';
 
-            categoryElement.innerHTML = `
+                categoryElement.innerHTML = `
         <div class="category-header">
             ${menuItem.category}
             <span class="toggle-icon">○</span>
         </div>
         <div class="category-items">
             ${menuItem.items.map(item => {
-                const itemId = item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
-                const isActive = item === currentActiveItemName ? "active" : "";
+                    const itemId = item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
+                    const isActive = item === currentActiveItemName ? "active" : "";
 
-                return `
+                    return `
                     <a href="#" class="category-item ${isActive}" data-item="${item}" data-page="${itemId}">
                         ${item}
                         <span class="category-item-indicator"></span>
                     </a>
                 `;
-            }).join('')}
+                }).join('')}
         </div>
     `;
-            sidebarMenu.appendChild(categoryElement);
+                sidebarMenu.appendChild(categoryElement);
 
-            // Update the category's active state based on the active item
-            if (menuItem.items.includes(currentActiveItemName)) {
-                categoryElement.classList.add('active');
-                categoryElement.querySelector('.toggle-icon').textContent = '⬤';
-            }
-        });
-
-        // Re-add event listeners to category headers
-        document.querySelectorAll('.category-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const parent = header.parentElement;
-                const toggleIcon = header.querySelector('.toggle-icon');
-                const isActive = parent.classList.contains('active');
-
-                // Close all categories first
-                document.querySelectorAll('.category').forEach(cat => {
-                    cat.classList.remove('active');
-                    cat.querySelector('.toggle-icon').textContent = '○';
-                });
-
-                document.querySelectorAll('.category-item').forEach(i => {
-                    i.classList.remove('active');
-                });
-
-                if (!isActive) {
-                    parent.classList.add('active');
-                    toggleIcon.textContent = '⬤';
-
-                    const firstItem = parent.querySelector('.category-item');
-                    if (firstItem) {
-                        firstItem.classList.add('active');
-                        const pageName = firstItem.getAttribute('data-page');
-                        loadContent(pageName);
-                        scrollToTop();
-                        closeSidebarOnMobile();
-                    }
+                // Update the category's active state based on the active item
+                if (menuItem.items.includes(currentActiveItemName)) {
+                    categoryElement.classList.add('active');
+                    categoryElement.querySelector('.toggle-icon').textContent = '⬤';
                 }
             });
-        });
 
-        // Re-add click listeners to category items
-        document.querySelectorAll('.category-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
+            // Re-add event listeners to category headers
+            document.querySelectorAll('.category-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const parent = header.parentElement;
+                    const toggleIcon = header.querySelector('.toggle-icon');
+                    const isActive = parent.classList.contains('active');
 
-                document.querySelectorAll('.category-item').forEach(i => {
-                    i.classList.remove('active');
+                    // Close all categories first
+                    document.querySelectorAll('.category').forEach(cat => {
+                        cat.classList.remove('active');
+                        cat.querySelector('.toggle-icon').textContent = '○';
+                    });
+
+                    document.querySelectorAll('.category-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+
+                    if (!isActive) {
+                        parent.classList.add('active');
+                        toggleIcon.textContent = '⬤';
+
+                        const firstItem = parent.querySelector('.category-item');
+                        if (firstItem) {
+                            firstItem.classList.add('active');
+                            const pageName = firstItem.getAttribute('data-page');
+                            loadContent(pageName);
+                            scrollToTop();
+                            closeSidebarOnMobile();
+                        }
+                    }
                 });
-
-                item.classList.add('active');
-                const pageName = item.getAttribute('data-page');
-                loadContent(pageName);
-                scrollToTop();
-                closeSidebarOnMobile();
             });
-        });
 
-        // If we had an active item before, load its content
-        if (currentActiveItemPage) {
-            loadContent(currentActiveItemPage);
+            // Re-add click listeners to category items
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+
+                    document.querySelectorAll('.category-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+
+                    item.classList.add('active');
+                    const pageName = item.getAttribute('data-page');
+                    loadContent(pageName);
+                    scrollToTop();
+                    closeSidebarOnMobile();
+                });
+            });
+
+            // If we had an active item before, load its content
+            if (currentActiveItemPage) {
+                loadContent(currentActiveItemPage);
+            }
         }
-    }
 
 
         // Function to sort menu data alphabetically
@@ -340,94 +342,94 @@
             });
         }
 
-    // Define a central repository of component information
-    const componentRepository = {
-        // Example structure - you'll need to populate this with your actual data
-    };
+        // Define a central repository of component information
+        const componentRepository = {
+            // Example structure - you'll need to populate this with your actual data
+        };
 
-    // Function to populate the component repository from navigation data
-    function populateComponentRepository() {
-        // This function will create entries in componentRepository based on menu data
-        menuData.forEach(category => {
-            category.items.forEach(item => {
-                // Create URL-friendly id from item name
-                const itemId = item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
+        // Function to populate the component repository from navigation data
+        function populateComponentRepository() {
+            // This function will create entries in componentRepository based on menu data
+            menuData.forEach(category => {
+                category.items.forEach(item => {
+                    // Create URL-friendly id from item name
+                    const itemId = item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
 
-                // Only add if not already in repository
-                if (!componentRepository[itemId]) {
-                    componentRepository[itemId] = {
-                        name: item,
-                        description: "", // Empty by default
-                        figmaLink: "", // Empty by default
-                        figmaButtonText: item,
-                        imagePath1: "", // Empty by default - for first image
-                        imagePath2: ""  // Empty by default - for second image
-                    };
-                }
+                    // Only add if not already in repository
+                    if (!componentRepository[itemId]) {
+                        componentRepository[itemId] = {
+                            name: item,
+                            description: "", // Empty by default
+                            figmaLink: "", // Empty by default
+                            figmaButtonText: item,
+                            imagePath1: "", // Empty by default - for first image
+                            imagePath2: ""  // Empty by default - for second image
+                        };
+                    }
+                });
             });
-        });
-    }
+        }
 
-    // Updated loadContent function with fade transition
-    async function loadContent(pageName) {
-        try {
-            // Show loading indicator
-            loadingIndicator.classList.add('active');
+        // Updated loadContent function with fade transition
+        async function loadContent(pageName) {
+            try {
+                // Show loading indicator
+                loadingIndicator.classList.add('active');
 
-            // Prepare content container for fade out
-            contentContainer.classList.add('fade-out');
+                // Prepare content container for fade out
+                contentContainer.classList.add('fade-out');
 
-            // Wait a short moment to allow fade out to be visible
-            await new Promise(resolve => setTimeout(resolve, 200));
+                // Wait a short moment to allow fade out to be visible
+                await new Promise(resolve => setTimeout(resolve, 200));
 
-            // Fetch the content file
-            const response = await fetch(`pages/${pageName}.html`);
+                // Fetch the content file
+                const response = await fetch(`pages/${pageName}.html`);
 
-            if (!response.ok) {
-                throw new Error(`Failed to load ${pageName}`);
-            }
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${pageName}`);
+                }
 
-            const html = await response.text();
+                const html = await response.text();
 
-            // Hide loading indicator
-            loadingIndicator.classList.remove('active');
+                // Hide loading indicator
+                loadingIndicator.classList.remove('active');
 
-            // Create the content header
-            const contentHeader = `
+                // Create the content header
+                const contentHeader = `
             <div class="content-header">
                 <h1 class="content-title">${pageName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h1>
             </div>
         `;
 
-            // Update content
-            contentContainer.innerHTML = contentHeader + html;
+                // Update content
+                contentContainer.innerHTML = contentHeader + html;
 
-            // Trigger reflow to ensure fade in works
-            contentContainer.offsetWidth;
+                // Trigger reflow to ensure fade in works
+                contentContainer.offsetWidth;
 
-            // Remove fade out, add fade in
-            contentContainer.classList.remove('fade-out');
-            contentContainer.classList.add('fade-in');
+                // Remove fade out, add fade in
+                contentContainer.classList.remove('fade-out');
+                contentContainer.classList.add('fade-in');
 
-            // Wait for animation to complete
-            await new Promise(resolve => setTimeout(resolve, 300));
+                // Wait for animation to complete
+                await new Promise(resolve => setTimeout(resolve, 300));
 
-            // Remove fade in class to reset for next transition
-            contentContainer.classList.remove('fade-in');
+                // Remove fade in class to reset for next transition
+                contentContainer.classList.remove('fade-in');
 
-            // Wait for the DOM to update before injecting component info
-            requestAnimationFrame(() => {
-                // After content is loaded, inject component information
-                injectComponentInfo(pageName);
+                // Wait for the DOM to update before injecting component info
+                requestAnimationFrame(() => {
+                    // After content is loaded, inject component information
+                    injectComponentInfo(pageName);
 
-                // Initialize video viewport observers
-                initializeVideos();
-            });
-        } catch (error) {
-            console.error('Error loading content:', error);
-            loadingIndicator.classList.remove('active');
-            contentContainer.classList.remove('fade-out');
-            contentContainer.innerHTML = `
+                    // Initialize video viewport observers
+                    initializeVideos();
+                });
+            } catch (error) {
+                console.error('Error loading content:', error);
+                loadingIndicator.classList.remove('active');
+                contentContainer.classList.remove('fade-out');
+                contentContainer.innerHTML = `
             <div class="content-header">
                 <h1 class="content-title">${pageName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h1>
                 <p class="content-subtitle">Content not found or still in development</p>
@@ -436,154 +438,184 @@
                 <p>We're still working on this component. Check back soon!</p>
             </div>
         `;
+            }
         }
-    }
 
- // Function to inject component information into the loaded page
-    function injectComponentInfo(pageName) {
-        // Add a small delay to ensure DOM is ready
-        setTimeout(() => {
-            console.log(`Injecting data for component: ${pageName}`);
+        // Function to inject component information into the loaded page
+        function injectComponentInfo(pageName) {
+            // Add a small delay to ensure DOM is ready
+            setTimeout(() => {
+                console.log(`Injecting data for component: ${pageName}`);
 
-            // Look up the component data from our repository
-            const componentData = componentRepository[pageName];
+                // Look up the component data from our repository
+                const componentData = componentRepository[pageName];
 
-            if (!componentData) {
-                console.log(`No stored data found for component: ${pageName}`);
-                return;
-            }
-
-            // Find the component description element - try different selectors
-            const descriptionElement = document.querySelector('.component-description p') ||
-                document.querySelector('.component-description') ||
-                document.querySelector('[data-description-container]');
-
-            if (descriptionElement && componentData.description) {
-                console.log('Found description element, updating content');
-                descriptionElement.textContent = componentData.description;
-            } else {
-                console.log('Description element not found in the DOM');
-            }
-
-            // Find the Figma link button - try different selectors
-            const figmaLink = document.querySelector('.two-tone-button') ||
-                document.querySelector('[data-figma-link]') ||
-                document.querySelector('a[href*="figma.com"]');
-
-            if (figmaLink && componentData.figmaLink) {
-                console.log('Found Figma link element, updating href');
-                figmaLink.setAttribute('href', componentData.figmaLink);
-
-                // Update button text if needed
-                const buttonLeftElement = figmaLink.querySelector('.button-left');
-                if (buttonLeftElement && componentData.figmaButtonText) {
-                    // Save the diamond icon HTML
-                    const diamondIcon = buttonLeftElement.querySelector('.diamond-icon');
-                    const diamondHtml = diamondIcon ? diamondIcon.outerHTML : '';
-
-                    // Replace the content, preserving the diamond icon
-                    buttonLeftElement.innerHTML = componentData.figmaButtonText + diamondHtml;
-                }
-            } else {
-                console.log('Figma link element not found in the DOM');
-            }
-
-            // Find and update images if paths are provided
-            if (componentData.imagePath1 || componentData.imagePath2) {
-                console.log('Found image paths, searching for image elements');
-
-                // Find only images with the data-prop-img attribute in grid layout
-                const gridImages = document.querySelectorAll('.grid-2-col .grid-item img[data-prop-img]');
-
-                // Update first image if found
-                if (gridImages.length > 0 && componentData.imagePath1) {
-                    console.log('Updating first image src');
-                    gridImages[0].setAttribute('src', componentData.imagePath1);
-                    gridImages[0].setAttribute('alt', `${componentData.name} - diagram 1`);
+                if (!componentData) {
+                    console.log(`No stored data found for component: ${pageName}`);
+                    return;
                 }
 
-                // Update second image if found
-                if (gridImages.length > 1 && componentData.imagePath2) {
-                    console.log('Updating second image src');
-                    gridImages[1].setAttribute('src', componentData.imagePath2);
-                    gridImages[1].setAttribute('alt', `${componentData.name} - diagram 2`);
+                // Find the component description element - try different selectors
+                const descriptionElement = document.querySelector('.component-description p') ||
+                    document.querySelector('.component-description') ||
+                    document.querySelector('[data-description-container]');
+
+                if (descriptionElement && componentData.description) {
+                    console.log('Found description element, updating content');
+                    descriptionElement.textContent = componentData.description;
+                } else {
+                    console.log('Description element not found in the DOM');
                 }
-            }
-        }, 100); // Small delay to ensure DOM is updated
-    }
 
-    // Function to save component data to downloadable JSON file
-    function saveComponentRepository() {
-        // Save to localStorage as a backup/cache
-        localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
+                // Find the Figma link button - try different selectors
+                const figmaLink = document.querySelector('.two-tone-button') ||
+                    document.querySelector('[data-figma-link]') ||
+                    document.querySelector('a[href*="figma.com"]');
 
-        // Create formatted JSON string
-        const jsonData = JSON.stringify(componentRepository, null, 2);
+                if (figmaLink && componentData.figmaLink) {
+                    console.log('Found Figma link element, updating href');
+                    figmaLink.setAttribute('href', componentData.figmaLink);
 
-        // Create a blob containing the JSON data
-        const blob = new Blob([jsonData], { type: 'application/json' });
+                    // Update button text if needed
+                    const buttonLeftElement = figmaLink.querySelector('.button-left');
+                    if (buttonLeftElement && componentData.figmaButtonText) {
+                        // Save the diamond icon HTML
+                        const diamondIcon = buttonLeftElement.querySelector('.diamond-icon');
+                        const diamondHtml = diamondIcon ? diamondIcon.outerHTML : '';
 
-        // Create a URL for the blob
-        const url = URL.createObjectURL(blob);
+                        // Replace the content, preserving the diamond icon
+                        buttonLeftElement.innerHTML = componentData.figmaButtonText + diamondHtml;
+                    }
+                } else {
+                    console.log('Figma link element not found in the DOM');
+                }
 
-        // Create a link element for downloading
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'components.json';
+                // Find and update images if paths are provided
+                if (componentData.imagePath1 || componentData.imagePath2) {
+                    console.log('Found image paths, searching for image elements');
 
-        // Append link to body, click it, and remove it
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+                    // Find all grid-2-col grids in the loaded content
+                    const gridContainers = document.querySelectorAll('.grid-2-col');
 
-        // Clean up the URL object
-        URL.revokeObjectURL(url);
+                    gridContainers.forEach(gridContainer => {
+                        // Find images within this specific grid
+                        const gridImages = gridContainer.querySelectorAll('.grid-item img[data-prop-img]');
 
-        console.log('Component repository saved to downloadable JSON file');
+                        // Update first image if found
+                        if (gridImages.length > 0 && componentData.imagePath1) {
+                            console.log('Updating first image src');
+                            gridImages[0].setAttribute('src', componentData.imagePath1);
+                            gridImages[0].setAttribute('alt', `${componentData.name} - diagram 1`);
 
-        // Display instructions for the user
-        alert('Component data has been saved as components.json. To make this data available for future visits, please replace the components.json file in your project\'s data directory with this downloaded file.');
-    }
-    // Function to load component data from JSON file
-    async function loadComponentRepository() {
-        try {
-            // Fetch the JSON file
-            const response = await fetch('data/components.json');
+                            // Hide the grid item if image is empty.png
+                            const firstGridItem = gridImages[0].closest('.grid-item');
+                            if (componentData.imagePath1.endsWith('empty.png')) {
+                                if (firstGridItem) firstGridItem.classList.add('hidden');
+                            } else {
+                                if (firstGridItem) firstGridItem.classList.remove('hidden');
+                            }
+                        }
 
-            if (!response.ok) {
-                throw new Error(`Failed to load component data: ${response.status}`);
-            }
+                        // Update second image if found
+                        if (gridImages.length > 1 && componentData.imagePath2) {
+                            console.log('Updating second image src');
+                            gridImages[1].setAttribute('src', componentData.imagePath2);
+                            gridImages[1].setAttribute('alt', `${componentData.name} - diagram 2`);
 
-            const loadedData = await response.json();
+                            // Hide the grid item if image is empty.png
+                            const secondGridItem = gridImages[1].closest('.grid-item');
+                            if (componentData.imagePath2.endsWith('empty.png')) {
+                                if (secondGridItem) secondGridItem.classList.add('hidden');
+                            } else {
+                                if (secondGridItem) secondGridItem.classList.remove('hidden');
+                            }
+                        }
 
-            // Merge the loaded data with our default data
-            Object.assign(componentRepository, loadedData);
-            console.log('Component repository loaded from JSON file');
+                        // Adjust grid layout based on visible items
+                        const visibleGridItems = gridContainer.querySelectorAll('.grid-item:not(.hidden)');
 
-            // Also save to localStorage as a backup/cache
+                        if (visibleGridItems.length === 1) {
+                            gridContainer.classList.add('single-column');
+                        } else {
+                            gridContainer.classList.remove('single-column');
+                        }
+                    });
+                }
+            }, 100); // Small delay to ensure DOM is updated
+        }
+
+        // Function to save component data to downloadable JSON file
+        function saveComponentRepository() {
+            // Save to localStorage as a backup/cache
             localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
-        } catch (error) {
-            console.error('Error loading component repository from file:', error);
 
-            // Fall back to localStorage if available
-            const storedData = localStorage.getItem('componentRepository');
-            if (storedData) {
-                try {
-                    const localData = JSON.parse(storedData);
-                    Object.assign(componentRepository, localData);
-                    console.log('Component repository loaded from localStorage fallback');
-                } catch (e) {
-                    console.error('Error parsing localStorage data:', e);
-                }
-            }
-        } finally {
-            // Ensure we have entries for all components by populating missing ones
-            populateComponentRepository();
+            // Create formatted JSON string
+            const jsonData = JSON.stringify(componentRepository, null, 2);
+
+            // Create a blob containing the JSON data
+            const blob = new Blob([jsonData], { type: 'application/json' });
+
+            // Create a URL for the blob
+            const url = URL.createObjectURL(blob);
+
+            // Create a link element for downloading
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'components.json';
+
+            // Append link to body, click it, and remove it
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up the URL object
+            URL.revokeObjectURL(url);
+
+            console.log('Component repository saved to downloadable JSON file');
+
+            // Display instructions for the user
+            alert('Component data has been saved as components.json. To make this data available for future visits, please replace the components.json file in your project\'s data directory with this downloaded file.');
         }
-    }
+        // Function to load component data from JSON file
+        async function loadComponentRepository() {
+            try {
+                // Fetch the JSON file
+                const response = await fetch('data/components.json');
 
-    function createComponentManager() {
-        const managerHtml = `
+                if (!response.ok) {
+                    throw new Error(`Failed to load component data: ${response.status}`);
+                }
+
+                const loadedData = await response.json();
+
+                // Merge the loaded data with our default data
+                Object.assign(componentRepository, loadedData);
+                console.log('Component repository loaded from JSON file');
+
+                // Also save to localStorage as a backup/cache
+                localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
+            } catch (error) {
+                console.error('Error loading component repository from file:', error);
+
+                // Fall back to localStorage if available
+                const storedData = localStorage.getItem('componentRepository');
+                if (storedData) {
+                    try {
+                        const localData = JSON.parse(storedData);
+                        Object.assign(componentRepository, localData);
+                        console.log('Component repository loaded from localStorage fallback');
+                    } catch (e) {
+                        console.error('Error parsing localStorage data:', e);
+                    }
+                }
+            } finally {
+                // Ensure we have entries for all components by populating missing ones
+                populateComponentRepository();
+            }
+        }
+
+        function createComponentManager() {
+            const managerHtml = `
     <div class="component-manager">
         <h2>Component Data Manager</h2>
         <p>Use this tool to manage component descriptions, Figma links, and images.</p>
@@ -605,8 +637,8 @@
             <select id="component-select" class="component-select">
                 <option value="">-- Select a component --</option>
                 ${Object.keys(componentRepository).map(key =>
-            `<option value="${key}">${componentRepository[key].name}</option>`
-        ).join('')}
+                `<option value="${key}">${componentRepository[key].name}</option>`
+            ).join('')}
             </select>
         </div>
 
@@ -648,122 +680,122 @@
     </div>
 `;
 
-        contentContainer.innerHTML = managerHtml;
+            contentContainer.innerHTML = managerHtml;
 
-        // Add event listeners
-        const componentSelect = document.getElementById('component-select');
-        const componentForm = document.getElementById('component-form');
-        const componentName = document.getElementById('component-name');
-        const componentDescription = document.getElementById('component-description');
-        const componentFigmaLink = document.getElementById('component-figma-link');
-        const componentButtonText = document.getElementById('component-button-text');
-        const componentImagePath1 = document.getElementById('component-image-path1');
-        const componentImagePath2 = document.getElementById('component-image-path2');
-        const saveButton = document.getElementById('save-component');
-        const exportButton = document.getElementById('export-components');
-        const importButton = document.getElementById('import-components');
+            // Add event listeners
+            const componentSelect = document.getElementById('component-select');
+            const componentForm = document.getElementById('component-form');
+            const componentName = document.getElementById('component-name');
+            const componentDescription = document.getElementById('component-description');
+            const componentFigmaLink = document.getElementById('component-figma-link');
+            const componentButtonText = document.getElementById('component-button-text');
+            const componentImagePath1 = document.getElementById('component-image-path1');
+            const componentImagePath2 = document.getElementById('component-image-path2');
+            const saveButton = document.getElementById('save-component');
+            const exportButton = document.getElementById('export-components');
+            const importButton = document.getElementById('import-components');
 
-        // Handle component selection
-        componentSelect.addEventListener('change', function () {
-            const selectedKey = this.value;
+            // Handle component selection
+            componentSelect.addEventListener('change', function () {
+                const selectedKey = this.value;
 
-            if (selectedKey) {
-                const data = componentRepository[selectedKey];
+                if (selectedKey) {
+                    const data = componentRepository[selectedKey];
 
-                // Populate form
-                componentName.value = data.name || '';
-                componentDescription.value = data.description || '';
-                componentFigmaLink.value = data.figmaLink || '';
-                componentButtonText.value = data.figmaButtonText || '';
-                componentImagePath1.value = data.imagePath1 || '';
-                componentImagePath2.value = data.imagePath2 || '';
+                    // Populate form
+                    componentName.value = data.name || '';
+                    componentDescription.value = data.description || '';
+                    componentFigmaLink.value = data.figmaLink || '';
+                    componentButtonText.value = data.figmaButtonText || '';
+                    componentImagePath1.value = data.imagePath1 || '';
+                    componentImagePath2.value = data.imagePath2 || '';
 
-                // Show form
-                componentForm.style.display = 'block';
-            } else {
-                // Hide form if no component selected
-                componentForm.style.display = 'none';
-            }
-        });
+                    // Show form
+                    componentForm.style.display = 'block';
+                } else {
+                    // Hide form if no component selected
+                    componentForm.style.display = 'none';
+                }
+            });
 
-        // Handle save button
-        saveButton.addEventListener('click', function () {
-            const selectedKey = componentSelect.value;
+            // Handle save button
+            saveButton.addEventListener('click', function () {
+                const selectedKey = componentSelect.value;
 
-            if (selectedKey) {
-                // Update repository
-                componentRepository[selectedKey] = {
-                    name: componentName.value,
-                    description: componentDescription.value,
-                    figmaLink: componentFigmaLink.value,
-                    figmaButtonText: componentButtonText.value,
-                    imagePath1: componentImagePath1.value,
-                    imagePath2: componentImagePath2.value
-                };
+                if (selectedKey) {
+                    // Update repository
+                    componentRepository[selectedKey] = {
+                        name: componentName.value,
+                        description: componentDescription.value,
+                        figmaLink: componentFigmaLink.value,
+                        figmaButtonText: componentButtonText.value,
+                        imagePath1: componentImagePath1.value,
+                        imagePath2: componentImagePath2.value
+                    };
 
-                // Save to localStorage
-                localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
+                    // Save to localStorage
+                    localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
 
-                // Provide feedback
-                alert(`Component "${componentName.value}" data saved to local storage. To permanently save this data, click "Export Data".`);
-            }
-        });
+                    // Provide feedback
+                    alert(`Component "${componentName.value}" data saved to local storage. To permanently save this data, click "Export Data".`);
+                }
+            });
 
-        // Add export/import functionality
-        exportButton.addEventListener('click', saveComponentRepository);
-        importButton.addEventListener('click', importComponentRepository);
-    }
+            // Add export/import functionality
+            exportButton.addEventListener('click', saveComponentRepository);
+            importButton.addEventListener('click', importComponentRepository);
+        }
 
         // Add this function to ensure consistent sidebar closing behavior
-            function closeSidebarOnMobile() {
-                if (window.innerWidth <= 768) {
-                    const sidebar = document.getElementById('sidebar');
-                    sidebar.classList.remove('active');
-                    document.body.classList.remove('sidebar-open');
-                }
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('active');
+                document.body.classList.remove('sidebar-open');
             }
+        }
         // Add event listeners to category headers - updated to close other categories and activate first item
         document.querySelectorAll('.category-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const parent = header.parentElement;
-            const toggleIcon = header.querySelector('.toggle-icon');
-            const isActive = parent.classList.contains('active');
+            header.addEventListener('click', () => {
+                const parent = header.parentElement;
+                const toggleIcon = header.querySelector('.toggle-icon');
+                const isActive = parent.classList.contains('active');
 
-            // Close all categories first
-            document.querySelectorAll('.category').forEach(cat => {
-                cat.classList.remove('active');
-                cat.querySelector('.toggle-icon').textContent = '○';
-            });
+                // Close all categories first
+                document.querySelectorAll('.category').forEach(cat => {
+                    cat.classList.remove('active');
+                    cat.querySelector('.toggle-icon').textContent = '○';
+                });
 
-            // Remove active class from all items
-            document.querySelectorAll('.category-item').forEach(i => {
-                i.classList.remove('active');
-            });
+                // Remove active class from all items
+                document.querySelectorAll('.category-item').forEach(i => {
+                    i.classList.remove('active');
+                });
 
-            // If the clicked category wasn't active, make it active
-            if (!isActive) {
-                parent.classList.add('active');
-                toggleIcon.textContent = '⬤';
+                // If the clicked category wasn't active, make it active
+                if (!isActive) {
+                    parent.classList.add('active');
+                    toggleIcon.textContent = '⬤';
 
-                // Find and activate the first item in this category
-                const firstItem = parent.querySelector('.category-item');
-                if (firstItem) {
-                    firstItem.classList.add('active');
+                    // Find and activate the first item in this category
+                    const firstItem = parent.querySelector('.category-item');
+                    if (firstItem) {
+                        firstItem.classList.add('active');
 
-                    // Get page name from the first item
-                    const pageName = firstItem.getAttribute('data-page');
+                        // Get page name from the first item
+                        const pageName = firstItem.getAttribute('data-page');
 
-                    // Load the content of the first item
-                    loadContent(pageName);
-                    // Scroll to top
-                    scrollToTop();
+                        // Load the content of the first item
+                        loadContent(pageName);
+                        // Scroll to top
+                        scrollToTop();
 
-                    // Close sidebar on mobile after selection
-                    closeSidebarOnMobile();
+                        // Close sidebar on mobile after selection
+                        closeSidebarOnMobile();
+                    }
                 }
-            }
+            });
         });
-    });
 
         // Add event listeners for sidebar toggle on mobile
         const sidebarToggle = document.getElementById('sidebar-toggle');
@@ -786,31 +818,37 @@
         });
 
         // Update the category item click event
-            document.querySelectorAll('.category-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
 
-                    // Remove active class from all items
-                    document.querySelectorAll('.category-item').forEach(i => {
-                        i.classList.remove('active');
-                    });
+                // Check if the clicked item is already active
+                if (item.classList.contains('active')) {
+                    // If already active, do nothing and return
+                    return;
+                }
 
-                    // Add active class to clicked item
-                    item.classList.add('active');
-
-                    // Get page name
-                    const pageName = item.getAttribute('data-page');
-
-                    // Load the content
-                    loadContent(pageName);
-
-                    // Scroll to top
-                    scrollToTop();
-
-                    // Close sidebar on mobile
-                    closeSidebarOnMobile();
+                // Remove active class from all items
+                document.querySelectorAll('.category-item').forEach(i => {
+                    i.classList.remove('active');
                 });
+
+                // Add active class to clicked item
+                item.classList.add('active');
+
+                // Get page name
+                const pageName = item.getAttribute('data-page');
+
+                // Load the content
+                loadContent(pageName);
+
+                // Scroll to top
+                scrollToTop();
+
+                // Close sidebar on mobile
+                closeSidebarOnMobile();
             });
+        });
 
         // Function to initialize video viewport observers
         function initializeVideos() {
@@ -921,87 +959,87 @@
                 });
             });
         }
-    // Initialize the application
-    async function initializeApp() {
-        // Add sorting toggle to the sidebar
-        const sidebarMenu = document.getElementById('sidebar-menu');
-        const sortFabBtn = document.getElementById('sortFab');
-        const sortToggleContainer = document.createElement('div');
-        sortToggleContainer.className = 'sidebar-sort-toggle';
-        sortToggleContainer.innerHTML = `
+        // Initialize the application
+        async function initializeApp() {
+            // Add sorting toggle to the sidebar
+            const sidebarMenu = document.getElementById('sidebar-menu');
+            const sortFabBtn = document.getElementById('sortFab');
+            const sortToggleContainer = document.createElement('div');
+            sortToggleContainer.className = 'sidebar-sort-toggle';
+            sortToggleContainer.innerHTML = `
         <span id="sort-toggle-icon" class="sort-toggle-icon">📋</span>
     `;
 
-        // Ensure the sort toggle is the first child of the sidebar menu
-        sidebarMenu.insertBefore(sortToggleContainer, sidebarMenu.firstChild);
+            // Ensure the sort toggle is the first child of the sidebar menu
+            sidebarMenu.insertBefore(sortToggleContainer, sidebarMenu.firstChild);
 
-        // Get the sort toggle icon
-        const sortToggleIcon = document.getElementById('sort-toggle-icon');
+            // Get the sort toggle icon
+            const sortToggleIcon = document.getElementById('sort-toggle-icon');
 
-        // Add click event to toggle sorting
-        sortToggleIcon.addEventListener('click', toggleSidebarSorting);
+            // Add click event to toggle sorting
+            sortToggleIcon.addEventListener('click', toggleSidebarSorting);
 
-        // First try to load data from the JSON file
-        await loadComponentRepository();
+            // First try to load data from the JSON file
+            await loadComponentRepository();
 
-        // Only call loadContent once with the default component
-        loadContent('ui-component-lib');
+            // Only call loadContent once with the default component
+            loadContent('ui-component-lib');
 
-        // Initialize video functionality
-        initializeVideos();
+            // Initialize video functionality
+            initializeVideos();
 
-        // Add Component Manager to the "First Steps" category
-        setTimeout(() => {
-            document.querySelectorAll('.category-header').forEach(header => {
-                if (header.textContent.trim().includes('First Steps')) {
-                    firstStepsCategory = header.parentElement;
-                }
-            });
+            // Add Component Manager to the "First Steps" category
+            setTimeout(() => {
+                document.querySelectorAll('.category-header').forEach(header => {
+                    if (header.textContent.trim().includes('First Steps')) {
+                        firstStepsCategory = header.parentElement;
+                    }
+                });
 
-            if (firstStepsCategory) {
-                // Find the items container
-                const itemsContainer = firstStepsCategory.querySelector('.category-items');
+                if (firstStepsCategory) {
+                    // Find the items container
+                    const itemsContainer = firstStepsCategory.querySelector('.category-items');
 
-                if (itemsContainer) {
-                    // Create a new item for the component manager
-                    const managerItem = document.createElement('a');
-                    managerItem.href = '#';
-                    managerItem.className = 'category-item';
-                    managerItem.setAttribute('data-item', 'Component Manager');
-                    managerItem.setAttribute('data-page', 'component-manager');
-                    managerItem.innerHTML = `
+                    if (itemsContainer) {
+                        // Create a new item for the component manager
+                        const managerItem = document.createElement('a');
+                        managerItem.href = '#';
+                        managerItem.className = 'category-item';
+                        managerItem.setAttribute('data-item', 'Component Manager');
+                        managerItem.setAttribute('data-page', 'component-manager');
+                        managerItem.innerHTML = `
                 Component Data Manager
                 <span class="category-item-indicator"></span>
             `;
 
-                    // Add click event
-                    managerItem.addEventListener('click', (e) => {
-                        e.preventDefault();
+                        // Add click event
+                        managerItem.addEventListener('click', (e) => {
+                            e.preventDefault();
 
-                        // Remove active class from all items
-                        document.querySelectorAll('.category-item').forEach(i => {
-                            i.classList.remove('active');
+                            // Remove active class from all items
+                            document.querySelectorAll('.category-item').forEach(i => {
+                                i.classList.remove('active');
+                            });
+
+                            // Add active class to clicked item
+                            managerItem.classList.add('active');
+
+                            // Display the component manager
+                            createComponentManager();
+
+                            // Scroll to top
+                            scrollToTop();
+
+                            // Close sidebar on mobile
+                            closeSidebarOnMobile();
                         });
 
-                        // Add active class to clicked item
-                        managerItem.classList.add('active');
-
-                        // Display the component manager
-                        createComponentManager();
-
-                        // Scroll to top
-                        scrollToTop();
-
-                        // Close sidebar on mobile
-                        closeSidebarOnMobile();
-                    });
-
-                    // Add to the container
-                    itemsContainer.appendChild(managerItem);
+                        // Add to the container
+                        itemsContainer.appendChild(managerItem);
+                    }
                 }
-            }
-        }, 200);
-    };
+            }, 200);
+        };
         // Theme Toggle Functionality
         const themeToggle = document.getElementById('theme-toggle');
 
@@ -1025,7 +1063,8 @@
             }
         });
 
-    window.addEventListener('DOMContentLoaded', initializeApp);
+        window.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
+
 </html>
