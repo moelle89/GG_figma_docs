@@ -31,6 +31,11 @@
             </svg>
             <span class="sortFab-tooltip">Default Category Sorting</span>
         </button>
+        <button class="sortFab" id="closeFab" onclick="closeSidebarOnMobile()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16.9,4.6l-4.5,4.5-4.5-4.5c-.8-.8-2.1-.8-2.9,0s-.8,2.1,0,2.9l4.5,4.5-4.5,4.5c-.8.8-.8,2.1,0,2.9s2.1.8,2.9,0l4.5-4.5,4.5,4.5c.8.8,2.1.8,2.9,0s.8-2.1,0-2.9l-4.5-4.5,4.5-4.5c.8-.8.8-2.1,0-2.9s-2.1-.8-2.9,0Z" />
+            </svg>
+        </button>
         <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
         <!-- Theme Toggle Switch -->
         <div class="theme-switch-container">
@@ -165,109 +170,96 @@
             return [...data].sort((a, b) => a.category.localeCompare(b.category));
         }
 
-        function regenerateSidebarMenu(sortedData) {
-            // Find the currently active item's data
-            const currentActiveItem = document.querySelector('.category-item.active');
-            const currentActiveItemName = currentActiveItem ? currentActiveItem.getAttribute('data-item') : null;
-            const currentActiveItemPage = currentActiveItem ? currentActiveItem.getAttribute('data-page') : null;
+ // Make sure to update the regenerateSidebarMenu function
+    function regenerateSidebarMenu(sortedData) {
+        // Find the currently active item's data
+        const currentActiveItem = document.querySelector('.category-item.active');
+        const currentActiveItemName = currentActiveItem ? currentActiveItem.getAttribute('data-item') : null;
+        const currentActiveItemPage = currentActiveItem ? currentActiveItem.getAttribute('data-page') : null;
 
-            const sidebarMenu = document.getElementById('sidebar-menu');
+        const sidebarMenu = document.getElementById('sidebar-menu');
 
-            // Clear existing menu items, but keep the sort toggle
-            const sortToggle = document.getElementById('sort-toggle-icon');
-            sidebarMenu.innerHTML = ''; // Clear everything
+        // Clear existing menu items, but keep the sort toggle
+        const sortToggle = document.getElementById('sort-toggle-icon');
+        sidebarMenu.innerHTML = ''; // Clear everything
 
-            // Re-add the sort toggle as the first child
-            sidebarMenu.appendChild(sortToggle.parentElement);
+        // Re-add the sort toggle as the first child
+        sidebarMenu.appendChild(sortToggle.parentElement);
 
-            // Regenerate menu with the provided data
-            sortedData.forEach((menuItem) => {
-                const categoryElement = document.createElement('div');
-                categoryElement.className = 'category';
+        // Regenerate menu with the provided data
+        sortedData.forEach((menuItem) => {
+            const categoryElement = document.createElement('div');
+            categoryElement.className = 'category';
 
-                categoryElement.innerHTML = `
+            categoryElement.innerHTML = `
         <div class="category-header">
             ${menuItem.category}
             <span class="toggle-icon">○</span>
         </div>
         <div class="category-items">
             ${menuItem.items.map(item => {
-                    const itemId = item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
-                    const isActive = item === currentActiveItemName ? "active" : "";
+                const itemId = item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
+                const isActive = item === currentActiveItemName ? "active" : "";
 
-                    return `
+                return `
                     <a href="#" class="category-item ${isActive}" data-item="${item}" data-page="${itemId}">
                         ${item}
                         <span class="category-item-indicator"></span>
                     </a>
                 `;
-                }).join('')}
+            }).join('')}
         </div>
     `;
-                sidebarMenu.appendChild(categoryElement);
+            sidebarMenu.appendChild(categoryElement);
 
-                // Update the category's active state based on the active item
-                if (menuItem.items.includes(currentActiveItemName)) {
-                    categoryElement.classList.add('active');
-                    categoryElement.querySelector('.toggle-icon').textContent = '⬤';
+            // Update the category's active state based on the active item
+            if (menuItem.items.includes(currentActiveItemName)) {
+                categoryElement.classList.add('active');
+                categoryElement.querySelector('.toggle-icon').textContent = '⬤';
+            }
+        });
+
+        // Re-add event listeners to category headers
+        document.querySelectorAll('.category-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const parent = header.parentElement;
+                const toggleIcon = header.querySelector('.toggle-icon');
+                const isActive = parent.classList.contains('active');
+
+                // Close all categories first
+                document.querySelectorAll('.category').forEach(cat => {
+                    cat.classList.remove('active');
+                    cat.querySelector('.toggle-icon').textContent = '○';
+                });
+
+                document.querySelectorAll('.category-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+
+                if (!isActive) {
+                    parent.classList.add('active');
+                    toggleIcon.textContent = '⬤';
+
+                    const firstItem = parent.querySelector('.category-item');
+                    if (firstItem) {
+                        firstItem.classList.add('active');
+                        const pageName = firstItem.getAttribute('data-page');
+                        loadContent(pageName);
+                        scrollToTop();
+                        closeSidebarOnMobile();
+                    }
                 }
             });
+        });
 
-            // Re-add event listeners to category headers
-            document.querySelectorAll('.category-header').forEach(header => {
-                header.addEventListener('click', () => {
-                    const parent = header.parentElement;
-                    const toggleIcon = header.querySelector('.toggle-icon');
-                    const isActive = parent.classList.contains('active');
+        // Use the new function to add event listeners to category items
+        addCategoryItemListeners();
 
-                    // Close all categories first
-                    document.querySelectorAll('.category').forEach(cat => {
-                        cat.classList.remove('active');
-                        cat.querySelector('.toggle-icon').textContent = '○';
-                    });
-
-                    document.querySelectorAll('.category-item').forEach(i => {
-                        i.classList.remove('active');
-                    });
-
-                    if (!isActive) {
-                        parent.classList.add('active');
-                        toggleIcon.textContent = '⬤';
-
-                        const firstItem = parent.querySelector('.category-item');
-                        if (firstItem) {
-                            firstItem.classList.add('active');
-                            const pageName = firstItem.getAttribute('data-page');
-                            loadContent(pageName);
-                            scrollToTop();
-                            closeSidebarOnMobile();
-                        }
-                    }
-                });
-            });
-
-            // Re-add click listeners to category items
-            document.querySelectorAll('.category-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-
-                    document.querySelectorAll('.category-item').forEach(i => {
-                        i.classList.remove('active');
-                    });
-
-                    item.classList.add('active');
-                    const pageName = item.getAttribute('data-page');
-                    loadContent(pageName);
-                    scrollToTop();
-                    closeSidebarOnMobile();
-                });
-            });
-
-            // If we had an active item before, load its content
-            if (currentActiveItemPage) {
-                loadContent(currentActiveItemPage);
-            }
+        // If we had an active item before, load its content
+        if (currentActiveItemPage) {
+            loadContent(currentActiveItemPage);
         }
+    }
 
 
         // Function to sort menu data alphabetically
@@ -984,6 +976,9 @@
 
             // First try to load data from the JSON file
             await loadComponentRepository();
+
+            // Add category item listeners using the new function
+            addCategoryItemListeners();
 
             // Only call loadContent once with the default component
             loadContent('ui-component-lib');

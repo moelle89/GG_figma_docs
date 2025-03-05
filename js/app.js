@@ -151,3 +151,41 @@ function initializeImageSliders() {
    });
 }
 
+// Function to add event listeners to category items with proper active check
+function addCategoryItemListeners() {
+   document.querySelectorAll('.category-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+         e.preventDefault();
+
+         // Check if the clicked item is already active
+         if (item.classList.contains('active')) {
+            // If already active, do nothing and return
+            console.log('Item already active, skipping reload');
+
+            // Still close sidebar on mobile if needed
+            closeSidebarOnMobile();
+            return;
+         }
+
+         // Remove active class from all items
+         document.querySelectorAll('.category-item').forEach(i => {
+            i.classList.remove('active');
+         });
+
+         // Add active class to clicked item
+         item.classList.add('active');
+
+         // Get page name
+         const pageName = item.getAttribute('data-page');
+
+         // Load the content
+         loadContent(pageName);
+
+         // Scroll to top
+         scrollToTop();
+
+         // Close sidebar on mobile
+         closeSidebarOnMobile();
+      });
+   });
+}

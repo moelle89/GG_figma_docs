@@ -523,6 +523,11 @@
 .indicator.active {
     background: white;
 }
+
+#closeFab{
+    display: none;
+    visibility: hidden;
+}
         /* For mobile devices */
         @media screen and (max-width: 768px) {
             .sortFab {
@@ -616,6 +621,11 @@
                 transition: all 0.3s ease-out, all 0.3s ease;
             }
 
+            #closeFab{
+                display: block;
+                visibility: visible;
+            }
+
             /* Hide the theme icons on mobile */
             .theme-switch-container .theme-icon {
                 display: none;
@@ -663,7 +673,11 @@
                 transition: all 0.3s ease-out, all 0.3s ease;
             }
              body.sidebar-open .sortFab {
-                bottom: +40px;
+                bottom: +100px;
+                transition: all 0.3s ease-out, all 0.3s ease;
+            }
+             body.sidebar-open #closeFab {
+                bottom: +30px;
                 transition: all 0.3s ease-out, all 0.3s ease;
             }
 
