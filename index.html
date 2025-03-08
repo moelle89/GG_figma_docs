@@ -88,6 +88,7 @@
             <!-- Content will be loaded here -->
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <script src="js/app.js"></script>
     <script>
         let toggle = true;
@@ -417,7 +418,47 @@
             });
         }
 
-    // Modified loadContent function
+    // Function to initialize Lottie animations
+    function initializeLottieAnimations() {
+        // Find all elements with data-lottie-path attribute
+        const lottieContainers = document.querySelectorAll('[data-lottie-path]');
+
+        lottieContainers.forEach(container => {
+            const path = container.getAttribute('data-lottie-path');
+            const loop = container.getAttribute('data-lottie-loop') !== 'false';
+            const autoplay = container.getAttribute('data-lottie-autoplay') !== 'false';
+
+            // Load the Lottie animation
+            fetch(path)
+                .then(response => response.json())
+                .then(animationData => {
+                    const animation = lottie.loadAnimation({
+                        container: container,
+                        renderer: 'svg',
+                        loop: loop,
+                        autoplay: autoplay,
+                        animationData: animationData
+                    });
+
+                    // Add click handler to toggle play/pause if autoplay is false
+                    if (!autoplay) {
+                        container.style.cursor = 'pointer';
+                        container.addEventListener('click', () => {
+                            if (animation.isPaused) {
+                                animation.play();
+                            } else {
+                                animation.pause();
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading Lottie animation:', error);
+                    container.innerHTML = 'Failed to load animation';
+                });
+        });
+    }
+
     // Modified loadContent function
     async function loadContent(pageName) {
         try {
@@ -515,6 +556,9 @@
 
                     // Initialize image sliders if any exist in the additional content
                     initializeImageSliders();
+
+                    // Initialize Lottie animations after content is loaded
+                    initializeLottieAnimations();
                 }, 300);
 
                 return;
@@ -554,6 +598,9 @@
 
                 // Initialize video viewport observers
                 initializeVideos();
+
+                // Initialize Lottie animations
+                initializeLottieAnimations();
             });
         } catch (error) {
             console.error('Error loading content:', error);
