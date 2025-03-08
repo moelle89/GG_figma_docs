@@ -1114,6 +1114,105 @@
             height: 450px;
         }
 
+
+        /* Enhanced Styles for Components Grid */
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .component-item {
+            background-color: var(--card-bg-color, #ffffff);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            padding: 20px;
+            cursor: pointer;
+            border: 1px solid var(--border-color, #eaeaea);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .component-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .component-item:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color, #4a6cf7) 0%, var(--secondary-color, #6a8fff) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .component-item:hover:before {
+            opacity: 1;
+        }
+
+        .component-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light-bg-color, #f5f7ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .component-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-color, #333);
+        }
+
+        .component-card-description {
+            font-size: 14px;
+            color: var(--text-secondary, #666);
+            margin: 0;
+        }
+
+        /* Dark theme compatibility */
+        [data-theme="dark"] .component-item {
+            background-color: var(--card-bg-color, #2a2a2a);
+            border-color: var(--border-color, #3a3a3a);
+        }
+
+        [data-theme="dark"] .component-title {
+            color: var(--text-color, #f0f0f0);
+        }
+
+        [data-theme="dark"] .component-card-description {
+            color: var(--text-secondary, #aaa);
+        }
+
+        [data-theme="dark"] .component-icon {
+            background-color: var(--light-bg-color, #3a3a3a);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .components-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Responsive embed */
         .responsive-embed-container {
             position: relative;
