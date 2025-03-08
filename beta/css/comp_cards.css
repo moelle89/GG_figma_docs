@@ -19,14 +19,14 @@
       border-radius: 10px;
       overflow: hidden;
       background-color: var(--button-bg);
-      box-shadow: var(--card-shadow);
+      box-shadow: 0;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .component-item:hover {
       cursor: pointer;
       transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--card-shadow);
     }
 
     .component-icon {

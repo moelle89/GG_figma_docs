@@ -1,5 +1,4 @@
 :root {
-      --primary-color: #3478F6;
       --text-color: #333;
       --border-color: #E5E7EB;
       --light-gray: #F8F9FA;
@@ -8,7 +7,7 @@
 
    .components-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 0));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 30px;
       margin: 60px 0;
       max-width: 2200px;
@@ -19,14 +18,15 @@
       border: 1px solid var(--border-color);
       border-radius: 10px;
       overflow: hidden;
-      background-color: white;
+      background-color: var(--button-bg);
       box-shadow: var(--card-shadow);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .component-item:hover {
+      cursor: pointer;
       transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--card-shadow-hover);
     }
 
     .component-icon {
@@ -35,23 +35,24 @@
       align-items: center;
       justify-content: center;
       min-height: 150px;
-      background-color: var(--light-gray);
+      background-color: var(--card-header-element);
     }
 
     .component-info {
-      padding: 20px;
+      padding: 20px 20px 0 20px;
     }
 
     .component-title {
-      font-size: 18px;
+      font-size: 16px;
       margin-bottom: 10px;
       font-weight: 600;
     }
 
-    .component-description {
-      font-size: 14px;
+    .component-card-description {
+      font-size: 12px;
       line-height: 1.5;
-      color: #666;
+      margin-bottom: 20px !important;
+      color: var(--description-color);
     }
 
     .icon-circle {
@@ -78,7 +79,7 @@
 
     /* Specific component styles */
     .action-sheet .component-icon {
-      background-color: white;
+      background-color: var(--card-header-element);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -88,7 +89,7 @@
     .action-sheet-bars {
       width: 100px;
       height: 120px;
-      background-color: white;
+      background-color: var(--card-header-element);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 15px;
@@ -146,7 +147,7 @@
       height: 60px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      background-color: white;
+      background-color: var(--card-header-element);
       box-shadow: var(--card-shadow);
     }
 
@@ -172,12 +173,12 @@
     }
 
     .chip .component-icon {
-      background-color: #f0f5ff;
+      background-color: var(--card-header-element);
     }
 
     .chip-demo {
       padding: 6px 12px;
-      background-color: #E1E1E6;
+      background-color: var(--card-header-element);
       border-radius: 16px;
       font-size: 14px;
       display: inline-flex;
@@ -185,7 +186,7 @@
     }
 
     .content .component-icon {
-      background-color: #f5f5f7;
+      background-color: var(--category-bg);
     }
 
     .content-demo {
@@ -193,11 +194,11 @@
       height: 80px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
-      background-color: white;
+      background-color: var(--card-header-element);
     }
 
     .date-time .component-icon {
-      background-color: #f5f7fa;
+      background-color: var(--category-bg);
     }
 
     .date-time-demo {
@@ -212,7 +213,7 @@
     }
 
     .floating-action .component-icon {
-      background-color: #1c2733;
+      background-color: var(--category-bg);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -228,11 +229,11 @@
       width: 30px;
       height: 30px;
       border-radius: 50%;
-      background-color: #454545;
+      background-color: var(--card-header-element);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: var(--text-color);
       font-size: 12px;
     }
 
@@ -241,7 +242,7 @@
     }
 
     .grid .component-icon {
-      background-color: #f7f9fc;
+      background-color: var(--category-bg);
     }
 
     .grid-demo {
@@ -251,7 +252,7 @@
     }
 
     .input .component-icon {
-      background-color: #f8f9fa;
+      background-color: var(--category-bg);
     }
 
     .input-demo {
@@ -262,7 +263,7 @@
     }
 
     .item .component-icon {
-      background-color: #f8fafc;
+      background-color: var(--category-bg);
     }
 
     .item-demo {
@@ -274,7 +275,7 @@
     }
 
     .menu .component-icon {
-      background-color: #faf0f4;
+      background-color: var(--category-bg);
     }
 
     .menu-demo {
@@ -301,7 +302,7 @@
       width: 80px;
       height: 100px;
       border-radius: 8px;
-      background-color: white;
+      background-color: var(--card-header-element);
       border: 1px solid #ddd;
       box-shadow: var(--card-shadow);
       z-index: 2;
@@ -316,7 +317,7 @@
     }
 
     .navigation .component-icon {
-      background-color: #f0f7fa;
+      background-color: var(--category-bg);
     }
 
     .navigation-demo {
@@ -347,7 +348,7 @@
       position: relative;
       width: 80px;
       height: 60px;
-      background-color: white;
+      background-color: var(--card-header-element);
       border: 1px solid #ddd;
       border-radius: 6px;
       box-shadow: var(--card-shadow);
@@ -365,7 +366,7 @@
     }
 
     .progress .component-icon {
-      background-color: #f7fafc;
+      background-color: var(--category-bg);
     }
 
     .progress-demo {
@@ -382,7 +383,7 @@
     }
 
     .radio .component-icon {
-      background-color: #f0f8ff;
+      background-color: var(--category-bg);
     }
 
     .radio-demo {
@@ -405,7 +406,7 @@
     }
 
     .refresher .component-icon {
-      background-color: #f5faff;
+      background-color: var(--category-bg);
     }
 
     .refresher-demo {
@@ -417,7 +418,7 @@
     }
 
     .reorder .component-icon {
-      background-color: #fcfcfc;
+      background-color: var(--category-bg);
     }
 
     .reorder-demo {
@@ -429,7 +430,7 @@
 
     .reorder-item {
       height: 8px;
-      background-color: #ddd;
+      background-color: var(--card-header-element);
       border-radius: 4px;
       padding-right: 15px;
       width: 80px;
@@ -439,11 +440,11 @@
       position: absolute;
       right: 0;
       font-size: 16px;
-      color: #666;
+      color: var(--description-color);
     }
 
     .routing .component-icon {
-      background-color: #f8f9fa;
+      background-color: var(--category-bg);
     }
 
     .routing-demo {
@@ -472,13 +473,13 @@
     }
 
     .searcher .component-icon {
-      background-color: #eef1fd;
+      background-color: var(--category-bg);
     }
 
     .searcher-demo {
       width: 150px;
       height: 100px;
-      background-color: #f5f7fa;
+      background-color: var(--card-header-element);
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -488,7 +489,7 @@
     .search-box {
       width: 80%;
       height: 40px;
-      background-color: white;
+      background-color: var(--card-header-element);
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -515,7 +516,7 @@
     .segment-item {
       padding: 6px 12px;
       font-size: 12px;
-      background-color: white;
+      background-color: var(--card-header-element);
     }
 
     .segment-item.active {
@@ -539,7 +540,7 @@
     }
 
     .select-arrow {
-      color: #666;
+      color: var(--description-color);
     }
 
     .tabs .component-icon {
@@ -558,7 +559,7 @@
 
     .tabs-content {
       flex: 1;
-      background-color: white;
+      background-color: var(--card-header-element);
     }
 
     .tabs-nav {
@@ -576,7 +577,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #666;
+      color: var(--description-color);
     }
 
     .tab-item.active {
@@ -616,7 +617,7 @@
       position: absolute;
       width: 16px;
       height: 16px;
-      background-color: white;
+      background-color: var(--card-header-element);
       border-radius: 50%;
       top: 2px;
       right: 2px;
@@ -639,6 +640,6 @@
     .toolbar-item {
       width: 8px;
       height: 8px;
-      background-color: white;
+      background-color: var(--card-header-element);
       border-radius: 50%;
     }

@@ -1,3 +1,135 @@
+function createComponentManager() {
+   const managerHtml = `
+    <div class="component-manager">
+        <h2>Component Data Manager</h2>
+        <p>Use this tool to manage component descriptions, Figma links, and images.</p>
+
+        <div class="info-box">
+            <h3>How Data Storage Works</h3>
+            <p>Data is loaded from <code>data/components.json</code> when the page loads.</p>
+            <p>Changes you make here are saved to your browser's local storage temporarily.</p>
+            <p>To permanently save changes, click "Export Data" and replace your project's components.json file with the downloaded file.</p>
+        </div>
+
+        <div class="data-actions">
+            <button id="export-components" class="export-button">Export Data (components.json)</button>
+            <button id="import-components" class="import-button">Import Data</button>
+        </div>
+
+        <div class="component-selector">
+            <label for="component-select">Select Component:</label>
+            <select id="component-select" class="component-select">
+                <option value="">-- Select a component --</option>
+                ${Object.keys(componentRepository).map(key =>
+      `<option value="${key}">${componentRepository[key].name}</option>`
+   ).join('')}
+            </select>
+        </div>
+
+        <div class="component-form" id="component-form" style="display: none;">
+            <div class="form-group">
+                <label for="component-name">Component Name:</label>
+                <input type="text" id="component-name" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="component-description">Description:</label>
+                <textarea id="component-description" class="form-textarea" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="component-figma-link">Figma Link:</label>
+                <input type="text" id="component-figma-link" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="component-button-text">Button Text:</label>
+                <input type="text" id="component-button-text" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="component-image-path1">Image Path 1:</label>
+                <input type="text" id="component-image-path1" class="form-input" placeholder="e.g., assets/prop_table/component_name.jpg">
+            </div>
+
+            <div class="form-group">
+                <label for="component-image-path2">Image Path 2:</label>
+                <input type="text" id="component-image-path2" class="form-input" placeholder="e.g., assets/img/component_name.jpg">
+            </div>
+
+            <div class="form-actions">
+                <button id="save-component" class="save-button">Save Component Data</button>
+            </div>
+        </div>
+    </div>
+`;
+
+   contentContainer.innerHTML = managerHtml;
+
+   // Add event listeners
+   const componentSelect = document.getElementById('component-select');
+   const componentForm = document.getElementById('component-form');
+   const componentName = document.getElementById('component-name');
+   const componentDescription = document.getElementById('component-description');
+   const componentFigmaLink = document.getElementById('component-figma-link');
+   const componentButtonText = document.getElementById('component-button-text');
+   const componentImagePath1 = document.getElementById('component-image-path1');
+   const componentImagePath2 = document.getElementById('component-image-path2');
+   const saveButton = document.getElementById('save-component');
+   const exportButton = document.getElementById('export-components');
+   const importButton = document.getElementById('import-components');
+
+   // Handle component selection
+   componentSelect.addEventListener('change', function () {
+      const selectedKey = this.value;
+
+      if (selectedKey) {
+         const data = componentRepository[selectedKey];
+
+         // Populate form
+         componentName.value = data.name || '';
+         componentDescription.value = data.description || '';
+         componentFigmaLink.value = data.figmaLink || '';
+         componentButtonText.value = data.figmaButtonText || '';
+         componentImagePath1.value = data.imagePath1 || '';
+         componentImagePath2.value = data.imagePath2 || '';
+
+         // Show form
+         componentForm.style.display = 'block';
+      } else {
+         // Hide form if no component selected
+         componentForm.style.display = 'none';
+      }
+   });
+
+   // Handle save button
+   saveButton.addEventListener('click', function () {
+      const selectedKey = componentSelect.value;
+
+      if (selectedKey) {
+         // Update repository
+         componentRepository[selectedKey] = {
+            name: componentName.value,
+            description: componentDescription.value,
+            figmaLink: componentFigmaLink.value,
+            figmaButtonText: componentButtonText.value,
+            imagePath1: componentImagePath1.value,
+            imagePath2: componentImagePath2.value
+         };
+
+         // Save to localStorage
+         localStorage.setItem('componentRepository', JSON.stringify(componentRepository));
+
+         // Provide feedback
+         alert(`Component "${componentName.value}" data saved to local storage. To permanently save this data, click "Export Data".`);
+      }
+   });
+
+   // Add export/import functionality
+   exportButton.addEventListener('click', saveComponentRepository);
+   importButton.addEventListener('click', importComponentRepository);
+}
+
 // Function to export component repository as downloadable JSON file
 function exportComponentRepository() {
    // Convert the component repository to a JSON string

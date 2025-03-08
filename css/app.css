@@ -32,6 +32,9 @@
             --description-color: #555;
             --tooltip-bg: #262626e6;
             --form-input-bg: var(--fab-fg);
+            --card-shadow: 0px 1px 1px #0208140f,0px 2px 4px #02081414;
+            --card-shadow-hover: 0px 1px 4px #02081418,0px 4px 8px #0208141f;
+            --card-header-element: var(--fab-fg);
         }
 
         [data-theme="dark"] {
@@ -69,6 +72,7 @@
             --description-color: #bbb;
             --tooltip-bg: #ffffffe6;
             --form-input-bg: var(--category-header-bg);
+            --card-header-element: var(--scrollbar-thumb-hover);
         }
 
        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -122,7 +126,7 @@
             left: 0;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 0 10px var(--shadow-color);
+            /*box-shadow: 0 0 0px var(--shadow-color);*/
         }
 
         .sidebar::-webkit-scrollbar {
@@ -524,6 +528,21 @@
     background: white;
 }
 
+/* Add this to your app.css file */
+.category-pinned {
+    order: -1; /* Ensures it stays at the top when using flexbox */
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+/* If your sidebar is using flexbox layout, add this to ensure proper ordering */
+#sidebar-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+
 #closeFab{
     display: none;
     visibility: hidden;
@@ -747,9 +766,9 @@
             width: 100%;
             max-width: 900px;
             margin-bottom: 40px;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 15px var(--modal-shadow);
+            box-shadow: var(--card-shadow);
         }
 
         .video-ratio-container {
@@ -788,17 +807,17 @@
             width: 100%;
             max-width: 900px;
             height: auto;
-            border-radius: 12px;
+            border-radius: 10px;
             margin-bottom: 40px;
-            box-shadow: 0 4px 15px var(--modal-shadow);
+            box-shadow: var(--card-shadow);
         }
         /* Full-width image */
         .full-width-card {
             width: 100%;
             max-width: 900px;
-            border-radius: 12px;
+            border-radius: 10px;
             margin-bottom: 40px;
-            box-shadow: 0 4px 15px var(--modal-shadow);
+            box-shadow: var(--card-shadow);
         }
 
         /* Image Grids */
@@ -840,9 +859,9 @@
 
         .grid-item {
             overflow: hidden;
-            border-radius: 12px;
+            border-radius: 10px;
             max-width: 900px;
-            box-shadow: 0 2px 10px var(--modal-shadow);
+            box-shadow: var(--card-shadow);
             transition: transform 0.3s ease;
         }
 
@@ -1105,112 +1124,13 @@
             margin: 30px 0;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
         }
 
         /* Basic embed */
         .basic-embed {
             width: 100%;
             height: 450px;
-        }
-
-
-        /* Enhanced Styles for Components Grid */
-        .components-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .component-item {
-            background-color: var(--card-bg-color, #ffffff);
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            padding: 20px;
-            cursor: pointer;
-            border: 1px solid var(--border-color, #eaeaea);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .component-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .component-item:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color, #4a6cf7) 0%, var(--secondary-color, #6a8fff) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .component-item:hover:before {
-            opacity: 1;
-        }
-
-        .component-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--light-bg-color, #f5f7ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-
-        .component-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--text-color, #333);
-        }
-
-        .component-card-description {
-            font-size: 14px;
-            color: var(--text-secondary, #666);
-            margin: 0;
-        }
-
-        /* Dark theme compatibility */
-        [data-theme="dark"] .component-item {
-            background-color: var(--card-bg-color, #2a2a2a);
-            border-color: var(--border-color, #3a3a3a);
-        }
-
-        [data-theme="dark"] .component-title {
-            color: var(--text-color, #f0f0f0);
-        }
-
-        [data-theme="dark"] .component-card-description {
-            color: var(--text-secondary, #aaa);
-        }
-
-        [data-theme="dark"] .component-icon {
-            background-color: var(--light-bg-color, #3a3a3a);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .components-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                padding: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .components-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         /* Responsive embed */
@@ -1235,7 +1155,7 @@
             width: 100%;
             max-width: 900px;
 
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 40px;
