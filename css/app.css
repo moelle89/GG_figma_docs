@@ -556,15 +556,10 @@
         /* Media queries for responsiveness */
         @media screen and (max-width: 768px) {
             .animation-container {
-                max-width: 400px;
+                max-width: 470px;
             }
         }
 
-        @media screen and (max-width: 480px) {
-            .animation-container {
-                max-width: 300px;
-            }
-        }
 
 #closeFab{
     display: none;
