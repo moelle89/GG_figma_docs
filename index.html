@@ -593,6 +593,8 @@
             contentContainer.offsetWidth;
             contentContainer.classList.remove('fade-out');
             contentContainer.classList.add('fade-in');
+
+            // Remove loading state code for Figma containers
             await new Promise(resolve => setTimeout(resolve, 300));
 
             // Remove fade in class to reset for next transition
