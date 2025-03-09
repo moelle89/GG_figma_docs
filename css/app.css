@@ -3,7 +3,7 @@
             --text-color: #333;
             --border-color: #eaeaea;
             --input-border-color: #cccccc;
-            --hover-color: #f8f8f8;
+            --hover-color: #ffffff;
             --purple-accent: #C27327;
             --purple-accent-light: #dc9450;
             --primary-color: #C27327;
@@ -11,7 +11,7 @@
             --sidebar-width: 280px;
             --bg-color: #f9f9f9;
             --sidebar-bg: white;
-            --category-bg: #f1f1f1;
+            --category-bg: #f7f7f7;
             --active-category-bg: white;
             --button-bg: white;
             --fab-bg: #C27327;
@@ -22,15 +22,15 @@
             --button-bg-hover: #f9f7fe;
             --button-comp-accent: #8638E5;
             --button-comp-accent-hover: #6b22c4;
-            --active-item-hover: #f8f8f8;
+            --active-item-hover: #efefef;
             --category-border: #e8e8e8;
             --spinner-border: rgba(0, 0, 0, 0.1);
             --shadow-color: rgba(0, 0, 0, 0.219);
             --modal-shadow: rgba(0, 0, 0, 0.201);
             --active-item-bg: rgba(176, 101, 39, 0.1);
-            --scrollbar-track: #f1f1f1;
-            --scrollbar-thumb: #E0E0E0;
-            --scrollbar-thumb-hover: #a8a8a8;
+            --scrollbar-track: #f7f7f7;
+            --scrollbar-thumb: #e7e7e7;
+            --scrollbar-thumb-hover: #d9d9d9;
             --content-subtitle: hsl(210, 5%, 30%);
             --description-color: hsl(210, 1%, 38%);
             --tooltip-bg: #262626e6;
@@ -46,10 +46,10 @@
             --border-color: #15171900;
             --input-border-color: #15171900;
             --hover-color: #5a78960d;
-            --purple-accent: #c27327;
-            --purple-accent-light: #dc9450;
-            --primary-color: #C27327;
-            --primary-hover-color: #CA8233;
+            --purple-accent: #D18A3D;
+            --purple-accent-light: #D99F5F;
+            --primary-color: #D18A3D;
+            --primary-hover-color: #D99F5F;
             --bg-color: #151719;
             --sidebar-bg: #1a1c1f;
             --category-bg: #1a1c1f;
@@ -165,7 +165,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 20px;
+            padding:15px 15px 15px 20px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
@@ -1466,7 +1466,7 @@
 .search-input {
     width: 100%;
     padding: 10px 35px 10px 15px;
-    border: 1px solid var(--input-border-color);
+    border: 2px solid var(--input-border-color);
     border-radius: 6px;
     background-color: var(--form-input-bg);
     color: var(--text-color);
@@ -1476,7 +1476,7 @@
 
 .search-input:focus {
     outline: none;
-    border-color: var(--purple-accent);
+     border: 2px solid var(--purple-accent);
     box-shadow: 0 0 0 2px rgba(194, 115, 39, 0.1);
 }
 

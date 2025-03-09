@@ -1,4 +1,3 @@
-
 <div class="video-container">
     <div class="video-ratio-container">
         <video controls autoplay muted loop>
@@ -9,7 +8,7 @@
 </div>
 
 <div class="component-description">
-<p>Icons are small graphical representations used to convey meaning, provide visual interest, or aid in user navigation within an application. They help communicate complex information in a concise manner, making it easier for users to understand and interact with your UI.</p>
+    <p>Icons are small graphical representations used to convey meaning, provide visual interest, or aid in user navigation within an application. They help communicate complex information in a concise manner, making it easier for users to understand and interact with your UI.</p>
 </div>
 
 <div class="grid-2-col" style="max-width: 900px;">
@@ -17,7 +16,7 @@
         <h2 class="section-title">Components</h2>
     </div>
     <div>
-<a href="#" class="two-tone-button" target="_blank" data-figma-link>
+        <a href="#" class="two-tone-button" target="_blank" data-figma-link>
             <div class="button-left">Badge<div class="diamond-icon">
                     <div class="diamond-group">
                         <div class="diamond-item"></div>
@@ -36,11 +35,115 @@
     <iframe src="https://www.figma.com/embed?embed_host=moelle&url=https://www.figma.com/proto/t23EtqNAyknCBnrnaEOYwq/Allgemein?page-id=2711%3A1249&node-id=3545-23187&viewport=-12643%2C-17216%2C0.94&t=crNjXrqpuXve3MK8-8&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=3545%3A23187&show-proto-sidebar=0&hide-ui=1" allowfullscreen>
     </iframe>
 </div>
-<div class="grid-2-col">
-    <div class="grid-item">
-        <img src="assets\img\Prop Table - Avatar stack.jpg" alt="Component diagram" data-prop-img>
-    </div>
-    <div class="grid-item">
-        <img src="assets\img\Prop Table - Avatar labelled.jpg" alt="Component diagram" data-prop-img>
+<div class="content-header">
+    <h1 class="section-title">Icons</h1>
+    <p class="content-subtitle">Using Ionicons in your designs</p>
+</div>
+
+<div class="component-description">
+    <p>This project uses Ionicons, an open-source icon library created by Ionic and released under the MIT license. The icons are designed for use in web, iOS, Android, and desktop applications.</p>
+</div>
+
+<div class="how-to-section">
+    <h2 class="section-title">Icon Usage</h2>
+    <div class="how-to-grid">
+        <div class="how-to-card">
+            <h3><ion-icon name="code-outline"></ion-icon> Basic Implementation</h3>
+            <ul>
+                <li><ion-icon name="checkmark-circle-outline"></ion-icon> Include the Ionicons script in your HTML head</li>
+                <li><ion-icon name="document-text-outline"></ion-icon> Use the ion-icon element with a name attribute</li>
+                <li><ion-icon name="resize-outline"></ion-icon> Icons automatically scale with font-size</li>
+            </ul>
+            <div class="code-example">
+                <pre><code>&lt;ion-icon name="heart-outline"&gt;&lt;/ion-icon&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="how-to-card">
+            <h3><ion-icon name="options-outline"></ion-icon> Style Variations</h3>
+            <ul>
+                <li><ion-icon name="layers-outline"></ion-icon> Outline style: name="icon-outline"</li>
+                <li><ion-icon name="layers"></ion-icon> Filled style: name="icon"</li>
+                <li><ion-icon name="layers-sharp"></ion-icon> Sharp style: name="icon-sharp"</li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<div class="how-to-section">
+    <h2 class="section-title">Common Icons</h2>
+    <div class="icon-grid">
+        <div class="icon-item">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>home-outline</span>
+        </div>
+        <div class="icon-item">
+            <ion-icon name="person-outline"></ion-icon>
+            <span>person-outline</span>
+        </div>
+        <div class="icon-item">
+            <ion-icon name="settings-outline"></ion-icon>
+            <span>settings-outline</span>
+        </div>
+        <div class="icon-item">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span>notifications-outline</span>
+        </div>
+        <div class="icon-item">
+            <ion-icon name="search-outline"></ion-icon>
+            <span>search-outline</span>
+        </div>
+        <div class="icon-item">
+            <ion-icon name="menu-outline"></ion-icon>
+            <span>menu-outline</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease;
+}
+
+.icon-item:hover {
+    transform: translateY(-2px);
+}
+
+.icon-item ion-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: var(--purple-accent);
+}
+
+.icon-item span {
+    font-size: 12px;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.code-example {
+    background: var(--category-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.code-example code {
+    color: var(--purple-accent);
+    font-family: monospace;
+}
+</style>
