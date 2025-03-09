@@ -1225,6 +1225,14 @@
             // Initialize video functionality
             initializeVideos();
 
+            // Trigger sortFab click twice after a short delay
+            setTimeout(() => {
+                sortFabBtn.click();
+                setTimeout(() => {
+                    sortFabBtn.click();
+                }, 100);
+            }, 500);
+
             // Add Component Manager to the "First Steps" category
             setTimeout(() => {
                 document.querySelectorAll('.category-header').forEach(header => {
