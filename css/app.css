@@ -81,7 +81,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Poppins', sans-serif, Roboto, Oxygen,
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif, Roboto, Oxygen,
                 Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
@@ -774,7 +774,7 @@
 
         .content-title {
             font-size: 2rem;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 10px;
             color: var(--text-color);
         }
@@ -821,7 +821,7 @@
 
         .section-title {
             font-size: 1.5rem;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 20px;
             color: var(--text-color);
         }
@@ -951,7 +951,7 @@
             padding: 12px 20px;
             display: flex;
             align-items: center;
-            font-weight: 500;
+            font-weight: 600;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
@@ -959,7 +959,7 @@
             background-color: var(--button-comp-accent);
             color: white;
             padding: 12px 20px;
-            font-weight: 500;
+            font-weight: 600;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
@@ -1016,7 +1016,7 @@
         .form-group label {
             display: block;
             margin-bottom: 10px;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--label-color, #555);
         }
 
@@ -1096,6 +1096,7 @@
             margin-top: 0px;
             margin-bottom: 10px;
             font-size: 16px;
+            font-weight: 600;
         }
 
         .info-box p {
@@ -1124,7 +1125,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             transition: background-color 0.2s;
         }
 
