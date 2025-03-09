@@ -60,42 +60,102 @@
     </div>
 
     <div class="tab-content" id="how-to-tab">
-        <!-- How-to content will be loaded here -->
+        <div class="content-header">
+            <h1 class="content-title">How to Use</h1>
+            <p class="content-subtitle">Learn how to effectively search, access, and use Figma components in your designs</p>
+        </div>
+
+        <div class="component-description">
+            <p>Figma allows you to efficiently manage and use components within your project file. This guide covers how to search for, access, and utilize these components effectively.</p>
+        </div>
+
+        <div class="how-to-section">
+            <h2 class="section-title">Searching for Components</h2>
+            <div class="component-description">
+                <p>Figma provides multiple ways to find components within your project file:</p>
+            </div>
+
+            <div class="how-to-grid">
+                <div class="how-to-card">
+                    <h3>🎯 Using the Assets Panel</h3>
+                    <ul>
+                        <li data-icon="✨">Open your Figma file</li>
+                        <li data-icon="📂">Click on the <strong>Assets</strong> panel in the left sidebar</li>
+                        <li data-icon="🔍">Use the <strong>Search bar</strong> to find a specific component by name</li>
+                        <li data-icon="✅">Ensure you are searching within the current file and not external libraries</li>
+                    </ul>
+                </div>
+
+                <div class="how-to-card">
+                    <h3>⌨️ Using Quick Search</h3>
+                    <ul>
+                        <li data-icon="🚀">Press <code>Cmd + /</code> (Mac) or <code>Ctrl + /</code> (Windows) to open Quick Search</li>
+                        <li data-icon="📝">Type the name of the component you need</li>
+                        <li data-icon="↩️">Select the desired component and insert it into your frame</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="how-to-section">
+            <h2 class="section-title">Accessing Components</h2>
+            <div class="component-description">
+                <p>All components must be within the current project file. Here's how to locate them:</p>
+            </div>
+
+            <div class="how-to-card">
+                <h3>📂 From the Local File</h3>
+                <ul>
+                    <li data-icon="📱">Components created within the file appear under <strong>Local components</strong> in the Assets panel</li>
+                    <li data-icon="🏷️">Ensure your components are properly named for easy identification</li>
+                    <li data-icon="📑">Components are organized by categories for better navigation</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="how-to-section">
+            <h2 class="section-title">Using Components</h2>
+            
+            <div class="how-to-grid">
+                <div class="how-to-card">
+                    <h3>🖱️ Dragging and Dropping</h3>
+                    <ul>
+                        <li data-icon="📍">Drag the component from the <strong>Assets panel</strong> onto the canvas</li>
+                        <li data-icon="✨">Position it where needed in your design</li>
+                    </ul>
+                </div>
+
+                <div class="how-to-card">
+                    <h3>✂️ Detaching Instances</h3>
+                    <ul>
+                        <li data-icon="🎯">Select the instance you want to modify</li>
+                        <li data-icon="🔄">Right-click and choose <strong>Detach Instance</strong></li>
+                        <li data-icon="⚠️">Note: The component will no longer receive updates from the main component</li>
+                    </ul>
+                </div>
+
+                <div class="how-to-card">
+                    <h3>🎨 Overriding Properties</h3>
+                    <ul>
+                        <li data-icon="✏️">Select an instance to modify its properties</li>
+                        <li data-icon="⚙️">Use the right sidebar to override text, colors, and images</li>
+                        <li data-icon="🔗">Changes are isolated to the instance while maintaining the component link</li>
+                    </ul>
+                </div>
+
+                <div class="how-to-card">
+                    <h3>🔄 Swapping Components</h3>
+                    <ul>
+                        <li data-icon="📱">Select a component instance on your canvas</li>
+                        <li data-icon="↔️">Use the <strong>Instance</strong> menu in the right sidebar to swap components</li>
+                        <li data-icon="✨">Choose a different component from the local file to replace it</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="component-description">
+            <p>By following these steps, you can efficiently work with components in your Figma projects. Remember that components help maintain consistency and speed up your design workflow. ✨</p>
+        </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    // Function to load how-to content
-    async function loadHowToContent() {
-        try {
-            const response = await fetch('pages/how-to.html');
-            const html = await response.text();
-            document.getElementById('how-to-tab').innerHTML = html;
-        } catch (error) {
-            console.error('Error loading how-to content:', error);
-            document.getElementById('how-to-tab').innerHTML = '<p>Failed to load content</p>';
-        }
-    }
-
-    // Load how-to content initially
-    loadHowToContent();
-
-    // Tab switching logic
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from all buttons and contents
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-
-            // Add active class to clicked button and corresponding content
-            button.classList.add('active');
-            const tabId = `${button.dataset.tab}-tab`;
-            document.getElementById(tabId).classList.add('active');
-        });
-    });
-});
-</script>

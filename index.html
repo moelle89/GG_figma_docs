@@ -466,6 +466,29 @@
         });
     }
 
+    // Add this function to handle tab switching
+    function initializeTabSwitching() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active');
+                const tabId = `${button.dataset.tab}-tab`;
+                const tabContent = document.getElementById(tabId);
+
+                if (tabContent) {
+                    tabContent.classList.add('active');
+                }
+            });
+        });
+    }
+
     // Modified loadContent function
     async function loadContent(pageName) {
         try {
@@ -566,6 +589,13 @@
 
                     // Initialize Lottie animations after content is loaded
                     initializeLottieAnimations();
+
+                    // Initialize tab switching after content is loaded
+                    requestAnimationFrame(() => {
+                        initializeTabSwitching();
+                        initializeVideos();
+                        initializeLottieAnimations();
+                    });
                 }, 300);
 
                 return;
@@ -610,6 +640,13 @@
 
                 // Initialize Lottie animations
                 initializeLottieAnimations();
+
+                // Initialize tab switching after content is loaded
+                requestAnimationFrame(() => {
+                    initializeTabSwitching();
+                    initializeVideos();
+                    initializeLottieAnimations();
+                });
             });
         } catch (error) {
             console.error('Error loading content:', error);
@@ -809,45 +846,35 @@
             }
         }
         // Add event listeners to category headers - updated to close other categories and activate first item
-        document.querySelectorAll('.category-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const parent = header.parentElement;
-                const toggleIcon = header.querySelector('.toggle-icon');
-                const isActive = parent.classList.contains('active');
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
 
-                // Close all categories first
-                document.querySelectorAll('.category').forEach(cat => {
-                    cat.classList.remove('active');
-                    cat.querySelector('.toggle-icon').textContent = '○';
-                });
+                // Check if the clicked item is already active
+                if (item.classList.contains('active')) {
+                    // If already active, do nothing and return
+                    return;
+                }
 
                 // Remove active class from all items
                 document.querySelectorAll('.category-item').forEach(i => {
                     i.classList.remove('active');
                 });
 
-                // If the clicked category wasn't active, make it active
-                if (!isActive) {
-                    parent.classList.add('active');
-                    toggleIcon.textContent = '⬤';
+                // Add active class to clicked item
+                item.classList.add('active');
 
-                    // Find and activate the first item in this category
-                    const firstItem = parent.querySelector('.category-item');
-                    if (firstItem) {
-                        firstItem.classList.add('active');
+                // Get page name
+                const pageName = item.getAttribute('data-page');
 
-                        // Get page name from the first item
-                        const pageName = firstItem.getAttribute('data-page');
+                // Load the content
+                loadContent(pageName);
 
-                        // Load the content of the first item
-                        loadContent(pageName);
-                        // Scroll to top
-                        scrollToTop();
+                // Scroll to top
+                scrollToTop();
 
-                        // Close sidebar on mobile after selection
-                        closeSidebarOnMobile();
-                    }
-                }
+                // Close sidebar on mobile
+                closeSidebarOnMobile();
             });
         });
 
