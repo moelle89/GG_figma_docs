@@ -894,10 +894,31 @@
             if (!sidebar.contains(e.target) &&
                 !sidebarToggle.contains(e.target)) {
 
+                // Store the currently active item and its category before clearing search
+                const activeItem = document.querySelector('.category-item.active');
+                const activeCategory = activeItem ? activeItem.closest('.category') : null;
+
                 // Clear search if it has value
                 if (searchInput.value) {
                     searchInput.value = '';
                     searchInput.dispatchEvent(new Event('input'));
+                    
+                    // After search is cleared, restore the active state
+                    if (activeItem && activeCategory) {
+                        // Close all categories first
+                        document.querySelectorAll('.category').forEach(cat => {
+                            cat.classList.remove('active');
+                            cat.querySelector('.toggle-icon').textContent = '○';
+                        });
+
+                        // Restore active category
+                        activeCategory.classList.add('active');
+                        activeCategory.querySelector('.toggle-icon').textContent = '⬤';
+
+                        // Make sure the active item is visible and active
+                        activeItem.classList.remove('hidden');
+                        activeItem.classList.add('active');
+                    }
                 }
 
                 // Close sidebar on mobile if it's open
@@ -909,72 +930,67 @@
         });
 
         // Update the category item click event
-        document.querySelectorAll('.category-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
+        function addCategoryItemListeners() {
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
 
-                // Check if the clicked item is already active
-                if (item.classList.contains('active')) {
-                    // If already active, do nothing and return
-                    return;
-                }
-
-                // Remove active class from all items
-                document.querySelectorAll('.category-item').forEach(i => {
-                    i.classList.remove('active');
-                });
-
-                // Add active class to clicked item
-                item.classList.add('active');
-
-                // Get page name
-                const pageName = item.getAttribute('data-page');
-
-                // Load the content
-                loadContent(pageName);
-
-                // Scroll to top
-                scrollToTop();
-
-                // Close sidebar on mobile
-                closeSidebarOnMobile();
-            });
-        });
-
-        // This function needs to be added if it doesn't exist already
-            function addCategoryItemListeners() {
-                document.querySelectorAll('.category-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        e.preventDefault();
-
-                        // Check if the clicked item is already active
-                        if (item.classList.contains('active')) {
-                            // If already active, do nothing and return
-                            return;
-                        }
-
-                        // Remove active class from all items
-                        document.querySelectorAll('.category-item').forEach(i => {
-                            i.classList.remove('active');
+                    // Clear search if it was used
+                    const searchInput = document.getElementById('sidebarSearch');
+                    const searchIcon = document.querySelector('.search-icon');
+                    if (searchInput.value) {
+                        searchInput.value = '';
+                        searchIcon.src = 'assets/search.svg';
+                        
+                        // Reset all categories and items visibility
+                        document.querySelectorAll('.category').forEach(cat => {
+                            cat.classList.remove('hidden', 'search-active');
+                            cat.querySelectorAll('.category-item').forEach(i => {
+                                i.classList.remove('hidden');
+                                // Restore original text without highlights
+                                const text = i.textContent.trim();
+                                const indicator = i.querySelector('.category-item-indicator');
+                                i.innerHTML = text + (indicator ? indicator.outerHTML : '');
+                            });
                         });
+                        
+                        // Hide no results message if visible
+                        document.getElementById('noResults').classList.remove('visible');
+                    }
 
-                        // Add active class to clicked item
-                        item.classList.add('active');
-
-                        // Get page name
-                        const pageName = item.getAttribute('data-page');
-
-                        // Load the content
-                        loadContent(pageName);
-
-                        // Scroll to top
-                        scrollToTop();
-
-                        // Close sidebar on mobile
-                        closeSidebarOnMobile();
+                    // Remove active class from all items
+                    document.querySelectorAll('.category-item').forEach(i => {
+                        i.classList.remove('active');
                     });
+
+                    // Add active class to clicked item
+                    item.classList.add('active');
+
+                    // Close all categories first
+                    document.querySelectorAll('.category').forEach(cat => {
+                        cat.classList.remove('active');
+                        cat.querySelector('.toggle-icon').textContent = '○';
+                    });
+
+                    // Open the parent category of the clicked item
+                    const parentCategory = item.closest('.category');
+                    if (parentCategory) {
+                        parentCategory.classList.add('active');
+                        parentCategory.querySelector('.toggle-icon').textContent = '⬤';
+                    }
+
+                    // Get page name and load content
+                    const pageName = item.getAttribute('data-page');
+                    loadContent(pageName);
+
+                    // Scroll to top
+                    scrollToTop();
+
+                    // Close sidebar on mobile
+                    closeSidebarOnMobile();
                 });
-            }
+            });
+        }
 
         // Function to initialize video viewport observers
         function initializeVideos() {
