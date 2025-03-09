@@ -565,7 +565,6 @@
 .category-pinned {
     order: -1; /* Ensures it stays at the top when using flexbox */
     border-bottom: 1px solid var(--border-color, #e0e0e0);
-    margin-bottom: 10px;
     padding-bottom: 10px;
 }
 

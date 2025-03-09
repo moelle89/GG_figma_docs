@@ -15,6 +15,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
 
 <body>
@@ -638,9 +640,6 @@
                 // Initialize video viewport observers
                 initializeVideos();
 
-                // Initialize Lottie animations
-                initializeLottieAnimations();
-
                 // Initialize tab switching after content is loaded
                 requestAnimationFrame(() => {
                     initializeTabSwitching();
@@ -902,7 +901,7 @@
                 if (searchInput.value) {
                     searchInput.value = '';
                     searchInput.dispatchEvent(new Event('input'));
-                    
+
                     // After search is cleared, restore the active state
                     if (activeItem && activeCategory) {
                         // Close all categories first
@@ -941,7 +940,7 @@
                     if (searchInput.value) {
                         searchInput.value = '';
                         searchIcon.src = 'assets/search.svg';
-                        
+
                         // Reset all categories and items visibility
                         document.querySelectorAll('.category').forEach(cat => {
                             cat.classList.remove('hidden', 'search-active');
@@ -953,7 +952,7 @@
                                 i.innerHTML = text + (indicator ? indicator.outerHTML : '');
                             });
                         });
-                        
+
                         // Hide no results message if visible
                         document.getElementById('noResults').classList.remove('visible');
                     }
