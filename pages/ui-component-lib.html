@@ -1,52 +1,101 @@
-<div class="content-header">
-<div class="grid-2-col" style="max-width: 1100px;">
-    <div>
-        <h2 class="section-title">Components</h2>
+<div class="tabs-container">
+    <div class="tabs-header">
+        <button class="tab-button active" data-tab="components">Component Library</button>
+        <button class="tab-button" data-tab="how-to">How to Use</button>
     </div>
-    <div>
-        <a href="https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3046-109540&t=Cb4kDB8ZcoJQHo4X-4" class="two-tone-button" target="_blank">
-            <div class="button-left">Component list<div class="diamond-icon">
-                    <div class="diamond-group">
-                        <div class="diamond-item"></div>
-                        <div class="diamond-item"></div>
-                        <div class="diamond-item"></div>
-                        <div class="diamond-item"></div>
-                    </div>
+
+    <div class="tab-content active" id="components-tab">
+        <div class="content-header">
+            <div class="grid-2-col" style="max-width: 1100px;">
+                <div>
+                    <h2 class="section-title">Components</h2>
+                </div>
+                <div>
+                    <a href="https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3046-109540&t=Cb4kDB8ZcoJQHo4X-4" class="two-tone-button" target="_blank">
+                        <div class="button-left">Component list<div class="diamond-icon">
+                                <div class="diamond-group">
+                                    <div class="diamond-item"></div>
+                                    <div class="diamond-item"></div>
+                                    <div class="diamond-item"></div>
+                                    <div class="diamond-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-right">in figma anzeigen</div>
+                    </a>
                 </div>
             </div>
-            <div class="button-right">in figma anzeigen</div>
-        </a>
-    </div>
-</div>
-    <p class="content-subtitle">Reusable design elements that enhance consistency, efficiency, and collaboration in your design system</p>
-</div>
-<div class="video-container" style="max-width: 1100px!important;margin-bottom: 60px;">
-    <div class="video-ratio-container">
-        <video controls autoplay muted loop>
-            <source src="pages/assets/hotkeys_and_component_search.webm" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    </div>
-</div>
-<div class="component-description" style="max-width: 1100px;">
-    <p>Figma components are reusable design elements that help maintain consistency across your designs. They function as templates that can be duplicated and modified while maintaining a connection to the original master component.</p>
-    <br>
-    <p>Components are a cornerstone of design systems, allowing designers to create scalable and consistent user interfaces. When you update a master component, all instances of that component can be updated across your designs, ensuring design consistency and saving significant time during revisions.</p>
-</div>
-
-<h2 class="section-title">Component Structure</h2>
-<div class="grid-2-col">
-    <div class="grid-item">
-        <img src="assets\img\comp_sitemap.jpg" alt="Local components">
-    </div>
-    <div class="grid-item">
-        <div class="video-container">
+            <p class="content-subtitle">Reusable design elements that enhance consistency, efficiency, and collaboration in your design system</p>
+        </div>
+        <div class="video-container" style="max-width: 1100px!important;margin-bottom: 60px;">
             <div class="video-ratio-container">
                 <video controls autoplay muted loop>
-                    <source src="assets\navigation.webm" type="video/mp4">
+                    <source src="pages/assets/hotkeys_and_component_search.webm" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
         </div>
+        <div class="component-description" style="max-width: 1100px;">
+            <p>Figma components are reusable design elements that help maintain consistency across your designs. They function as templates that can be duplicated and modified while maintaining a connection to the original master component.</p>
+            <br>
+            <p>Components are a cornerstone of design systems, allowing designers to create scalable and consistent user interfaces. When you update a master component, all instances of that component can be updated across your designs, ensuring design consistency and saving significant time during revisions.</p>
+        </div>
+
+        <h2 class="section-title">Component Structure</h2>
+        <div class="grid-2-col">
+            <div class="grid-item">
+                <img src="assets\img\comp_sitemap.jpg" alt="Local components">
+            </div>
+            <div class="grid-item">
+                <div class="video-container">
+                    <div class="video-ratio-container">
+                        <video controls autoplay muted loop>
+                            <source src="assets\navigation.webm" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="how-to-tab">
+        <!-- How-to content will be loaded here -->
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    // Function to load how-to content
+    async function loadHowToContent() {
+        try {
+            const response = await fetch('pages/how-to.html');
+            const html = await response.text();
+            document.getElementById('how-to-tab').innerHTML = html;
+        } catch (error) {
+            console.error('Error loading how-to content:', error);
+            document.getElementById('how-to-tab').innerHTML = '<p>Failed to load content</p>';
+        }
+    }
+
+    // Load how-to content initially
+    loadHowToContent();
+
+    // Tab switching logic
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked button and corresponding content
+            button.classList.add('active');
+            const tabId = `${button.dataset.tab}-tab`;
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+});
+</script>
