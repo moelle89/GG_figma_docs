@@ -1180,6 +1180,13 @@
             box-shadow: var(--card-shadow);
         }
 
+        .fig-html-container {
+            margin: 0 0 30px 0;
+            width: fit-content;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
         /* Basic embed */
         .basic-embed {
             width: 100%;
@@ -1373,6 +1380,16 @@
         /* For mobile devices */
         @media screen and (max-width: 768px) {
 
+            .fig-html-container {
+                margin: 0 0 30px 0;
+                border-radius: 8px;
+            }
+            .fig-html-child {
+                transform: scale(0.5);
+                transform-origin: left;
+                overflow: hidden;
+            }
+
             .responsive-embed-container {
                 position: relative;
                 padding-bottom: 70.25%;
@@ -1459,15 +1476,15 @@
 
         .search-icon-search {
             position: absolute;
-            left: 15px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #999;
+            color:var(--text-color);;
         }
 
         #iconSearchInput {
             width: 100%;
-            padding: 15px 15px 15px 45px;
+            padding: 15px 15px 15px 25px;
             border-radius: 8px;
             border: 1px solid var(--input-border-color);
             background-color: var(--form-input-bg);
@@ -1640,32 +1657,51 @@
             justify-content: space-between;
         }
 
-        .code-block {
-            background-color: var(--bg-color);
+        .fig-block {
             padding: 10px;
-            border-radius: 4px;
-            font-family: monospace;
             font-weight: 600;
-            overflow-x: auto;
             display: flex;
-            margin: 5px 0;
+            margin-top: 10px;
             font-size: 14px;
-            border: 1px solid var(--fab-border);
         }
 
+       .copy-btn {
+            padding: 8px 15px;
+            background: var(--accent-color);
+            border: 1px solid var(--fab-border);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+       .show-more-button {
+            padding: 8px 15px;
+            background: var(--accent-color);
+            border: 1px solid var(--fab-border);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .show-more-button:hover {
+            background: var(--purple-accent-light);
+        }
         .copy-btn:hover {
             background: var(--purple-accent-light);
         }
 
         .code-block {
             background-color: var(--bg-color);
-            padding: 10px;
-            border-radius: 4px;
+            padding: 12px;
+            border-radius: 6px;
             font-family: monospace;
             overflow-x: auto;
             display: flex;
-            margin: 5px 0;
-            font-size: 12px;
+            margin: 7px 0;
+            font-size: 14px;
             border: 1px solid var(--fab-border);
         }
 
