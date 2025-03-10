@@ -47,23 +47,22 @@
 <!-- Icon Search Component -->
 <div class="icon-search-component">
     <div class="container">
-        <div class="header">
+        <div class="header" style="margin-bottom: 30px;">
             <h1>Icon Library</h1>
             <p>Search and browse through our collection of icons</p>
         </div>
 
         <div class="search-container">
-            <span class="search-icon">
+            <span class="search-icon-search">
                 <ion-icon name="search-outline"></ion-icon>
             </span>
-            <input type="text" id="iconSearchInput" placeholder="Search icons...">
+            <input type="text" id="iconSearchInput" class="iconSearchInput" placeholder="Search icons...">
         </div>
 
         <div class="filter-options">
-            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn active" data-filter="filled">Filled</button>
             <button class="filter-btn" data-filter="outline">Outline</button>
             <button class="filter-btn" data-filter="sharp">Sharp</button>
-            <button class="filter-btn" data-filter="filled">Default</button>
         </div>
 
         <div class="icon-grid" id="iconGrid">
