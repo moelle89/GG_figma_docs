@@ -1640,14 +1640,17 @@
             justify-content: space-between;
         }
 
-        .copy-btn {
-            padding: 8px 15px;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background 0.2s ease;
+        .code-block {
+            background-color: var(--bg-color);
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+            overflow-x: auto;
+            display: flex;
+            margin: 5px 0;
+            font-size: 14px;
+            border: 1px solid var(--fab-border);
         }
 
         .copy-btn:hover {
@@ -1660,6 +1663,7 @@
             border-radius: 4px;
             font-family: monospace;
             overflow-x: auto;
+            display: flex;
             margin: 5px 0;
             font-size: 12px;
             border: 1px solid var(--fab-border);

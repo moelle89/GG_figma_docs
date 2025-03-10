@@ -1421,9 +1421,6 @@
                             case 'html':
                                 element = document.getElementById('iconHtml');
                                 break;
-                            case 'react':
-                                element = document.getElementById('iconReact');
-                                break;
                         }
 
                         const text = element.textContent;
@@ -1443,20 +1440,29 @@
                 const modalIconPreview = document.getElementById('modalIconPreview');
                 const modalIconName = document.getElementById('modalIconName');
                 const iconHtml = document.getElementById('iconHtml');
-                const iconReact = document.getElementById('iconReact');
 
                 // Set content
                 modalIconName.textContent = icon.name;
                 modalIconPreview.innerHTML = `
                     <ion-icon name="${icon.name}" size="large"></ion-icon>
                     <p id="modalIconName">${icon.name}</p>
-                    <a href="https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=${icon.id}" target="_blank" class="figma-link">
-                        View in Figma
-                    </a>
                 `;
 
                 iconHtml.textContent = `<ion-icon name="${icon.name}"></ion-icon>`;
-                iconReact.textContent = `import { ${icon.name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} } from 'react-ionicons'`;
+                iconReact.innerHTML = `
+                    <a href="https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=${icon.id}&t=OaCX3hbgJH9gzTAw-4" class="two-tone-button" target="_blank" data-figma-link>
+                        <div class="button-left">${icon.name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}<div class="diamond-icon">
+                                <div class="diamond-group">
+                                    <div class="diamond-item"></div>
+                                    <div class="diamond-item"></div>
+                                    <div class="diamond-item"></div>
+                                    <div class="diamond-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-right">in figma anzeigen</div>
+                    </a>
+                `;
 
                 // Show modal
                 modal.style.display = 'flex';
