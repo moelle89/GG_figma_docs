@@ -1612,6 +1612,48 @@
 
         window.addEventListener('DOMContentLoaded', initializeApp);
     </script>
+
+    <script>
+        function scaleContainer() {
+            const container = document.getElementById("scalable-container");
+            if (!container) return;
+
+            const wrapper = container.closest(".fig-wrapper");
+            if (!wrapper) return;
+
+            const originalWidth = 900;
+            const originalHeight = 444;
+            const scaleX = window.innerWidth / originalWidth;
+            const scaleY = window.innerHeight / originalHeight;
+            let scale = Math.min(scaleX, scaleY);
+
+            if (scale > 1) scale = 1;
+
+            container.style.transform = `scale(${scale})`;
+            wrapper.style.width = `${originalWidth}px`;
+            wrapper.style.height = `${originalHeight}px`;
+        }
+
+        // Initialize scaling when content is loaded
+        function initializeScaling() {
+            const container = document.getElementById("scalable-container");
+            if (container) {
+                window.addEventListener("resize", scaleContainer);
+                scaleContainer(); // Initial scale
+            }
+        }
+
+        // Add scaling initialization to the loadContent function
+        const originalLoadContent = window.loadContent;
+        window.loadContent = async function(pageName) {
+            await originalLoadContent(pageName);
+            
+            // Initialize scaling if we're on a page with scalable content
+            if (document.getElementById("scalable-container")) {
+                initializeScaling();
+            }
+        };
+    </script>
 </body>
 
 </html>
