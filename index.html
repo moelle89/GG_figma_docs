@@ -697,63 +697,70 @@
         }
     }
 
-    (function () {
-        // Configuration
-        const maxWidth = 900;
-        const debounceTime = 100;
-        let debounceTimer;
+            // Configuration
+            const debounceTime = 100;
+            let debounceTimer;
 
-        // Main scaling function
-        function scaleContent() {
-            const containers = document.querySelectorAll('.scalable-container');
+        const maxWidth = window.innerWidth;
+            // Main scaling function
+            function scaleContent() {
+                const containers = document.querySelectorAll('.scalable-container');
 
-            containers.forEach(container => {
-                const content = container.querySelector('.scalable-content');
-                if (!content) return;
-                console.log(`scaleContent function executed`);
-                // If content doesn't have its natural dimensions stored, measure them
-                if (!content.dataset.originalWidth || !content.dataset.originalHeight) {
-                    // Temporarily reset any transformations
-                    const originalTransform = content.style.transform;
-                    content.style.transform = 'none';
+                containers.forEach(container => {
+                    const content = container.querySelector('.scalable-content');
+                    if (!content) return;
+                    console.log(`scaleContent function executed`);
+                    // If content doesn't have its natural dimensions stored, measure them
+                    if (!content.dataset.originalWidth || !content.dataset.originalHeight) {
+                        // Temporarily reset any transformations
+                        const originalTransform = content.style.transform;
+                        content.style.transform = 'none';
 
-                    // Force layout recalculation
-                    void content.offsetHeight;
+                        // Force layout recalculation
+                        void content.offsetHeight;
 
-                    // Get dimensions (forcing a fixed width if necessary)
-                    if (!content.offsetWidth || content.offsetWidth < 10) {
-                        // If content has no width, force the max width temporarily
-                        content.style.width = maxWidth + 'px';
-                        void content.offsetHeight; // Force layout recalculation
+                        // Get dimensions (forcing a fixed width if necessary)
+                        if (!content.offsetWidth || content.offsetWidth < 10) {
+                            // If content has no width, force the max width temporarily
+                            content.style.width = maxWidth + 'px';
+                            void content.offsetHeight; // Force layout recalculation
+                        }
+
+                        // Store original dimensions
+                        content.dataset.originalWidth = content.offsetWidth || maxWidth;
+                        content.dataset.originalHeight = content.offsetHeight || 300; // Fallback height
+
+                        // Restore content to original size
+                        content.style.width = content.dataset.originalWidth + 'px';
+                        content.style.height = content.dataset.originalHeight + 'px';
+                        content.style.transform = originalTransform;
                     }
 
-                    // Store original dimensions
-                    content.dataset.originalWidth = content.offsetWidth || maxWidth;
-                    content.dataset.originalHeight = content.offsetHeight || 300; // Fallback height
+                    // Get available width (respecting max width)
+                    const availableWidth = Math.min(
+                        container.clientWidth || document.documentElement.clientWidth,
+                        maxWidth
+                    );
 
-                    // Restore content to original size
-                    content.style.width = content.dataset.originalWidth + 'px';
-                    content.style.height = content.dataset.originalHeight + 'px';
-                    content.style.transform = originalTransform;
-                }
+                    // Calculate scale
+                    const scale = availableWidth / content.dataset.originalWidth;
 
-                // Get available width (respecting max width)
-                const availableWidth = Math.min(
-                    container.clientWidth || document.documentElement.clientWidth,
-                    maxWidth
-                );
+                    // Apply transform
+                    content.style.transform = `scale(${scale})`;
+                    content.style.transformOrigin = 'top left';
 
-                // Calculate scale
-                const scale = availableWidth / content.dataset.originalWidth;
+                    if (maxWidth < 900) { // Adjust this value according to your needs
+                        // Update container height
+                        const newHeight = (content.dataset.originalHeight * scale)/2;
+                        container.style.height = `${newHeight}px`;
+                        const newWidth = maxWidth;
+                        content.style.width = `${newWidth}px`;
+                        content.style.transform = `scale(${newWidth / 960})`; // This will adjust the content's size based on the device width.
+                    }
+                });
+            }
 
-                // Apply transform
-                content.style.transform = `scale(${scale})`;
-                content.style.transformOrigin = 'top left';
-
-                // Update container height
-                container.style.height = (content.dataset.originalHeight * scale) + 'px';
-            });
-        }
+    (function () {
 
         // Debounced version of scaleContent
         function debouncedScaleContent() {
@@ -913,7 +920,7 @@
                                 if (secondGridItem) secondGridItem.classList.remove('hidden');
                             }
                         }
-
+                        scaleContent();
                         // Adjust grid layout based on visible items
                         const visibleGridItems = gridContainer.querySelectorAll('.grid-item:not(.hidden)');
 
