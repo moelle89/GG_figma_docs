@@ -1804,6 +1804,14 @@
 
         @media (max-width: 1280px) {
 
+            /* 2-column grid */
+            .grid-2-col {
+                margin-bottom: 20px;
+            }
+
+            .scalable-container {
+                margin-bottom: 0px;
+            }
             .fig-wrapper {
                 display: flex;
                 /* justify-content: flex-end; */
