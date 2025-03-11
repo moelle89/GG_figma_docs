@@ -696,6 +696,55 @@
         `;
         }
     }
+
+            const maxWidth = 900; // Original/maximum width of the content
+            // Function to apply scaling
+            function scaleContent() {
+                const containers = document.querySelectorAll('.scalable-container');
+
+                containers.forEach(container => {
+                    const content = container.querySelector('.scalable-content');
+
+                    if (!content) return;
+
+                    // Get the original dimensions from data attributes or set them
+                    if (!content.dataset.originalWidth) {
+                        content.dataset.originalWidth = content.offsetWidth || maxWidth;
+                        content.dataset.originalHeight = content.offsetHeight;
+
+                        // Set original dimensions in CSS for proper ratio calculations
+                        content.style.width = content.dataset.originalWidth + 'px';
+                        content.style.height = content.dataset.originalHeight + 'px';
+                    }
+
+                    // Calculate available width (either container width or viewport width)
+                    const availableWidth = Math.min(
+                        container.offsetWidth || window.innerWidth,
+                        maxWidth
+                    );
+
+                    // Calculate and apply the scale
+                    const scale = availableWidth / content.dataset.originalWidth;
+
+                    // Apply the transformation
+                    content.style.transform = `scale(${scale})`;
+                    content.style.transformOrigin = 'top left';
+
+                    // Update container height to match scaled content
+                    container.style.height = (content.dataset.originalHeight * scale) + 'px';
+                });
+            }
+
+            // Apply scaling on load and resize
+            window.addEventListener('load', scaleContent);
+            window.addEventListener('resize', scaleContent);
+
+            // Initial call if DOM is already loaded
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                scaleContent();
+            }
+
+
         // Function to inject component information into the loaded page
         function injectComponentInfo(pageName) {
             // Add a small delay to ensure DOM is ready
@@ -799,6 +848,7 @@
             }, 100); // Small delay to ensure DOM is updated
             // Call slider initialization
             requestAnimationFrame(initializeImageSliders);
+            scaleContent();
         }
 
         // Function to save component data to downloadable JSON file
@@ -1611,49 +1661,22 @@
         });
 
         window.addEventListener('DOMContentLoaded', initializeApp);
-    </script>
+        // Run the function only if the container exists
+        if (document.querySelectorAll('.scalable-container')) {
+                            window.addEventListener("resize", scaleContent);
+                            window.addEventListener("load", scaleContent);
+                        }
+</script>
 
     <script>
-        function scaleContainer() {
-            const container = document.getElementById("scalable-container");
-            if (!container) return;
-
-            const wrapper = container.closest(".fig-wrapper");
-            if (!wrapper) return;
-
-            const originalWidth = 900;
-            const originalHeight = 444;
-            const scaleX = window.innerWidth / originalWidth;
-            const scaleY = window.innerHeight / originalHeight;
-            let scale = Math.min(scaleX, scaleY);
-
-            if (scale > 1) scale = 1;
-
-            container.style.transform = `scale(${scale})`;
-            wrapper.style.width = `${originalWidth}px`;
-            wrapper.style.height = `${originalHeight}px`;
-        }
-
         // Initialize scaling when content is loaded
         function initializeScaling() {
-            const container = document.getElementById("scalable-container");
+            const container = document.querySelector('.scalable-content');
             if (container) {
                 window.addEventListener("resize", scaleContainer);
-                scaleContainer(); // Initial scale
+                scaleContent(); // Initial scale
             }
         }
-
-        // Add scaling initialization to the loadContent function
-        const originalLoadContent = window.loadContent;
-        window.loadContent = async function(pageName) {
-            await originalLoadContent(pageName);
-            
-            // Initialize scaling if we're on a page with scalable content
-            if (document.getElementById("scalable-container")) {
-                initializeScaling();
-            }
-        };
     </script>
 </body>
-
 </html>

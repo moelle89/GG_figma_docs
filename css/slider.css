@@ -4,9 +4,10 @@
 }
 
 .csslider1 {
-	display: inline;
-	margin-top: 10px;
+    display: -webkit-box;
+    /* margin-top: 10px; */
 }
+
 .csslider1 > .cs_anchor {
 	display: none;
 }
@@ -194,21 +195,23 @@
 }
 
 
-/* /calculate autoplay */
 .csslider1 > .cs_bullets {
-	position: absolute;
-	left: 0;
-	width: 100%;
-	z-index: 6;
-	font-size: 0;
-	line-height: 8pt;
-	text-align: center;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+    left: 0;
+    width: 100%;
+    position: absolute;
+    transform: translatey(-20px);
+    z-index: 6;
+    z-index: 99999999;
+    justify-items: start;
+    font-size: 0;
+    line-height: 0;
+    text-align: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .csslider1 > .cs_bullets > div {
 	margin-left: -50%;
