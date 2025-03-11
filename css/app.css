@@ -1760,6 +1760,7 @@
             width: 100%;
             max-width: 900px;
             overflow: hidden;
+            margin-bottom: 30px;
         }
 
         .scalable-content {
