@@ -697,53 +697,132 @@
         }
     }
 
-            const maxWidth = 900; // Original/maximum width of the content
-            // Function to apply scaling
-            function scaleContent() {
-                const containers = document.querySelectorAll('.scalable-container');
+    (function () {
+        // Configuration
+        const maxWidth = 900;
+        const debounceTime = 100;
+        let debounceTimer;
 
-                containers.forEach(container => {
-                    const content = container.querySelector('.scalable-content');
+        // Main scaling function
+        function scaleContent() {
+            const containers = document.querySelectorAll('.scalable-container');
 
-                    if (!content) return;
+            containers.forEach(container => {
+                const content = container.querySelector('.scalable-content');
+                if (!content) return;
+                console.log(`scaleContent function executed`);
+                // If content doesn't have its natural dimensions stored, measure them
+                if (!content.dataset.originalWidth || !content.dataset.originalHeight) {
+                    // Temporarily reset any transformations
+                    const originalTransform = content.style.transform;
+                    content.style.transform = 'none';
 
-                    // Get the original dimensions from data attributes or set them
-                    if (!content.dataset.originalWidth) {
-                        content.dataset.originalWidth = content.offsetWidth || maxWidth;
-                        content.dataset.originalHeight = content.offsetHeight;
+                    // Force layout recalculation
+                    void content.offsetHeight;
 
-                        // Set original dimensions in CSS for proper ratio calculations
-                        content.style.width = content.dataset.originalWidth + 'px';
-                        content.style.height = content.dataset.originalHeight + 'px';
+                    // Get dimensions (forcing a fixed width if necessary)
+                    if (!content.offsetWidth || content.offsetWidth < 10) {
+                        // If content has no width, force the max width temporarily
+                        content.style.width = maxWidth + 'px';
+                        void content.offsetHeight; // Force layout recalculation
                     }
 
-                    // Calculate available width (either container width or viewport width)
-                    const availableWidth = Math.min(
-                        container.offsetWidth || window.innerWidth,
-                        maxWidth
-                    );
+                    // Store original dimensions
+                    content.dataset.originalWidth = content.offsetWidth || maxWidth;
+                    content.dataset.originalHeight = content.offsetHeight || 300; // Fallback height
 
-                    // Calculate and apply the scale
-                    const scale = availableWidth / content.dataset.originalWidth;
+                    // Restore content to original size
+                    content.style.width = content.dataset.originalWidth + 'px';
+                    content.style.height = content.dataset.originalHeight + 'px';
+                    content.style.transform = originalTransform;
+                }
 
-                    // Apply the transformation
-                    content.style.transform = `scale(${scale})`;
-                    content.style.transformOrigin = 'top left';
+                // Get available width (respecting max width)
+                const availableWidth = Math.min(
+                    container.clientWidth || document.documentElement.clientWidth,
+                    maxWidth
+                );
 
-                    // Update container height to match scaled content
-                    container.style.height = (content.dataset.originalHeight * scale) + 'px';
+                // Calculate scale
+                const scale = availableWidth / content.dataset.originalWidth;
+
+                // Apply transform
+                content.style.transform = `scale(${scale})`;
+                content.style.transformOrigin = 'top left';
+
+                // Update container height
+                container.style.height = (content.dataset.originalHeight * scale) + 'px';
+            });
+        }
+
+        // Debounced version of scaleContent
+        function debouncedScaleContent() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(scaleContent, debounceTime);
+        }
+
+        // Create and start mutation observer to detect dynamic content
+        function startObserver() {
+            const observer = new MutationObserver((mutations) => {
+                let shouldRescale = false;
+
+                mutations.forEach(mutation => {
+                    // Check if relevant elements were added
+                    if (mutation.addedNodes.length) {
+                        shouldRescale = true;
+                    }
                 });
-            }
 
-            // Apply scaling on load and resize
-            window.addEventListener('load', scaleContent);
-            window.addEventListener('resize', scaleContent);
+                if (shouldRescale) {
+                    // Reset stored dimensions to force remeasurement
+                    document.querySelectorAll('.scalable-content').forEach(content => {
+                        content.removeAttribute('data-original-width');
+                        content.removeAttribute('data-original-height');
+                    });
 
-            // Initial call if DOM is already loaded
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                scaleContent();
-            }
+                    // Delay to ensure content is fully loaded
+                    setTimeout(scaleContent, 50);
+                }
+            });
 
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        }
+
+        // Initialize and schedule periodic checks for the first few seconds
+        function initialize() {
+            // Initial scaling
+            scaleContent();
+
+            // Start the observer
+            startObserver();
+
+            // Handle window resize
+            window.addEventListener('resize', debouncedScaleContent);
+
+            // Schedule additional checks for dynamically loaded content
+            const checkIntervals = [100, 500, 1000, 2000, 5000];
+            checkIntervals.forEach(interval => {
+                setTimeout(scaleContent, interval);
+            });
+        }
+
+        // Initialize when ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            initialize();
+        }
+
+        // Also initialize after full load
+        window.addEventListener('load', () => {
+            scaleContent();
+            // One more check after images and resources load
+            setTimeout(scaleContent, 500);
+        });
+    })();
 
         // Function to inject component information into the loaded page
         function injectComponentInfo(pageName) {
@@ -846,9 +925,11 @@
                     });
                 }
             }, 100); // Small delay to ensure DOM is updated
+
             // Call slider initialization
-            requestAnimationFrame(initializeImageSliders);
-            scaleContent();
+            requestAnimationFrame(() => {
+                initializeImageSliders();
+            });
         }
 
         // Function to save component data to downloadable JSON file
@@ -1583,7 +1664,7 @@
                 setTimeout(() => {
                     sortFabBtn.click();
                 }, 100);
-            }, 500);
+            }, 400);
 
             // Add Component Manager to the "First Steps" category
             setTimeout(() => {
@@ -1661,22 +1742,6 @@
         });
 
         window.addEventListener('DOMContentLoaded', initializeApp);
-        // Run the function only if the container exists
-        if (document.querySelectorAll('.scalable-container')) {
-                            window.addEventListener("resize", scaleContent);
-                            window.addEventListener("load", scaleContent);
-                        }
 </script>
-
-    <script>
-        // Initialize scaling when content is loaded
-        function initializeScaling() {
-            const container = document.querySelector('.scalable-content');
-            if (container) {
-                window.addEventListener("resize", scaleContainer);
-                scaleContent(); // Initial scale
-            }
-        }
-    </script>
 </body>
 </html>

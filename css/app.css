@@ -1680,7 +1680,7 @@
             padding: 8px 15px;
             background: var(--accent-color);
             border: 1px solid var(--fab-border);
-            border-radius: 20px;
+            border-radius: 15px;
             color: white;
             cursor: pointer;
             font-size: 14px;
