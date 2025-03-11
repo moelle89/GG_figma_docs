@@ -1768,7 +1768,7 @@
         }
 
         .scalable-content > div {
-            border-radius: 15px;
+            border-radius: 10px;
         }
 
         .scale-wrapper {
@@ -1831,6 +1831,9 @@
             }
 
             .scale-container {
+                border-radius: 20px;
+            }
+            .scalable-content > div {
                 border-radius: 20px;
             }
         }
