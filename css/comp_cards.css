@@ -179,9 +179,6 @@
       align-items: center;
     }
 
-    .content .component-icon {
-      background-color: var(--category-bg);
-    }
 
     .content-demo {
       width: 40px;
@@ -489,11 +486,6 @@
       align-items: center;
       padding: 0 10px;
       border: 1px solid #ddd;
-    }
-
-    .search-icon {
-      color: #999;
-      margin-right: 5px;
     }
 
     .segment .component-icon {

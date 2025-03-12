@@ -52,16 +52,16 @@
             --purple-accent-light: #dc9450;
             --primary-color: #C27327;
             --primary-hover-color: #CA8233;
-            --bg-color: #151719;
-            --sidebar-bg: #1a1c1f;
-            --category-bg: #1a1c1f;
+            --bg-color: hsl(210, 9.25%, 9.25%);
+            --sidebar-bg: var(--category-bg);
+            --category-bg: hsl(210, 9.95%, 9.36%);
             --fab-bg: #0e0f11;
             --sortfab-bg: var(--button-bg);
-            --card-bg: var(--category-bg);
+            --card-bg: var(--card-header-element);
             --fab-border: var(--scrollbar-thumb-hover);
             --fab-fg: #ffffff;
-            --category-header-bg: #0e0f11;
-            --active-category-bg: #0e0f11;
+            --category-header-bg: hsl(210, 10%, 7.4%);
+            --active-category-bg: var(--category-header-bg);
             --button-bg: #0f1113;
             --button-bg-hover: #0a0b0d;
             --button-comp-accent: #9e4fff;
@@ -71,7 +71,7 @@
             --spinner-border: rgba(255, 255, 255, 0.1);
             --shadow-color: rgba(0, 0, 0, 0.2);
             --modal-shadow: rgba(0, 0, 0, 0.3);
-            --active-item-bg: rgba(194, 115, 39, 0.08);
+            --active-item-bg: rgba(45, 48, 50, 0.337);
             --active-item-bg-hover: var(--active-item-bg);
             --scrollbar-track: #191b1d;
             --scrollbar-thumb: #5a789615;
@@ -79,8 +79,8 @@
             --content-subtitle: hsl(210, 7%, 75%);
             --description-color: hsl(210, 5%, 70%);
             --tooltip-bg: #ffffffe6;
-            --form-input-bg: var(--fab-bg);
-            --card-header-element: var(--scrollbar-thumb-hover);
+            --form-input-bg: hsla(210, 21%, 13%, 0.955);
+            --card-header-element: hsl(210, 9.5%, 11.06%);
         }
 
        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -1484,8 +1484,8 @@
 
         #iconSearchInput {
             width: 100%;
-            padding: 15px 15px 15px 25px;
-            border-radius: 8px;
+            padding: 18px 15px 18px 25px;
+            border-radius: 30px;
             border: 1px solid var(--input-border-color);
             background-color: var(--form-input-bg);
             color: var(--text-color);
@@ -1676,7 +1676,7 @@
             transition: all 0.2s ease;
         }
 
-       .show-more-button {
+        .show-more-button {
             padding: 8px 15px;
             background: var(--accent-color);
             border: 1px solid var(--fab-border);
@@ -1686,6 +1686,7 @@
             font-size: 14px;
             transition: all 0.2s ease;
         }
+
         .show-more-button:hover {
             background: var(--purple-accent-light);
         }
@@ -1739,17 +1740,25 @@
         @media (max-width: 768px) {
             .icon-grid {
                 grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-                gap: 15px;
+                gap: 20px;
             }
 
             .icon-item {
-                padding: 10px;
+                padding: 12px;
+                height: auto;
+            }
+            .icon-name {
+                font-size: 10px;
             }
 
             .filter-options {
                 overflow-x: auto;
                 padding-bottom: 10px;
                 justify-content: flex-start;
+            }
+
+            .show-more-button {
+                margin-bottom: 40px;
             }
         }
 
@@ -1856,9 +1865,9 @@
 
 .search-input {
     width: 100%;
-    padding: 10px 35px 10px 15px;
+    padding: 18px 30px 18px 25px;
     border: 1px solid var(--input-border-color);
-    border-radius: 6px;
+    border-radius: 30px;
     background-color: var(--form-input-bg);
     color: var(--text-color);
     font-size: 14px;
@@ -1873,7 +1882,7 @@
 
 .search-icon {
     position: absolute;
-    right: 10px;
+    right: 24px;
     top: 50%;
     transform: translateY(-50%);
     width: 20px;
@@ -2084,7 +2093,7 @@
 .how-to-card {
     background: var(--card-bg);
     border-radius: 14px;
-    padding: 32px;
+    padding: 28px;
     box-shadow: var(--card-shadow);
 }
 
