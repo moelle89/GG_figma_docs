@@ -1865,7 +1865,7 @@
 
 .search-input {
     width: 100%;
-    padding: 18px 30px 18px 25px;
+    padding: 16px 30px 16px 25px;
     border: 1px solid var(--input-border-color);
     border-radius: 30px;
     background-color: var(--form-input-bg);
