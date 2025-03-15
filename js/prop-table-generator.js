@@ -258,4 +258,151 @@ function createPropTableFromInterface(interfaceString, title = null, container =
     }
     
     return tableGenerator.generateTableFromInterface(interfaceString, title, containerElement);
-} 
+}
+
+/**
+ * Creates a property table from the given properties
+ * @param {Object} properties - The properties to display
+ * @param {string} title - The title for the table
+ * @param {HTMLElement} container - The container to append the table to
+ */
+function createPropTable(properties, title, container) {
+    // Create title
+    const titleElement = document.createElement('h3');
+    titleElement.className = 'auto-prop-table-title';
+    titleElement.textContent = title;
+    container.appendChild(titleElement);
+
+    // Create legend
+    const legendContainer = document.createElement('div');
+    legendContainer.className = 'prop-table-legend';
+    legendContainer.innerHTML = `
+        <div class="legend-title">Legend:</div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <span class="bool-true">True</span>
+                <span class="legend-text">Boolean switches that activate additional properties when enabled. Related properties usually include the switch name.</span>
+            </div>
+            <div class="legend-item">
+                <span class="variant-option">string</span>
+                <span class="legend-text">Text values that can be freely defined by the user.</span>
+            </div>
+            <div class="legend-item">
+                <span class="variant-option">Pill</span>
+                <span class="legend-text">When used with corner-radius, creates completely rounded sides.</span>
+            </div>
+        </div>
+    `;
+    container.appendChild(legendContainer);
+
+    // Create table
+    const table = document.createElement('table');
+    table.className = 'auto-prop-table';
+
+    // Create header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    ['Property Name', 'Type', 'Variant Options'].forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create body
+    const tbody = document.createElement('tbody');
+    Object.entries(properties).forEach(([propName, propType]) => {
+        const row = document.createElement('tr');
+        
+        // Property name cell
+        const nameCell = document.createElement('td');
+        nameCell.textContent = propName;
+        row.appendChild(nameCell);
+        
+        // Type cell
+        const typeCell = document.createElement('td');
+        const baseType = getBaseType(propType);
+        typeCell.textContent = baseType;
+        row.appendChild(typeCell);
+        
+        // Variants cell
+        const variantsCell = document.createElement('td');
+        const variants = getVariants(propType);
+        if (variants.length > 0) {
+            variants.forEach(variant => {
+                const variantSpan = document.createElement('span');
+                variantSpan.className = 'variant-option';
+                
+                // Check if this is a default value
+                if (variant.startsWith('default=')) {
+                    variantSpan.setAttribute('data-default', 'true');
+                    variantSpan.textContent = variant;
+                } else {
+                    variantSpan.textContent = variant;
+                }
+                
+                variantsCell.appendChild(variantSpan);
+                // Add a space between variants
+                variantsCell.appendChild(document.createTextNode(' '));
+            });
+        } else if (baseType === 'boolean') {
+            // Special handling for boolean types
+            const trueSpan = document.createElement('span');
+            trueSpan.className = 'bool-true';
+            trueSpan.textContent = 'True';
+            
+            const falseSpan = document.createElement('span');
+            falseSpan.className = 'bool-false';
+            falseSpan.textContent = 'False';
+            
+            variantsCell.appendChild(trueSpan);
+            variantsCell.appendChild(document.createTextNode(' '));
+            variantsCell.appendChild(falseSpan);
+        } else if (baseType === 'ReactNode') {
+            // Special handling for ReactNode type
+            const swapSpan = document.createElement('span');
+            swapSpan.className = 'variant-option';
+            swapSpan.textContent = 'swapInstance';
+            variantsCell.appendChild(swapSpan);
+        } else {
+            variantsCell.textContent = '-';
+        }
+        row.appendChild(variantsCell);
+        
+        tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+    container.appendChild(table);
+}
+
+/**
+ * Gets the base type from a property type string
+ * @param {string} type - The property type
+ * @returns {string} The base type
+ */
+function getBaseType(type) {
+    if (type.includes('|')) {
+        return 'Variant';
+    }
+    return type.split(';')[0].trim();
+}
+
+/**
+ * Gets the variants from a property type string
+ * @param {string} type - The property type
+ * @returns {Array<string>} The variants
+ */
+function getVariants(type) {
+    if (!type.includes('|')) {
+        return [];
+    }
+    
+    return type
+        .split('|')
+        .map(v => v.trim().replace(/['"]/g, '').replace(/;$/, '')) // Remove semicolon at the end
+        .filter(v => v !== '');
+}
+
+// Make the function available globally
+window.createPropTable = createPropTable; 

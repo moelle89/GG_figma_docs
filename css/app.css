@@ -40,6 +40,8 @@
             --card-shadow: 0px 1px 1px #0208140f,0px 2px 4px #02081414;
             --card-shadow-hover: 0px 1px 4px #02081418,0px 4px 8px #0208141f;
             --card-header-element: hsl(0, 0%, 98%);
+            --table-header-element: var(--card-header-element);
+            --variant-bg: hsl(213, 14%, 50%);
         }
 
         [data-theme="dark"] {
@@ -77,11 +79,13 @@
             --scrollbar-track: var(--bg-color);
             --scrollbar-thumb: #5a789615;
             --scrollbar-thumb-hover: var(--border-color);
-            --content-subtitle: hsl(210, 7%, 80%);
-            --description-color: hsl(210, 5%, 75%);
+            --content-subtitle: hsl(210, 7%, 85%);
+            --description-color: hsl(210, 5%, 80%);
             --tooltip-bg: #ffffffe6;
             --form-input-bg: var(--button-bg);
             --card-header-element: var(--card-bg);
+            --table-header-element: var(--category-header-bg);
+            --variant-bg: var(--button-bg);
         }
 
        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
