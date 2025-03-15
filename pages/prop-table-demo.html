@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Table Generator Demo</title>
+    <link rel="stylesheet" href="../css/prop-table.css">
+    <link rel="stylesheet" href="../css/prop-table-demo.css">
+</head>
+<body>
+<!-- Property Table Demo Page -->
+<div class="component-description">
+    <p>This demo shows how to use the Property Table Generator to create visual HTML tables from JSON data.</p>
+</div>
+
+<div class="section-title">Basic Usage</div>
+<div class="how-to-section">
+    <p>The Property Table Generator can create tables from JSON objects or TypeScript interfaces. Here's a basic example:</p>
+</div>
+
+<!-- Example 1: Button Properties -->
+<div id="button-table-container"></div>
+
+<!-- Example 2: From TypeScript Interface -->
+<div class="section-title">From TypeScript Interface</div>
+<div class="how-to-section">
+    <p>You can also generate a table directly from a TypeScript interface definition:</p>
+</div>
+<div id="interface-table-container"></div>
+
+<!-- Example 3: Complex Data -->
+<div class="section-title">Complex Data</div>
+<div class="how-to-section">
+    <p>The table generator can handle nested objects and arrays:</p>
+</div>
+<div id="complex-table-container"></div>
+
+<!-- How to Use Section -->
+<div class="section-title">How to Use</div>
+<div class="how-to-section">
+    <h3>1. Include the Required Files</h3>
+    <p>Add the following to your HTML:</p>
+    <pre><code>&lt;link rel="stylesheet" href="css/prop-table.css"&gt;
+&lt;script src="js/prop-table-generator.js"&gt;&lt;/script&gt;</code></pre>
+
+    <h3>2. Create a Table from JSON Data</h3>
+    <p>Use the <code>createPropTable</code> function:</p>
+    <pre><code>// Example data
+const buttonData = {
+    'button label': 'Click me',
+    'icon after': true,
+    'icon before': false,
+    'size': 'md',
+    'type': 'Primary',
+    'state': 'Default',
+    'corner radius': 'Default'
+};
+
+// Create the table
+createPropTable(buttonData, 'Button Properties', 'container-id');</code></pre>
+
+    <h3>3. Create a Table from TypeScript Interface</h3>
+    <p>Use the <code>createPropTableFromInterface</code> function:</p>
+    <pre><code>const interfaceString = `
+interface Button {
+    button label: string; 
+    icon after swap: ReactNode; 
+    icon before swap: ReactNode; 
+    icon after: boolean; 
+    icon before: boolean; 
+    size: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'; 
+    type: 'Primary' | 'Secondary' | 'Tertiary' | 'Link 01' | 'Link 02'; 
+    state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
+    corner radius: 'Default' | 'Pill'; 
+}`;
+
+// Create the table
+createPropTableFromInterface(interfaceString, 'Button Interface', 'container-id');</code></pre>
+</div>
+
+<!-- Script to initialize the demo tables -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Example 1: Button Properties
+        const buttonData = {
+            'button label': 'Click me',
+            'icon after': true,
+            'icon before': false,
+            'size': 'md',
+            'type': 'Primary',
+            'state': 'Default',
+            'corner radius': 'Default'
+        };
+        createPropTable(buttonData, 'Button Properties', 'button-table-container');
+        
+        // Example 2: From TypeScript Interface
+        const interfaceString = `
+        interface Button {
+            button label: string; 
+            icon after swap: ReactNode; 
+            icon before swap: ReactNode; 
+            icon after: boolean; 
+            icon before: boolean; 
+            size: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'; 
+            type: 'Primary' | 'Secondary' | 'Tertiary' | 'Link 01' | 'Link 02'; 
+            state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
+            corner radius: 'Default' | 'Pill'; 
+        }`;
+        createPropTableFromInterface(interfaceString, 'Button Interface', 'interface-table-container');
+        
+        // Example 3: Complex Data
+        const complexData = {
+            'component': 'Dropdown',
+            'variants': ['Default', 'Compact', 'Expanded'],
+            'states': {
+                'default': {
+                    'background': '#FFFFFF',
+                    'text': '#333333',
+                    'border': '1px solid #CCCCCC'
+                },
+                'hover': {
+                    'background': '#F5F5F5',
+                    'text': '#333333',
+                    'border': '1px solid #AAAAAA'
+                },
+                'active': {
+                    'background': '#EEEEEE',
+                    'text': '#111111',
+                    'border': '1px solid #999999'
+                }
+            },
+            'accessibility': true,
+            'responsive': true,
+            'animation': {
+                'duration': '0.2s',
+                'easing': 'ease-in-out'
+            }
+        };
+        createPropTable(complexData, 'Complex Component Properties', 'complex-table-container');
+    });
+</script>
+</body>
+<script src="../js/prop-table-generator.js"></script>
+</html> 

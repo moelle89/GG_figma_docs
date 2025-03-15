@@ -693,6 +693,13 @@
                             if (pageName === 'icons' && typeof initializeIconSearch === 'function') {
                                 console.log('Detected icons page, initializing icon search...');
                                 setTimeout(initializeIconSearch, 300);
+                                // For icon pages, reinitialize element animations after icon search is complete
+                                setTimeout(initializeElementScrollAnimations, 400);
+                            }
+                            // Initialize property tables for dynamically loaded content
+                            if (typeof initializePropTables === 'function') {
+                                console.log('Initializing property tables for dynamic content...');
+                                initializePropTables();
                             }
                         });
                     }, 300);
@@ -737,6 +744,11 @@
                             setTimeout(initializeIconSearch, 300);
                             // For icon pages, reinitialize element animations after icon search is complete
                             setTimeout(initializeElementScrollAnimations, 400);
+                        }
+                        // Initialize property tables for dynamically loaded content
+                        if (typeof initializePropTables === 'function') {
+                            console.log('Initializing property tables for dynamic content...');
+                            initializePropTables();
                         }
                     });
                 });
@@ -1470,6 +1482,8 @@
             }, 300);
         });
     </script>
+    <!-- Property Table System -->
+    <script src="js/include-prop-tables.js"></script>
     <script>    <!-- Animation JavaScript -->
         // Initialize ScrollTrigger plugin
             gsap.registerPlugin(ScrollTrigger);

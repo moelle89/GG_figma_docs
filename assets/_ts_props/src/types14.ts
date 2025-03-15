@@ -1,0 +1,4 @@
+export interface Horizontal Tabs {
+	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09'; 
+	size: 'md' | 'sm'; 
+}

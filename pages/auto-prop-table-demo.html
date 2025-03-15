@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Property Table Demo</title>
+    <link rel="stylesheet" href="../css/prop-table.css">
+    <link rel="stylesheet" href="../css/auto-prop-table.css">
+    <link rel="stylesheet" href="../css/prop-table-demo.css">
+    <style>
+        .demo-controls {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f5f5f7;
+            border-radius: 10px;
+        }
+
+        .demo-controls select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .demo-controls button {
+            padding: 8px 16px;
+            background-color: #D18A3D;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .demo-controls button:hover {
+            background-color: #c07c30;
+        }
+
+        .component-preview {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #e6e6e6;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .demo-controls {
+                background-color: #2a2a2a;
+            }
+
+            .component-preview {
+                background-color: #1a1a1a;
+                border-color: #333;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="component-description">
+    <p>This demo shows how property tables are automatically generated and injected into component pages based on the props.json file.</p>
+</div>
+
+<div class="section-title">How It Works</div>
+<div class="how-to-section">
+    <p>The auto property table system:</p>
+    <ol>
+        <li>Detects the current page from the URL</li>
+        <li>Loads and parses the props.json file</li>
+        <li>Finds the matching component data based on the page name</li>
+        <li>Generates and injects a property table after the component description</li>
+    </ol>
+
+    <p>This happens automatically on all component pages without requiring any manual work.</p>
+</div>
+
+<div class="section-title">Interactive Demo</div>
+<div class="how-to-section">
+    <p>Select a component to see its property table:</p>
+
+    <div class="demo-controls">
+        <select id="component-selector">
+            <option value="">Select a component...</option>
+            <option value="Button">Button</option>
+            <option value="Social Button">Social Button</option>
+            <option value="Toggle Switch">Toggle Switch</option>
+            <option value="Toggle Label">Toggle Label</option>
+            <option value="Dropdown Menu">Dropdown Menu</option>
+            <option value="Dropdown Box">Dropdown Box</option>
+            <option value="Horizontal Tabs">Horizontal Tabs</option>
+            <option value="Vertical Tabs">Vertical Tabs</option>
+            <option value="Tab Button">Tab Button</option>
+            <option value="Store Badges">Store Badges</option>
+            <option value="Button Close">Button Close</option>
+            <option value="Button with Icon Only">Button with Icon Only</option>
+            <option value="Input">Input</option>
+            <option value="Checkbox">Checkbox</option>
+            <option value="Checkbox Label">Checkbox Label</option>
+            <option value="Radio Button">Radio Button</option>
+            <option value="Radio Button Group">Radio Button Group</option>
+        </select>
+        <button id="show-props">Show Properties</button>
+    </div>
+
+    <div class="component-preview">
+        <div id="component-name" style="font-size: 18px; font-weight: 600; margin-bottom: 15px;">Select a component above</div>
+        <div id="demo-table-container"></div>
+    </div>
+</div>
+
+<div class="section-title">Implementation</div>
+<div class="how-to-section">
+    <h3>1. Include the Script</h3>
+    <p>Add the following script to your main template or layout file:</p>
+    <pre><code>&lt;script src="js/include-prop-tables.js"&gt;&lt;/script&gt;</code></pre>
+
+    <h3>2. That's It!</h3>
+    <p>The script will automatically:</p>
+    <ul>
+        <li>Detect if the current page is a component page</li>
+        <li>Include the necessary CSS and JavaScript files</li>
+        <li>Parse the props.json file</li>
+        <li>Find the matching component data</li>
+        <li>Generate and inject the property table</li>
+    </ul>
+</div>
+
+<script src="../js/prop-table-generator.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load the props.json file
+        fetch('../assets/_ts_props/props.json')
+            .then(response => response.text())
+            .then(text => {
+                // Parse the props.json file
+                window.propsData = parsePropsJson(text);
+
+                // Set up the demo
+                setupDemo();
+            })
+            .catch(error => {
+                console.error('Error loading props.json:', error);
+                document.getElementById('demo-table-container').innerHTML =
+                    '<div style="color: red;">Error loading props.json: ' + error.message + '</div>';
+            });
+
+        /**
+         * Parse the non-standard props.json format
+         */
+        function parsePropsJson(jsonText) {
+            const result = {};
+
+            // Remove the outer braces and split by component
+            const componentsText = jsonText.trim().slice(1, -1).trim();
+
+            // Split the text by component definitions
+            const componentBlocks = componentsText.split(/},\s*(?=[A-Za-z])/);
+
+            componentBlocks.forEach(block => {
+                // Extract component name and properties
+                const match = block.match(/([^{]+){\s*([\s\S]+)/);
+                if (match) {
+                    const componentName = match[1].trim();
+                    const propertiesText = match[2].trim();
+
+                    // Parse properties
+                    const properties = {};
+                    const propertyLines = propertiesText.split(/;\s*(?=\w)/);
+
+                    propertyLines.forEach(line => {
+                        if (!line.trim()) return;
+
+                        // Split by first colon to get property name and type
+                        const colonIndex = line.indexOf(':');
+                        if (colonIndex > 0) {
+                            const propName = line.substring(0, colonIndex).trim();
+                            const propType = line.substring(colonIndex + 1).trim();
+                            properties[propName] = propType;
+                        }
+                    });
+
+                    result[componentName] = properties;
+                }
+            });
+
+            return result;
+        }
+
+        /**
+         * Set up the interactive demo
+         */
+        function setupDemo() {
+            const selector = document.getElementById('component-selector');
+            const showButton = document.getElementById('show-props');
+            const componentName = document.getElementById('component-name');
+            const tableContainer = document.getElementById('demo-table-container');
+
+            showButton.addEventListener('click', function() {
+                const selectedComponent = selector.value;
+
+                if (!selectedComponent) {
+                    componentName.textContent = 'Please select a component';
+                    tableContainer.innerHTML = '';
+                    return;
+                }
+
+                const componentData = window.propsData[selectedComponent];
+
+                if (componentData) {
+                    componentName.textContent = selectedComponent;
+                    tableContainer.innerHTML = '';
+                    createPropTable(componentData, `${selectedComponent} Properties`, tableContainer);
+                } else {
+                    componentName.textContent = 'Component not found';
+                    tableContainer.innerHTML = '';
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

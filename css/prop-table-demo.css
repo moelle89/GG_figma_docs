@@ -1,0 +1,134 @@
+/* Property Table Demo Page Styles */
+.component-description {
+    max-width: 800px;
+    margin: 40px auto;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 40px 0 20px;
+    color: #1a1a1a;
+    border-bottom: 2px solid #e6e6e6;
+    padding-bottom: 10px;
+}
+
+.how-to-section {
+    max-width: 800px;
+    margin: 20px auto 40px;
+    padding: 0 20px;
+}
+
+.how-to-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 30px 0 15px;
+    color: #2a2a2a;
+}
+
+.how-to-section p {
+    margin: 15px 0;
+    line-height: 1.6;
+    color: #444;
+}
+
+.how-to-section pre {
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 15px 0;
+    overflow-x: auto;
+}
+
+.how-to-section code {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Container styling for the example tables */
+#button-table-container,
+#interface-table-container,
+#complex-table-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #e6e6e6;
+    }
+
+    .component-description,
+    .how-to-section p {
+        color: #e6e6e6;
+    }
+
+    .section-title {
+        color: #ffffff;
+        border-bottom-color: #333;
+    }
+
+    .how-to-section h3 {
+        color: #ffffff;
+    }
+
+    .how-to-section pre {
+        background-color: #2a2a2a;
+    }
+
+    .how-to-section code {
+        color: #e6e6e6;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .component-description,
+    .how-to-section {
+        padding: 0 15px;
+    }
+
+    .section-title {
+        font-size: 20px;
+        margin: 30px 0 15px;
+    }
+
+    .how-to-section h3 {
+        font-size: 16px;
+    }
+
+    .how-to-section pre {
+        padding: 15px;
+    }
+
+    .how-to-section code {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .component-description,
+    .how-to-section {
+        padding: 0 10px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        margin: 25px 0 12px;
+    }
+
+    .how-to-section pre {
+        padding: 12px;
+    }
+
+    .how-to-section code {
+        font-size: 12px;
+    }
+} 

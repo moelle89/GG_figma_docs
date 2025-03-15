@@ -1,0 +1,60 @@
+<div class="component-description">
+    <p>This is a test page to verify that property tables are being injected correctly.</p>
+    <p>If the property table system is working, a table should appear below this text.</p>
+</div>
+
+<div class="section-title">Test Component</div>
+<div class="test-content">
+    <p>This page is named "prop-table-test.html" but the system should try to match it with component names in props.json.</p>
+    <p>To test this, we've named this page in a way that doesn't directly match any component.</p>
+</div>
+
+<div class="section-title">Debug Information</div>
+<div class="debug-info">
+    <div id="debug-output"></div>
+</div>
+
+<script>
+    // This script will help debug the property table injection
+    document.addEventListener('DOMContentLoaded', function() {
+        const debugOutput = document.getElementById('debug-output');
+        
+        // Check if the necessary scripts are loaded
+        const scripts = {
+            'prop-table-generator.js': typeof window.propTableGenerator !== 'undefined',
+            'auto-prop-table.js': document.querySelector('script[src*="auto-prop-table.js"]') !== null
+        };
+        
+        // Display debug information
+        debugOutput.innerHTML = `
+            <h3>Script Loading Status:</h3>
+            <ul>
+                <li>prop-table-generator.js: ${scripts['prop-table-generator.js'] ? '✅ Loaded' : '❌ Not loaded'}</li>
+                <li>auto-prop-table.js: ${scripts['auto-prop-table.js'] ? '✅ Loaded' : '❌ Not loaded'}</li>
+            </ul>
+            
+            <h3>Page Information:</h3>
+            <ul>
+                <li>Page Name: ${window.location.pathname.split('/').pop()}</li>
+                <li>Injection Point: ${document.querySelector('.component-description') ? '✅ Found' : '❌ Not found'}</li>
+            </ul>
+            
+            <h3>Property Table Status:</h3>
+            <div id="table-status">Checking...</div>
+        `;
+        
+        // Check if a property table was injected after a short delay
+        setTimeout(function() {
+            const tableStatus = document.getElementById('table-status');
+            const propTable = document.getElementById('auto-generated-prop-table');
+            
+            if (propTable) {
+                tableStatus.innerHTML = '✅ Property table was successfully injected!';
+                tableStatus.style.color = 'green';
+            } else {
+                tableStatus.innerHTML = '❌ No property table was injected. Check the console for errors.';
+                tableStatus.style.color = 'red';
+            }
+        }, 2000);
+    });
+</script> 
