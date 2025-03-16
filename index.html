@@ -71,9 +71,14 @@
             display: block;
         }
 
-        .dark-section .has-mask-fill > span {
+        [data-theme="dark"] .has-mask-fill > span {
+            position: relative;
+            display: inline;
             -webkit-text-fill-color: rgba(255, 255, 255, 0.1);
-            background-image: linear-gradient(var(--bg-color), var(--bg-color));
+            -webkit-background-clip: text;
+            background-repeat: no-repeat;
+            background-image: linear-gradient(var(--text-color), var(--text-color));
+            background-size: 0% 100%;
         }
 
         .has-opacity span {
