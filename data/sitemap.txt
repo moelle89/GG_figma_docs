@@ -70,7 +70,7 @@ Modals
 Pagination
 
 	Pagination
-	https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2765-110147&t=OaCX3hbgJH9gzTAw-4
+	https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=5297-143206&t=FWVmfdqltACLK7tK-4
 	Pagination Dots
 	https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2765-110089&t=OaCX3hbgJH9gzTAw-4
 

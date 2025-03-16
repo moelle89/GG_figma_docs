@@ -1,4 +1,4 @@
-export interface Tab Button {
+export interface TabButton {
 	icon: boolean; 
 	badge: boolean; 
 	size: 'sm' | 'md'; 

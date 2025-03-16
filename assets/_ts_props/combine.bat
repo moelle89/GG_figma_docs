@@ -1,9 +1,6 @@
-@echo off
-setlocal enabledelayedexpansion
-
 :: Configuration
 set "inputDir=src"
-set "outputFile=dist\combined.ts"
+set "outputFile=dist\combined.json"
 
 :: Ensure output directory exists
 if not exist "dist" mkdir "dist"
@@ -19,3 +16,5 @@ for /r "%inputDir%" %%F in (*.ts) do (
 )
 
 echo Combined TypeScript files into %outputFile%
+
+can you add that it will remove every line that starts with "// File" and replaces "export interface " with ""

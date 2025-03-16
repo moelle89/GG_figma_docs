@@ -1,12 +1,12 @@
 export interface Input {
-	input text: string; 
-	hint text: string; 
-	input placeholder: string; 
-	icon swap before: ReactNode; 
-	label text: string; 
-	icon swap after: ReactNode; 
-	icon before: boolean; 
-	icon after: boolean; 
+	inputText: string; 
+	hintText: string; 
+	inputPlaceholder: string; 
+	iconSwapBefore: ReactNode; 
+	labelText: string; 
+	iconSwapAfter: ReactNode; 
+	iconBefore: boolean; 
+	iconAfter: boolean; 
 	hint: boolean; 
 	label: boolean; 
 	state: 'Default' | 'Hover' | 'Filled' | 'Focus' | 'Disabled' | 'Error'; 

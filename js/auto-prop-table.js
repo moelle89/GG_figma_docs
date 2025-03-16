@@ -186,23 +186,22 @@
     function findComponentData(propsData, pageName) {
         debugLog('Finding component data for page:', pageName);
         
-        // Convert page name to possible component names
+        // Get possible component names
         const possibleNames = getPossibleComponentNames(pageName);
         debugLog('Possible component names:', possibleNames);
         
-        // Check each possible name against the props data
-        for (const name of possibleNames) {
-            if (propsData[name]) {
-                debugLog('Match found:', name);
-                return {
-                    name: name,
-                    properties: propsData[name]
-                };
-            }
+        // Find matching component
+        const componentData = findMatchingComponent(propsData, possibleNames);
+        if (componentData) {
+            debugLog('Match found:', componentData.name);
+            return {
+                name: componentData.name,
+                properties: componentData
+            };
+        } else {
+            debugLog('No match found for any possible name');
+            return null;
         }
-        
-        debugLog('No match found for any possible name');
-        return null;
     }
 
     /**
@@ -211,72 +210,91 @@
      * @returns {Array<string>} Possible component names
      */
     function getPossibleComponentNames(pageName) {
+        debugLog(`Getting possible component names for page: ${pageName}`);
         const names = [];
-        
-        // Handle test pages by removing the -test suffix
+
+        // Remove -test suffix if present
         if (pageName.endsWith('-test')) {
-            const baseName = pageName.replace('-test', '');
-            debugLog('Test page detected, using base name:', baseName);
-            
-            // Add the base name with first letter capitalized
-            names.push(baseName.charAt(0).toUpperCase() + baseName.slice(1));
-            
-            // Also add the original possible names for the base name
-            const baseNames = getPossibleComponentNames(baseName);
-            names.push(...baseNames);
-            
-            return names;
+            pageName = pageName.slice(0, -5);
+            debugLog(`Removed -test suffix, base name is: ${pageName}`);
         }
-        
-        // Convert kebab-case to different formats
-        const parts = pageName.split('-');
-        
-        // Original format with spaces (e.g., "Button Close")
-        const spacedName = parts.map(part => 
-            part.charAt(0).toUpperCase() + part.slice(1)
+
+        // Normalize the page name by removing special characters and converting to lowercase
+        const normalizedName = pageName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        debugLog(`Normalized name: ${normalizedName}`);
+
+        // Generate variations of the name
+        const words = pageName.split(/[-\s]/);
+        debugLog(`Split words: ${words}`);
+
+        // Original kebab case name
+        names.push(pageName);
+
+        // Pascal case (e.g., "AvatarLabeled")
+        const pascalCase = words.map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join('');
+        names.push(pascalCase);
+
+        // Space separated (e.g., "Avatar Labeled")
+        const spaceCase = words.map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         ).join(' ');
-        names.push(spacedName);
-        
-        // Reversed format with spaces (e.g., "Close Button")
-        const reversedName = [...parts].reverse().map(part => 
-            part.charAt(0).toUpperCase() + part.slice(1)
-        ).join(' ');
-        names.push(reversedName);
-        
-        // Handle special cases
+        names.push(spaceCase);
+
+        // No spaces pascal case (e.g., "AvatarStack")
+        const noSpacesPascalCase = words.map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join('');
+        names.push(noSpacesPascalCase);
+
+        // Add special cases for specific components
         if (pageName === 'button') {
             names.push('Button');
-        } else if (pageName === 'button-with-icon-only') {
-            names.push('Button with Icon Only');
-        } else if (pageName === 'drop-down-menu') {
-            names.push('Dropdown Menu');
-        } else if (pageName === 'drop-down-box') {
-            names.push('Dropdown Box');
-        } else if (pageName === 'toggle-switch') {
-            names.push('Toggle Switch');
-        } else if (pageName === 'toggle-label') {
-            names.push('Toggle Label');
-        } else if (pageName === 'horizontal-tabs') {
-            names.push('Horizontal Tabs');
-        } else if (pageName === 'vertical-tabs') {
-            names.push('Vertical Tabs');
-        } else if (pageName === 'tab-button') {
-            names.push('Tab Button');
-        } else if (pageName === 'store-badges') {
-            names.push('Store Badges');
-        } else if (pageName === 'button-close') {
-            names.push('Button Close');
-        } else if (pageName === 'social-button') {
-            names.push('Social Button');
-        } else if (pageName === 'checkbox-label') {
-            names.push('Checkbox Label');
-        } else if (pageName === 'radio-button') {
-            names.push('Radio Button');
-        } else if (pageName === 'radio-button-group') {
-            names.push('Radio Button Group');
+            names.push('ButtonComponent');
         }
-        
+
+        debugLog(`Generated component name variations: ${names.join(', ')}`);
         return names;
+    }
+
+    /**
+     * Find matching component in props data
+     * @param {Object} propsData - The parsed props data
+     * @param {Array<string>} componentNames - Possible component names
+     * @returns {Object|null} The matching component data or null
+     */
+    function findMatchingComponent(propsData, componentNames) {
+        debugLog(`Looking for matching component in props data...`);
+        
+        // Normalize all component names in props data
+        const normalizedPropsData = {};
+        Object.keys(propsData).forEach(key => {
+            const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+            normalizedPropsData[normalizedKey] = propsData[key];
+        });
+
+        for (const name of componentNames) {
+            // Check exact match first
+            if (propsData[name]) {
+                debugLog(`Found exact match for component: ${name}`);
+                return propsData[name];
+            }
+
+            // Check normalized match
+            const normalizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const matchingKey = Object.keys(propsData).find(key => 
+                key.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedName
+            );
+
+            if (matchingKey) {
+                debugLog(`Found normalized match: ${matchingKey} for ${name}`);
+                return propsData[matchingKey];
+            }
+        }
+
+        debugLog(`No matching component found for variations: ${componentNames.join(', ')}`);
+        return null;
     }
 
     /**
@@ -291,13 +309,10 @@
         container.id = CONFIG.tableContainerId;
         container.className = 'auto-prop-table-container';
         
-        // Add a title
-        const title = `${componentData.name} ${CONFIG.tableTitle}`;
-        
         // Generate the table using the PropTableGenerator
         if (typeof createPropTable === 'function') {
-            debugLog('Creating property table with title:', title);
-            createPropTable(componentData.properties, title, container);
+            debugLog('Creating property table');
+            createPropTable(componentData.properties, `${CONFIG.tableTitle}`, container);
         } else {
             debugLog('PropTableGenerator not loaded');
             console.error('PropTableGenerator not loaded. Make sure to include prop-table-generator.js before this script.');

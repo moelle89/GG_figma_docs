@@ -1,4 +1,4 @@
-export interface Horizontal Tabs {
+export interface HorizontalTabs {
 	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09'; 
 	size: 'md' | 'sm'; 
 }

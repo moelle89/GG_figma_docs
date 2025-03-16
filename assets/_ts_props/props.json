@@ -1,126 +1,199 @@
- {
- Button {
-	button label: string; 
-	icon after swap: ReactNode; 
-	icon before swap: ReactNode; 
-	icon after: boolean; 
-	icon before: boolean; 
+{
+Avatar {
+	initials: string; 
+	size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'; 
+	type: 'Default' | 'With line' | 'Online' | 'Offline'; 
+	variant: 'Image' | 'Initial subtle' | 'Initial filled' | 'User subtle' | 'User filled'; 
+},
+
+AvatarLabeled {
+	text: string; 
+	subline: string; 
+	sublabel: boolean; 
+	size: 'sm' | 'md' | 'lg' | 'xl'; 
+},
+
+Avatar Stack {
+	3: boolean; 
+	size: 'xs' | 'sm' | 'md' | 'lg'; 
+	number: '5' | '4' | '3' | '2'; 
+},
+
+Badge {
+	size: 'lg' | 'md' | 'sm'; 
+	type: 'Simple' | 'icon + Label' | 'Just icon' | 'Avatar'; 
+	stroke: 'No' | 'Yes'; 
+	cancel: 'Yes' | 'No'; 
+	color: 'Gray' | 'Success' | 'Primary' | 'Warning' | 'Error' | 'Clear'; 
+},
+
+BaseBadge {
+	icon: ReactNode; 
+	text: string; 
+	size: 'lg' | 'md' | 'sm'; 
+	type: 'Simple' | 'icon + Label' | 'Just icon' | 'Avatar'; 
+	cancel: 'Yes' | 'No'; 
+},
+
+Button {
+	buttonLabel: string; 
+	iconAfterSwap: ReactNode; 
+	iconBeforeSwap: ReactNode; 
+	iconAfter: boolean; 
+	iconBefore: boolean; 
 	size: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'; 
 	type: 'Primary' | 'Secondary' | 'Tertiary' | 'Link 01' | 'Link 02'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
-	corner radius: 'Default' | 'Pill'; 
-}, 
-Social Button {
+	cornerRadius: 'Default' | 'Pill'; 
+},
+
+ButtonClose {
+	size: 'xs' | 'sm' | 'md' | 'lg'; 
+	color: 'Primary' | 'Gray'; 
+	state: 'Default' | 'Hover' | 'Focus'; 
+},
+
+ButtonWithIconOnly {
+	changeIcon: ReactNode; 
+	size: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'; 
+	type: 'Primary' | 'Secondary' | 'Tertiary'; 
+	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
+},
+
+ContentFrame {
+	swapSlot: ReactNode; 
+	contentRight: ReactNode; 
+	contentCenter: ReactNode; 
+	contentLeft: ReactNode; 
+	contentDimm: boolean; 
+	contentHeader: boolean; 
+	grid: '1 Cell' | '2 Cells' | '3 Cells' | '4 Cells' | '2 Rows' | '2 Rows | 2 Cells each' | '2 Rows | 2 Cells 3 Cells' | '2 Rows | 3 Cells each' | '3 Rows'; 
+},
+
+Divider {
+	text: string; 
+	variant: 'Default' | 'Text left' | 'Text right' | 'Text middle'; 
+},
+
+EmptyState {
+	secondaryButton: boolean; 
+	primaryButton: boolean; 
+	title: string; 
+	subtext: string; 
+},
+
+EmptyStateGraphic {
+	accent: boolean; 
+	type: 'calendar' | 'code' | 'Category' | 'Comment' | 'Date' | 'Files' | 'Group' | 'Task' | 'Analitics' | 'Upload' | 'Dev Settings' | 'Development 01' | 'Edit' | 'Error' | 'Login' | 'Media' | 'Performance' | 'Settings' | 'Syncronize' | 'Tags' | 'Tracking' | 'Upload Error' | 'Upload Media' | 'Upload Single File' | 'Validation' | 'Web Page' | 'Write Content' | 'add Files' | 'Signature'; 
+},
+
+HorizontalTabs {
+	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09'; 
+	size: 'md' | 'sm'; 
+},
+
+Input {
+	inputText: string; 
+	hintText: string; 
+	inputPlaceholder: string; 
+	iconSwapBefore: ReactNode; 
+	labelText: string; 
+	iconSwapAfter: ReactNode; 
+	iconBefore: boolean; 
+	iconAfter: boolean; 
+	hint: boolean; 
+	label: boolean; 
+	state: 'Default' | 'Hover' | 'Filled' | 'Focus' | 'Disabled' | 'Error'; 
+	variant: 'Default' | 'Phone number' | 'Amount' | 'Website' | 'Card'; 
+},
+
+ModalActions {
+	backButton: boolean; 
+	customButton: boolean; 
+	variant: 'Single Button' | '2 Buttons' | '3 Buttons | fill' | '3 Buttons | hug' | '3 Buttons | left' | '3 Buttons | right'; 
+	mobile: 'True' | 'False'; 
+},
+
+ModalHeader {
+	featuredIcon: boolean; 
+	instance: ReactNode; 
+	closeButton: boolean; 
+	supportingText: boolean; 
+	subtitle: string; 
+	spacer: boolean; 
+	titel: string; 
+	variant: 'Left align 01' | 'Left align 02' | 'Center align'; 
+	mobile: 'True' | 'False'; 
+},
+
+Pagination {
+	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12' | '13' | '14' | '15' | '16'; 
+},
+
+PaginationButtonItem {
+	icon: boolean; 
+	button: 'Previous' | 'Next' | 'Number' | 'Icon only'; 
+	state: 'Default' | 'Selected' | 'Focussed'; 
+	color: 'Primary' | 'Gray'; 
+},
+
+PaginationDots {
+	type: 'Dots' | 'Dots filled' | 'Lines' | 'Lines filled'; 
+	size: 'sm' | 'md'; 
+	pages: '2' | '3' | '4' | '5' | '6' | '7'; 
+},
+
+PaginationDotsItem {
+	current: 'True' | 'False'; 
+	type: 'Dot' | 'Line'; 
+	size: 'sm' | 'md'; 
+},
+
+PaginationItem {
+	changeIcon: ReactNode; 
+	state: 'Default' | 'Selected' | 'Focussed'; 
+	color: 'Gray' | 'Primary'; 
+	shape: 'Square' | 'Circle'; 
+	type: 'Number' | 'Icon'; 
+},
+
+SocialButton {
 	social: 'Google' | 'Facebook' | 'Apple'; 
 	style: 'Filled' | 'Outline color' | 'Outline gray'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus'; 
 	text: 'True' | 'False'; 
-}, 
-Toggle Switch {
-	size: 'sm' | 'md'; 
-	state: 'Default' | 'Hover' | 'Disabled'; 
-	pressed: 'True' | 'False'; 
-}, 
-Toggle Label {
-	subtext: string; 
-	title: string; 
-	description: boolean; 
-	state: 'Default' | 'Hover' | 'Disabled'; 
-	pressed: 'True' | 'False'; 
-	toggle position: 'Left' | 'Right'; 
-}, 
-Dropdown Menu {
-	show header when opened: boolean; 
-	title: string; 
-	state: 'Closed' | 'Opened'; 
-	items: '2' | '3' | '4' | '5' | '6' | '7'; 
-}, 
-Dropdown Box {
-	state: 'Opened' | 'Closed' | 'Closed-L1' | 'Closed-L2' | 'Closed-L3' | 'Closed-L4' | 'Closed-L5' | 'Opened-L1' | 'Opened-L2' | 'Opened-L3' | 'Opened-L4' | 'Opened-L5'; 
-}, 
-Horizontal Tabs {
-	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09'; 
-	size: 'md' | 'sm'; 
-}, 
-Vertical Tabs {
-	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07'; 
-	size: 'sm' | 'md'; 
-}, 
-Tab Button {
+},
+
+StoreBadges {
+	store: 'Google play' | 'App store' | 'Galaxy store' | 'Microsoft' | 'App gallery' | 'F-droid'; 
+	style: 'Brand' | 'White outline' | 'Black outline'; 
+},
+
+TabButton {
 	icon: boolean; 
 	badge: boolean; 
 	size: 'sm' | 'md'; 
 	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09'; 
 	state: 'Default' | 'Hover' | 'Active'; 
-}, 
-Store Badges {
-	store: 'Google play' | 'App store' | 'Galaxy store' | 'Microsoft' | 'App gallery' | 'F-droid'; 
-	style: 'Brand' | 'White outline' | 'Black outline'; 
-}, 
-Button Close {
-	size: 'xs' | 'sm' | 'md' | 'lg'; 
-	color: 'Primary' | 'Gray'; 
-	state: 'Default' | 'Hover' | 'Focus'; 
-}, 
-Button with Icon Only {
-	change icon: ReactNode; 
-	size: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'; 
-	type: 'Primary' | 'Secondary' | 'Tertiary'; 
-	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
-}, 
-Input {
-	input text: string; 
-	hint text: string; 
-	input placeholder: string; 
-	icon swap before: ReactNode; 
-	label text: string; 
-	icon swap after: ReactNode; 
-	icon before: boolean; 
-	icon after: boolean; 
-	hint: boolean; 
-	label: boolean; 
-	state: 'Default' | 'Hover' | 'Filled' | 'Focus' | 'Disabled' | 'Error'; 
-	variant: 'Default' | 'Phone number' | 'Amount' | 'Website' | 'Card'; 
-}, 
-Checkbox {
-	checked: 'False' | 'True'; 
-	size: 'sm' | 'md' | 'lg'; 
-	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
-	indeterminate: 'False' | 'True'; 
-}, 
-Checkbox Label {
-	label: boolean; 
-	description text: string; 
-	label text: string; 
+},
+
+ToggleLabel {
+	subtext: string; 
+	title: string; 
 	description: boolean; 
-	size: 'sm' | 'md' | 'lg'; 
-	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
-	checked: 'False' | 'True'; 
-	indeterminate: 'False' | 'True'; 
-}, 
-Radio Button {
+	state: 'Default' | 'Hover' | 'Disabled'; 
+	pressed: 'True' | 'False'; 
+	togglePosition: 'Left' | 'Right'; 
+},
+
+ToggleSwitch {
 	size: 'sm' | 'md'; 
-	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
-	checked: 'True' | 'False'; 
-}, 
-Radio Button Group {
-	info 1: string; 
-	icon: ReactNode; 
-	info 2: string; 
-	subtext 1: string; 
-	option 3: string; 
-	extra 2: string; 
-	option 1: string; 
-	info 3: string; 
-	extra 1: string; 
-	extra 3: string; 
-	option 2: string; 
-	subtext 3: string; 
-	subtext 2: string; 
-	text 2: string; 
-	text 3: string; 
-	text 1: string; 
-	variant: 'List with description' | 'List verticle' | 'List horizontal' | 'List with inline description' | 'List with radio on right' | 'Simple list with radio on right' | 'Stacked cards 01' | 'Stacked cards 02' | 'Cards'; 
+	state: 'Default' | 'Hover' | 'Disabled'; 
+	pressed: 'True' | 'False'; 
+},
+
+VerticalTabs {
+	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07'; 
 	size: 'sm' | 'md'; 
 }
-} 
+}

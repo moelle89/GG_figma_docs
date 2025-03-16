@@ -1,8 +1,8 @@
-export interface Toggle Label {
+export interface ToggleLabel {
 	subtext: string; 
 	title: string; 
 	description: boolean; 
 	state: 'Default' | 'Hover' | 'Disabled'; 
 	pressed: 'True' | 'False'; 
-	toggle position: 'Left' | 'Right'; 
+	togglePosition: 'Left' | 'Right'; 
 }
