@@ -1,4 +1,4 @@
-export interface AvatarLabelled {
+export interface AvatarLabeled {
 	text: string; 
 	subline: string; 
 	sublabel: boolean; 

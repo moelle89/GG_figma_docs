@@ -281,7 +281,7 @@ function createPropTable(properties, title, container) {
         <div class="legend-items">
             <div class="legend-item">
                 <span class="bool-true">True</span>
-                <span class="legend-text">Boolean switches that activate additional properties when enabled. Related properties usually include the switch name.</span>
+                <span class="legend-text">Boolean switches that either enable the named content directly or activate additional related properties when enabled. Related properties usually include the switch name.</span>
             </div>
             <div class="legend-item">
                 <span class="variant-option">string</span>

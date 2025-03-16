@@ -1,4 +1,17 @@
 {
+Accordion {
+	property1: 'Default'; 
+},
+
+AccordionItem {
+	instance: ReactNode; 
+	accordionSubtext: string; 
+	accordionTitle: string; 
+	property: 'Default' | 'Hover'; 
+	icon: 'True' | 'False'; 
+	expanded: 'True' | 'False'; 
+},
+
 Avatar {
 	initials: string; 
 	size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'; 
@@ -13,7 +26,7 @@ AvatarLabeled {
 	size: 'sm' | 'md' | 'lg' | 'xl'; 
 },
 
-Avatar Stack {
+AvatarStack {
 	3: boolean; 
 	size: 'xs' | 'sm' | 'md' | 'lg'; 
 	number: '5' | '4' | '3' | '2'; 
@@ -53,11 +66,67 @@ ButtonClose {
 	state: 'Default' | 'Hover' | 'Focus'; 
 },
 
+ButtonGroup {
+	size: 'sm' | 'md' | 'lg'; 
+	type: 'Text only' | 'Icon before' | 'Icon after' | 'Icon only' | 'Arrows'; 
+},
+
+ButtonGroupButton {
+	text: string; 
+	icon: ReactNode; 
+	size: 'sm' | 'md' | 'lg'; 
+	type: 'Icon only' | 'Text only' | 'Icon before' | 'Icon after'; 
+	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
+},
+
 ButtonWithIconOnly {
 	changeIcon: ReactNode; 
 	size: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'; 
 	type: 'Primary' | 'Secondary' | 'Tertiary'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
+},
+
+CardHeader {
+	actionButtons: boolean; 
+	caption: boolean; 
+	badge: boolean; 
+	divider: boolean; 
+	dropdownAction: boolean; 
+	property1: 'Default'; 
+},
+
+Checkbox {
+	checked: 'False' | 'True'; 
+	size: 'sm' | 'md' | 'lg'; 
+	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
+	indeterminate: 'False' | 'True'; 
+},
+
+CheckboxLabel {
+	label: boolean; 
+	descriptionText: string; 
+	labelText: string; 
+	description: boolean; 
+	size: 'sm' | 'md' | 'lg'; 
+	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
+	checked: 'False' | 'True'; 
+	indeterminate: 'False' | 'True'; 
+},
+
+ChecklistItem {
+	itemTitle: string; 
+	instance: ReactNode; 
+	variant: 'Only icon' | 'Circle line' | 'Circle filled' | 'Custom Icon'; 
+	color: 'Primary' | 'Green' | 'Black'; 
+	size: 'xs' | 'sm' | 'md' | 'lg'; 
+},
+
+ClassListItem {
+	divier: boolean; 
+	subtext: string; 
+	titel: string; 
+	icon: boolean; 
+	property1: 'Circle Icon' | 'Circle Icon hover' | 'Square Icon' | 'Square Icon hover'; 
 },
 
 ContentFrame {
@@ -68,6 +137,16 @@ ContentFrame {
 	contentDimm: boolean; 
 	contentHeader: boolean; 
 	grid: '1 Cell' | '2 Cells' | '3 Cells' | '4 Cells' | '2 Rows' | '2 Rows | 2 Cells each' | '2 Rows | 2 Cells 3 Cells' | '2 Rows | 3 Cells each' | '3 Rows'; 
+},
+
+ContentHeader {
+	swapSlot2: ReactNode; 
+	swapSlot: ReactNode; 
+	headerGrid: '1 Cell' | '2 Cells' | '2 Rows'; 
+},
+
+ContentSlot {
+	text: string; 
 },
 
 Divider {
@@ -87,9 +166,29 @@ EmptyStateGraphic {
 	type: 'calendar' | 'code' | 'Category' | 'Comment' | 'Date' | 'Files' | 'Group' | 'Task' | 'Analitics' | 'Upload' | 'Dev Settings' | 'Development 01' | 'Edit' | 'Error' | 'Login' | 'Media' | 'Performance' | 'Settings' | 'Syncronize' | 'Tags' | 'Tracking' | 'Upload Error' | 'Upload Media' | 'Upload Single File' | 'Validation' | 'Web Page' | 'Write Content' | 'add Files' | 'Signature'; 
 },
 
+GgLogo {
+	size: 'sm' | 'md' | 'lg'; 
+	color: 'Primary' | 'Black' | 'White'; 
+	logotypeIcon: 'LOGOTYPE' | 'ICON'; 
+},
+
+GgLogoIcon {
+	style: 'STROKE' | 'FILLED'; 
+},
+
+GgLogoMark {
+	style: 'STROKE' | 'FILLED'; 
+},
+
 HorizontalTabs {
 	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09'; 
 	size: 'md' | 'sm'; 
+},
+
+InfoCard {
+	subtext: string; 
+	title: string; 
+	variant: 'With progress 02' | 'With icon 01' | 'With icon 02' | 'With illustration' | 'Simple 02' | 'With progress 01' | 'Simple 01'; 
 },
 
 Input {
@@ -105,6 +204,12 @@ Input {
 	label: boolean; 
 	state: 'Default' | 'Hover' | 'Filled' | 'Focus' | 'Disabled' | 'Error'; 
 	variant: 'Default' | 'Phone number' | 'Amount' | 'Website' | 'Card'; 
+},
+
+LoginSections {
+	text: string; 
+	variant: 'Simple 01' | 'Simple 02' | 'Simple 03' | 'Simple 04' | 'Simple 05' | 'With image 01' | 'With image 02' | 'With image 03' | 'With image 04' | 'With image 05' | 'With mockup 01' | 'With mockup 02' | 'With mockup 03' | 'With mockup 04' | 'With mockup 05' | 'Gradient 01' | 'Gradient 02' | 'Gradient 03' | 'Gradient 04' | 'Gradient 05'; 
+	mobileLayout: 'True' | 'False'; 
 },
 
 ModalActions {
@@ -124,6 +229,13 @@ ModalHeader {
 	titel: string; 
 	variant: 'Left align 01' | 'Left align 02' | 'Center align'; 
 	mobile: 'True' | 'False'; 
+},
+
+PageHeader {
+	search: boolean; 
+	action: boolean; 
+	caption: boolean; 
+	property1: 'Default'; 
 },
 
 Pagination {
@@ -155,6 +267,49 @@ PaginationItem {
 	color: 'Gray' | 'Primary'; 
 	shape: 'Square' | 'Circle'; 
 	type: 'Number' | 'Icon'; 
+},
+
+RadioButton {
+	size: 'sm' | 'md'; 
+	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
+	checked: 'True' | 'False'; 
+},
+
+RadioButtonGroup {
+	info1: string; 
+	icon: ReactNode; 
+	info2: string; 
+	subtext1: string; 
+	option3: string; 
+	extra2: string; 
+	option1: string; 
+	info3: string; 
+	extra1: string; 
+	extra3: string; 
+	option2: string; 
+	subtext3: string; 
+	subtext2: string; 
+	text2: string; 
+	text3: string; 
+	text1: string; 
+	variant: 'List with description' | 'List verticle' | 'List horizontal' | 'List with inline description' | 'List with radio on right' | 'Simple list with radio on right' | 'Stacked cards 01' | 'Stacked cards 02' | 'Cards'; 
+	size: 'sm' | 'md'; 
+},
+
+SectionHeader {
+	divider: boolean; 
+	caption: boolean; 
+	actionButtons: boolean; 
+	actionDropdown: boolean; 
+	tabs: boolean; 
+	buttonGroup: boolean; 
+	search: boolean; 
+	property1: 'Default'; 
+},
+
+SignupSection {
+	variant: 'Simple 01' | 'Simple 02' | 'Simple 03' | 'Simple 04' | 'Simple 05' | 'With image 01' | 'With image 02' | 'With image 03' | 'With image 04' | 'With image 05' | 'With mockup 01' | 'With mockup 02' | 'With mockup 03' | 'With mockup 04' | 'With mockup 05' | 'Gradient 01' | 'Gradient 02' | 'Gradient 03' | 'Gradient 04' | 'Gradient 05'; 
+	mobileLayout: 'True' | 'False'; 
 },
 
 SocialButton {

@@ -292,7 +292,7 @@
 }
 
 .bool-false {
-    background: var(--bool-false-bg, #d3222eba);
+    background: var(--bool-false-bg, #ec182787);
     color: var(--bool-false-text, #ffffff);
 }
 
