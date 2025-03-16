@@ -57,9 +57,9 @@
             --purple-accent-light: #dc9450;
             --primary-color: #C27327;
             --primary-hover-color: #CA8233;
-            --bg-color: #0A0D14;
+            --bg-color: hsl(222, 30%, 6.5%);
             --sidebar-bg: var(--category-bg);
-            --category-bg: #0A0D14;
+            --category-bg: hsl(222, 30%, 6.5%);
             --fab-bg: var(--card-bg);
             --sortfab-bg: var(--button-bg);
             --card-bg: #10141D;
@@ -71,12 +71,12 @@
             --button-bg-hover: #0a0b0d;
             --button-comp-accent: #9e4fff;
             --button-comp-accent-hover: #a35ef7;
-            --active-item-hover: hsla(216, 39%, 11%, 0.208);
+            --active-item-hover: hsla(208, 20%, 20%, 0.3);
             --category-border: #15171900;
             --spinner-border: rgba(255, 255, 255, 0.1);
             --shadow-color: rgba(0, 0, 0, 0.2);
             --modal-shadow: rgba(0, 0, 0, 0.3);
-            --active-item-bg: hsla(208, 24%, 16%, 0.3);
+            --active-item-bg: hsla(220, 25%, 16%, 0.25);
             --active-item-bg-hover: var(--active-item-bg);
             --scrollbar-track: var(--bg-color);
             --scrollbar-thumb: #5a789615;
@@ -376,6 +376,14 @@
             font-size: 18px;
         }
 
+        /* FAB Button */
+        .fab-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+        }
+
         .fab {
             width: 56px;
             height: 56px;
@@ -388,9 +396,8 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.3s ease, background-color 0.3s ease;
-            position: relative;
-            z-index: 2;
-            pointer-events: auto;
+            color: white;
+            font-size: 24px;
         }
 
         .fab:hover {
@@ -398,19 +405,17 @@
             background: var(--primary-hover-color);
         }
 
-        .fab::after {
-            content: '';
-            width: 24px;
-            height: 24px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'/%3E%3C/svg%3E");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            transition: transform 0.3s ease;
-        }
+        @media screen and (max-width: 768px) {
+            .fab-container {
+                bottom: 80px;
+                right: 20px;
+            }
 
-        .fab:hover::after {
-            transform: scale(1.1);
+            .fab {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
         }
 
         .sortFab {
@@ -2339,24 +2344,8 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
 .fab-container {
     position: fixed;
     bottom: 24px;
-    right: 14px;
-    width: 70px;
-    height: 150px;
+    right: 24px;
     z-index: 999;
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: flex-end;
-    pointer-events: none;
-}
-
-.fab-container::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: auto;
 }
 
 .fab {
@@ -2368,12 +2357,11 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     cursor: pointer;
     box-shadow: var(--card-shadow);
     display: flex;
+    font-size: 40px !important;
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease, background-color 0.3s ease;
-    position: relative;
-    z-index: 2;
-    pointer-events: auto;
+    color: white;
 }
 
 .fab:hover {
@@ -2381,19 +2369,17 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     background: var(--primary-hover-color);
 }
 
-.fab::after {
-    content: '';
-    width: 24px;
-    height: 24px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    transition: transform 0.3s ease;
-}
+@media screen and (max-width: 768px) {
+    .fab-container {
+        bottom: 80px;
+        right: 20px;
+    }
 
-.fab:hover::after {
-    transform: scale(1.1);
+    .fab {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
 }
 
 .mini-fab {
