@@ -39,11 +39,12 @@
 
 @media (max-width: 480px) {
     .auto-prop-table-container {
-        padding: 0 10px;
+        padding: 0 0px;
+        margin-top: 2rem;
     }
 
     .auto-prop-table-container .prop-table-title {
-        font-size: 16px;
+        font-size: 14px;
         margin-bottom: 12px;
     }
 }

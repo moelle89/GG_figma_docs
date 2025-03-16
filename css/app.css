@@ -42,6 +42,8 @@
             --card-header-element: hsl(0, 0%, 98%);
             --table-header-element: var(--card-header-element);
             --variant-bg: hsl(213, 14%, 50%);
+            --component-bg: var(--button-bg);
+            --table-bg: var(--card-bg);
         }
 
         [data-theme="dark"] {
@@ -65,7 +67,7 @@
             --fab-fg: #ffffff;
             --category-header-bg: var(--button-bg);
             --active-category-bg: var(--category-header-bg);
-            --button-bg: hsl(222, 33%, 4%);
+            --button-bg: hsl(222, 33%, 2%);
             --button-bg-hover: #0a0b0d;
             --button-comp-accent: #9e4fff;
             --button-comp-accent-hover: #a35ef7;
@@ -85,7 +87,9 @@
             --form-input-bg: var(--button-bg);
             --card-header-element: var(--card-bg);
             --table-header-element: var(--category-header-bg);
-            --variant-bg: var(--button-bg);
+            --variant-bg: var(--component-bg);
+            --component-bg: hsl(222, 33%, 4%);
+            --table-bg: hsl(222, 29%, 10%);
         }
 
        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -96,6 +100,13 @@
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif, Roboto, Oxygen,
                 Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+            scrollbar-highlight-color: var(--scrollbar-thumb-hover);
         }
 
         /* Optional: Specify different weights and styles */
@@ -121,7 +132,8 @@
         }
 
         body::-webkit-scrollbar {
-        display: none;
+            width: 6px;
+            height: 6px;
         }
 
         .main-container {
@@ -146,7 +158,7 @@
             border-right: 2px solid var(--card-bg);
         }
         .sidebar::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         .sidebar::-webkit-scrollbar-track {
@@ -154,12 +166,14 @@
         }
 
         .sidebar::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
+            background-color: var(--scrollbar-thumb);
             border-radius: 6px;
+            border: none;
+            transition: background-color 0.2s ease;
         }
 
         .sidebar::-webkit-scrollbar-thumb:hover {
-            background: var(--scrollbar-thumb-hover);
+            background-color: var(--scrollbar-thumb-hover);
         }
 
         .category {
@@ -1040,7 +1054,11 @@
         .two-tone-button {
             float: right;
         }
-
+        @media screen and (max-width: 768px) {
+            .two-tone-button {
+                float: inline-start;
+            }
+        }
         /* CSS for Component Manager */
         .component-selector {
             margin-bottom: 20px;
@@ -2162,21 +2180,22 @@
 /* How-to Content Grid */
 .how-to-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
     margin: 20px 0 40px;
+    max-width: 900px;
 }
 
 .how-to-card {
-    background: var(--card-bg);
-    border-radius: 14px;
-    padding: 28px;
+    background: var(--component-bg);
+    border-radius: 8px;
+    padding: 20px;
     box-shadow: var(--card-shadow);
 }
 
 .how-to-card h3 {
-    color: var(--purple-accent);
-    font-size: 18px;
+    color: var(--text-color);
+    font-size: 14px;
     font-weight: 600;
     margin: 0 0 16px;
     display: flex;
@@ -2186,20 +2205,29 @@
 
 .how-to-card ul {
     margin: 0;
+    padding: 0;
+    list-style: none;
+    columns: 1;
 }
 
 .how-to-card li {
-    margin: 12px 0;
-    padding-left: 28px;
+    margin: 8px 0;
+    padding-left: 24px;
     position: relative;
+    color: var(--description-color);
+    font-size: 13px;
+    line-height: 1.5;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
 }
 
 .how-to-card li::before {
     content: attr(data-icon);
     position: absolute;
     left: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 2px;
+    color: var(--text-color);
 }
 
 @media screen and (max-width: 768px) {
@@ -2297,4 +2325,10 @@
 /* Preserve original colors in light mode */
 img[src*="assets/prop_table/"] {
     transition: filter 0.3s ease;
+}
+
+/* Re-enable text selection for specific content elements */
+p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
+    -webkit-user-select: text;
+    user-select: text;
 }

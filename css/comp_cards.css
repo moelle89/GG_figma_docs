@@ -11,7 +11,7 @@
     border: 1px solid var(--border-color);
     border-radius: 10px;
     overflow: hidden;
-    background-color: var(--button-bg);
+    background-color: var(--component-bg);
     box-shadow: var(--card-shadow);
     transition: transform 0.2s ease, translate 0.2s ease-out, box-shadow 0.2s ease-out;
 }

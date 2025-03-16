@@ -216,7 +216,7 @@
     border-radius: 10px;
     overflow: hidden;
     box-shadow: var(--card-shadow);
-    background: var(--card-bg);
+    background: var(--table-bg);
     border: 1px solid var(--border-color);
 }
 
@@ -297,6 +297,16 @@
 
 /* Responsive styles */
 @media (max-width: 768px) {
+    .auto-prop-table th {
+        background: var(--table-header-element);
+        color: var(--text-color);
+        text-align: left;
+        font-size: small;
+        padding: 1rem;
+        font-weight: 600;
+        border-bottom: 1px solid var(--border-color);
+    }
+
     .auto-prop-table td:first-child {
         width: auto;
     }
@@ -307,6 +317,7 @@
 
     .variant-option {
         margin: 2px 4px;
+        font-size: 0.8rem;
     }
 }
 
@@ -322,7 +333,7 @@
     margin: 2rem 0 2rem;
     padding: 1.25rem;
     border-radius: 10px;
-    background: var(--bg-color);
+    background: var(--card-bg);
     border: 2px solid var(--border-color);
     font-size: 0.9rem;
 }
@@ -361,6 +372,21 @@
 
 /* Responsive styles */
 @media (max-width: 768px) {
+    .auto-prop-table-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        color: var(--text-color);
+    }
+
+    .auto-prop-table td {
+        padding: .9rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-color);
+        font-size: smaller;
+        vertical-align: top;
+    }
+
     .prop-table-legend {
         margin: 1rem 0 1.5rem;
         padding: 0.75rem;
@@ -372,11 +398,23 @@
 
     .legend-item {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 1rem;
+        align-items: unset;
     }
 
-    .legend-item .bool-true,
-    .legend-item .variant-option {
+    .legend-item .bool-true, .legend-item .variant-option {
         min-width: auto;
+        min-height: 35px;
+        align-content: center;
+    }
+    .bool-true, .bool-false {
+        display: inline-block;
+        padding: 4px 12px;
+        font-size: smaller;
+        min-width: unset;
+        text-align: center;
+        border-radius: 60px;
+        font-weight: 500;
+        margin: 2px 8px 2px 0;
     }
 }
