@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Component Library</title>
+    <title>❖ Component Library</title>
     <link rel="icon" type="image/png" href="assets/fav/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="assets/fav/favicon.svg" />
     <link rel="shortcut icon" href="assets/fav/favicon.ico" />
@@ -633,7 +633,7 @@
                     loadingIndicator.classList.remove('active');
                     const contentHeader = `
                     <div class="content-header">
-                        <h1 class="content-title">Component Library</h1>
+                        <h1 class="content-title">❖ Component Library</h1>
                         <p class="content-subtitle">Select a component category to explore</p>
                     </div>
                 `;
@@ -725,7 +725,7 @@
                 // Find the original component name from menuData
                 let componentName = pageName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 menuData.forEach(category => {
-                    const item = category.items.find(item => 
+                    const item = category.items.find(item =>
                         item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-') === pageName
                     );
                     if (item) {
@@ -1528,12 +1528,33 @@
             modal.offsetHeight;
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
+
+            // Get the animation container and initialize a new Lottie animation
+            const container = modal.querySelector('.animation-container');
+            if (container) {
+                const animation = lottie.loadAnimation({
+                    container: container,
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: container.getAttribute('data-lottie-path')
+                });
+                // Store the animation instance on the container
+                container.animation = animation;
+            }
         }
 
         function closeHowToModal() {
             const modal = document.getElementById('howToModal');
             modal.classList.remove('show');
             modal.classList.add('hide');
+
+            // Get the animation container and destroy the animation
+            const container = modal.querySelector('.animation-container');
+            if (container && container.animation) {
+                container.animation.destroy();
+                container.animation = null;
+            }
 
             // Wait for animation to complete before hiding the modal
             setTimeout(() => {
@@ -1641,23 +1662,19 @@
     <div id="howToModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>How to Use the Component Library</h2>
+                <h2>How to Use the ❖ Component Library</h2>
                 <button class="close-modal" onclick="closeHowToModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="video-container">
-                    <video autoplay loop muted playsinline>
-                        <source src="assets/tutorial.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                <div class="animation-container" data-lottie-path="assets/lottie/modal_tut.json" data-lottie-loop="true" data-lottie-autoplay="true">
                 </div>
                 <div class="tutorial-info">
-                    <p>Welcome to the Component Library! Here's a quick guide to get you started:</p>
+                    <p>Here's how to access components in Figma:</p>
                     <ul>
-                        <li>Browse components using the sidebar navigation</li>
-                        <li>Click on any component to view its details and properties</li>
-                        <li>Use the search bar to find specific components</li>
-                        <li>Toggle between light and dark themes using the moon icon</li>
+                        <li>Click the navigation icon in Figma and switch to the Assets panel</li>
+                        <li>Search for your desired component in the search bar</li>
+                        <li>Quick tip: Use <kbd>Shift</kbd> + <kbd>I</kbd> to open the component search directly</li>
+                        <li>Or simply click the "Open in Figma" button on any component page to view it directly</li>
                     </ul>
                 </div>
             </div>

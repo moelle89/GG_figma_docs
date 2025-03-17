@@ -89,7 +89,7 @@
             --table-header-element: var(--category-header-bg);
             --variant-bg: var(--component-bg);
             --component-bg: hsl(222, 33%, 4%);
-            --table-bg: hsl(222, 29%, 10%);
+            --table-bg: #121721;
         }
 
        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -634,6 +634,7 @@
         @media screen and (max-width: 768px) {
             .animation-container {
                 max-width: 470px;
+                height: 200px!important;
             }
         }
 
@@ -2499,6 +2500,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     background-color: var(--card-bg);
     border-radius: 12px;
     width: 90%;
+    height: auto;
     max-width: 800px;
     position: relative;
     transform: translateY(20px);
@@ -2580,6 +2582,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     margin-bottom: 12px;
     padding-left: 24px;
     position: relative;
+    line-height: 1.5;
 }
 
 #howToModal .tutorial-info li:before {
@@ -2594,4 +2597,82 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
         width: 95%;
         margin: 20px;
     }
+    #howToModal .modal-header h2 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text-color);
+    }
+}
+
+#howToModal .lottie-container {
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--bg-color-secondary);
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+#howToModal .lottie-container svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    #howToModal .lottie-container {
+        padding-bottom: 75%; /* 4:3 aspect ratio for mobile */
+    }
+}
+
+#howToModal .animation-container {
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    max-height: 350px;
+    overflow: hidden;
+    margin: 0 auto 20px;
+}
+
+#howToModal .modal-content {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    opacity: 1;
+    height: auto;
+    padding: 0;
+}
+
+#howToModal .modal-body {
+    padding: 20px;
+}
+
+#howToModal .tutorial-info {
+    color: var(--text-color);
+    margin: 20px;
+}
+
+@media screen and (max-width: 768px) {
+    #howToModal .animation-container {
+        max-width: 470px;
+    }
+}
+
+#howToModal .tutorial-info kbd {
+    background-color: var(--bg-color-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.9em;
+    font-family: monospace;
+    color: var(--text-color);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
