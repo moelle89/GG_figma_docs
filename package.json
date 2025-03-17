@@ -1,0 +1,8 @@
+{
+  "name": "gg-figma-docs",
+  "version": "1.0.0",
+  "description": "GG Figma Documentation",
+  "scripts": {
+    "generate-pages": "node scripts/generate-missing-pages.js"
+  }
+} 

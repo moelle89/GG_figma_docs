@@ -462,5 +462,13 @@
         "figmaButtonText": "Checklist Item",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": ""
+    },
+    "table-cell": {
+        "name": "Table cell",
+        "description": "",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=5424-44421&t=EGh4lSp0Tr7bu25W-4",
+        "figmaButtonText": "Table cell",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
     }
 }

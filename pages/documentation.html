@@ -1,0 +1,263 @@
+<!-- Documentation Page -->
+<div class="documentation-content">
+    <div class="component-description">
+        <p>A modern, interactive component library that showcases UI components with live examples, documentation, and property tables. Built with vanilla JavaScript and CSS for maximum compatibility and performance.</p>
+    </div>
+
+    <div class="doc-section">
+        <h2 class="section-title">Features</h2>
+
+        <h3>1. Interactive Component Navigation</h3>
+        <ul>
+            <li><strong>Sidebar Navigation:</strong> Easy access to all components, organized by categories</li>
+            <li><strong>Search Functionality:</strong> Quick component search with real-time filtering</li>
+            <li><strong>Category Sorting:</strong> Toggle between alphabetical and default category sorting</li>
+            <li><strong>Mobile Responsive:</strong> Collapsible sidebar for mobile devices</li>
+        </ul>
+
+        <h3>2. Component Display</h3>
+        <ul>
+            <li><strong>Live Examples:</strong> Interactive component demonstrations</li>
+            <li><strong>Component Properties:</strong> Automatically generated property tables from TypeScript interfaces</li>
+            <li><strong>Visual Documentation:</strong> Images and diagrams showing component variations</li>
+            <li><strong>Figma Integration:</strong> Direct links to component designs in Figma</li>
+        </ul>
+
+        <h3>3. Property Table System</h3>
+        <p>The library includes an automatic property table generation system that:</p>
+        <ul>
+            <li>Parses TypeScript interfaces from <code>props.json</code></li>
+            <li>Automatically generates formatted property tables</li>
+            <li>Displays property names, types, and possible values</li>
+            <li>Updates dynamically when navigating between components</li>
+        </ul>
+
+        <h3>4. Animation System</h3>
+        <ul>
+            <li><strong>Scroll Animations:</strong> Elements animate as they enter the viewport</li>
+            <li><strong>Transition Effects:</strong> Smooth transitions between component pages</li>
+            <li><strong>Loading States:</strong> Visual feedback during content loading</li>
+        </ul>
+
+        <h3>5. Theme Support</h3>
+        <ul>
+            <li><strong>Light/Dark Mode:</strong> System-wide theme switching</li>
+            <li><strong>Persistent Settings:</strong> Theme preference is saved between sessions</li>
+            <li><strong>System Preference:</strong> Automatically matches system theme preference</li>
+        </ul>
+    </div>
+
+    <div class="doc-section">
+        <h2 class="section-title">File Structure</h2>
+        <pre class="code-block"><code>├── assets/
+│   ├── _ts_props/
+│   │   └── props.json         # Component property definitions
+│   ├── cards/                 # Component category images
+│   └── icons/                 # UI icons
+├── css/
+│   ├── app.css               # Main application styles
+│   ├── comp_cards.css        # Component card styles
+│   ├── prop-table.css        # Property table styles
+│   └── auto-prop-table.css   # Auto-generated table styles
+├── js/
+│   ├── app.js               # Main application logic
+│   ├── prop-table-generator.js    # Property table generation
+│   ├── auto-prop-table.js        # Automatic table injection
+│   └── include-prop-tables.js    # Property table system loader
+├── scripts/
+│   └── generate-missing-pages.js  # Component page generator script
+├── pages/                    # Component page templates
+├── package.json             # Project configuration and scripts
+└── index.html               # Main application entry</code></pre>
+    </div>
+
+    <div class="doc-section">
+        <h2 class="section-title">Usage</h2>
+
+        <h3>Adding New Components</h3>
+        <ol>
+            <li>
+                <p>Create a new component page in the <code>pages/</code> directory:</p>
+                <pre class="code-block"><code>&lt;div class="component-description"&gt;
+    &lt;p&gt;Component description here&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class="grid-2-col"&gt;
+    &lt;h2 class="section-title"&gt;Components&lt;/h2&gt;
+    &lt;a href="figma-link" class="two-tone-button" target="_blank"&gt;
+        &lt;!-- Button content --&gt;
+    &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;!-- Component examples and documentation --&gt;</code></pre>
+            </li>
+            <li>
+                <p>Add component properties to <code>props.json</code>:</p>
+                <pre class="code-block"><code>{
+    "ComponentName": {
+        "property": "type",
+        "variants": "'option1' | 'option2'",
+        // ... more properties
+    }
+}</code></pre>
+            </li>
+            <li>
+                <p>Add the component to the navigation menu in <code>index.html</code>.</p>
+            </li>
+        </ol>
+
+        <h3>Property Table System</h3>
+        <p>The property table system automatically:</p>
+        <ul>
+            <li>Detects the current component page</li>
+            <li>Loads the corresponding properties from <code>props.json</code></li>
+            <li>Generates and injects a formatted table</li>
+            <li>Updates when navigating between components</li>
+        </ul>
+
+        <h3>Theme Customization</h3>
+        <p>Modify theme variables in <code>css/app.css</code>:</p>
+        <pre class="code-block"><code>[data-theme="light"] {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    /* ... more variables */
+}
+
+[data-theme="dark"] {
+    --bg-color: #171717;
+    --text-color: #ffffff;
+    /* ... more variables */
+}</code></pre>
+    </div>
+
+    <div class="doc-section">
+        <h2 class="section-title">Development</h2>
+
+        <h3>Prerequisites</h3>
+        <ul>
+            <li>Modern web browser</li>
+            <li>Local web server (for development)</li>
+        </ul>
+
+        <h3>Setup</h3>
+        <ol>
+            <li>Clone the repository</li>
+            <li>Serve the directory using a local web server</li>
+            <li>Open <code>index.html</code> in your browser</li>
+        </ol>
+
+        <h3>Generating Component Pages</h3>
+        <p>The project includes an automated script for generating missing component pages:</p>
+        <ol>
+            <li>Install Node.js if not already installed</li>
+            <li>Run the page generator:</li>
+        </ol>
+        <pre class="code-block"><code>npm run generate-pages</code></pre>
+
+        <p>The script will:</p>
+        <ul>
+            <li>Check for components listed in both <code>components.json</code> and <code>menuData</code></li>
+            <li>Create missing component pages in the <code>/pages</code> directory</li>
+            <li>Use a standardized template with:
+                <ul>
+                    <li>Grid layout for component diagrams</li>
+                    <li>Component description section</li>
+                    <li>Figma button with diamond icon</li>
+                    <li>Property table container</li>
+                </ul>
+            </li>
+            <li>Report the number of pages created</li>
+            <li>Skip existing pages to prevent overwrites</li>
+        </ul>
+
+        <h3>Adding Features</h3>
+        <ol>
+            <li>Component pages are loaded dynamically from the <code>pages/</code> directory</li>
+            <li>Styles are organized by feature in the <code>css/</code> directory</li>
+            <li>JavaScript functionality is modular in the <code>js/</code> directory</li>
+        </ol>
+    </div>
+
+    <div class="doc-section">
+        <h2 class="section-title">Browser Support</h2>
+        <ul>
+            <li>Chrome (latest)</li>
+            <li>Firefox (latest)</li>
+            <li>Safari (latest)</li>
+            <li>Edge (latest)</li>
+        </ul>
+    </div>
+
+    <div class="doc-section">
+        <h2 class="section-title">Contributing</h2>
+        <ol>
+            <li>Fork the repository</li>
+            <li>Create a feature branch</li>
+            <li>Submit a pull request</li>
+        </ol>
+    </div>
+
+    <div class="doc-section">
+        <h2 class="section-title">License</h2>
+        <p>MIT License - feel free to use this component library in your projects.</p>
+    </div>
+</div>
+
+<style>
+    .documentation-content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .doc-section {
+        margin-bottom: 40px;
+    }
+
+    .doc-section h2 {
+        margin-bottom: 20px;
+    }
+
+    .doc-section h3 {
+        margin: 25px 0 15px;
+        font-size: 1.2em;
+    }
+
+    .code-block {
+        background: var(--code-bg);
+        border-radius: 8px;
+        padding: 20px;
+        margin: 15px 0;
+        overflow-x: auto;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .code-block code {
+        white-space: pre;
+    }
+
+    .documentation-content ul,
+    .documentation-content ol {
+        padding-left: 25px;
+        margin: 15px 0;
+    }
+
+    .documentation-content li {
+        margin: 8px 0;
+        line-height: 1.5;
+    }
+
+    .documentation-content code {
+        background: var(--code-bg);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9em;
+    }
+
+    .documentation-content strong {
+        color: var(--accent-color);
+    }
+</style> 

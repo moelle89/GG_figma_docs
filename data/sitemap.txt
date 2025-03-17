@@ -122,6 +122,10 @@ Accordion
 	Accordion Item
 	https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2766-105949&t=OaCX3hbgJH9gzTAw-4
 
+Tables
+	Table Cell
+	https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=5424-44421&t=EGh4lSp0Tr7bu25W-4
+
 Headers
 
 	Card Header

@@ -51,7 +51,10 @@ The library includes an automatic property table generation system that:
 │   ├── prop-table-generator.js    # Property table generation
 │   ├── auto-prop-table.js        # Automatic table injection
 │   └── include-prop-tables.js    # Property table system loader
+├── scripts/
+│   └── generate-missing-pages.js  # Component page generator script
 ├── pages/                    # Component page templates
+├── package.json             # Project configuration and scripts
 └── index.html               # Main application entry
 ```
 
@@ -124,6 +127,26 @@ Modify theme variables in `css/app.css`:
 2. Serve the directory using a local web server
 3. Open `index.html` in your browser
 
+### Generating Component Pages
+The project includes an automated script for generating missing component pages:
+
+1. Install Node.js if not already installed
+2. Run the page generator:
+```bash
+npm run generate-pages
+```
+
+The script will:
+- Check for components listed in both `components.json` and `menuData`
+- Create missing component pages in the `/pages` directory
+- Use a standardized template with:
+  - Grid layout for component diagrams
+  - Component description section
+  - Figma button with diamond icon
+  - Property table container
+- Report the number of pages created
+- Skip existing pages to prevent overwrites
+
 ### Adding Features
 1. Component pages are loaded dynamically from the `pages/` directory
 2. Styles are organized by feature in the `css/` directory
@@ -141,4 +164,4 @@ Modify theme variables in `css/app.css`:
 3. Submit a pull request
 
 ## License
-MIT License - feel free to use this component library in your projects. 
+MIT License - feel free to use this component library in your projects.
