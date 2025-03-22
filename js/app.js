@@ -321,3 +321,407 @@ function addCategoryItemListeners() {
       });
    });
 }
+
+function loadSocialIcons() {
+   const iconContainer = document.getElementById('other-icons');
+   const suffixes = [
+      '_white',
+      '_white_circle',
+      '_gray',
+      '_gray_circle',
+      '_color',
+      '_color_circle'
+   ];
+
+
+
+   // Add section title
+   const sectionTitle = document.createElement('h2');
+   sectionTitle.className = 'section-title';
+   sectionTitle.id = 'social-icons';
+   sectionTitle.innerHTML = '❖ Social-Icons:';
+   iconContainer.appendChild(sectionTitle);
+
+   // Create main grid container
+   const gridContainer = document.createElement('div');
+   gridContainer.className = 'social-icons-grid';
+   // Create sections for each suffix
+   suffixes.forEach(suffix => {
+      const sectionContainer = document.createElement('div');
+      sectionContainer.className = 'icon-section';
+
+      // Add section title
+      const sectionTitle = document.createElement('h3');
+      sectionTitle.className = 'section-title';
+      sectionTitle.textContent = suffix.replace(/_/g, ' ').toUpperCase();
+      sectionContainer.appendChild(sectionTitle);
+
+      // Create grid for icons
+      const iconGrid = document.createElement('div');
+      iconGrid.className = 'icon-grid';
+
+      // Add icons to grid
+      const icons = [
+         'facebook',
+         'twitter',
+         'instagram',
+         'linkedin',
+         'youtube',
+         'pinterest',
+         'tiktok',
+         'snapchat'
+      ];
+
+      icons.forEach(icon => {
+         const iconWrapper = document.createElement('div');
+         iconWrapper.className = 'icon-wrapper';
+
+         const img = document.createElement('img');
+         img.src = `assets/icons/social_icons/${icon}${suffix}.png`;
+         img.alt = `${icon}${suffix}`;
+         img.className = 'social-icon';
+
+         const label = document.createElement('span');
+         label.className = 'icon-label';
+         label.textContent = icon;
+
+         iconWrapper.appendChild(img);
+         iconGrid.appendChild(iconWrapper);
+      });
+
+      sectionContainer.appendChild(iconGrid);
+      gridContainer.appendChild(sectionContainer);
+   });
+
+   // Add the grid to the container
+   iconContainer.appendChild(gridContainer);
+}
+
+function loadPaymentIcons() {
+   const iconContainer = document.getElementById('other-icons');
+
+   // Add section title
+   const sectionTitle = document.createElement('h2');
+   sectionTitle.className = 'section-title';
+   sectionTitle.id = 'payment-icons';
+   sectionTitle.innerHTML = '❖ Payments:';
+   iconContainer.appendChild(sectionTitle);
+
+   const gridContainer = document.createElement('div');
+   gridContainer.className = 'payment-icons-grid';
+
+   const paymentIcons = [
+      'affirm', 'alipay', 'amazon', 'amex', 'applepay', 'bancontact', 'bitcoin', 'bitcoincash', 'bitpay', 'citadele', 'dinersclub', 'discover', 'elo', 'etherium', 'giropay', 'googlepay', 'ideal', 'interac', 'jcb', 'klarna', 'lightcoin', 'maestro', 'mastercard', 'payoneer', 'paypal', 'paysafe', 'qiwi', 'sepa', 'shop pay', 'skrill', 'sofort', 'stripe', 'unionpay', 'verifone', 'visa', 'webmoney', 'wechat', 'yandex'
+
+   ];
+
+   paymentIcons.forEach(icon => {
+      const iconWrapper = document.createElement('div');
+      iconWrapper.className = 'icon-wrapper';
+
+      const img = document.createElement('img');
+      img.src = `assets/icons/payments/${icon}.png`;
+      img.alt = icon;
+      img.className = 'payment-icon';
+
+      const label = document.createElement('span');
+      label.className = 'icon-label';
+      label.textContent = icon.replace(/_/g, ' ');
+
+      iconWrapper.appendChild(img);
+      iconWrapper.appendChild(label);
+      gridContainer.appendChild(iconWrapper);
+   });
+
+   iconContainer.appendChild(gridContainer);
+}
+
+function loadAppIcons() {
+   const iconContainer = document.getElementById('other-icons');
+
+   // Add section title for Apps
+   const sectionTitle = document.createElement('h2');
+   sectionTitle.className = 'section-title';
+   sectionTitle.id = 'app-icons';
+   sectionTitle.innerHTML = '❖ App Icons:';
+   iconContainer.appendChild(sectionTitle);
+
+   const categories = {
+      browsers: ['chrome', 'edge', 'firefox', 'ie', 'opera', 'safari', 'tor', 'uc', 'yandex'],
+      coding: ['adobe_dreamweaver', 'angular', 'atom', 'bitbucket', 'csharp', 'c++', 'codepen', 'css_3', 'docker', 'drupal', 'git', 'go', 'html_5', 'java', 'jb_appcode', 'jb_clion', 'jb_datagrip', 'jb_dotcover', 'jb_dotmemory', 'jb_dotpeek', 'jb_dottrace', 'jb_goland', 'jb_hub', 'jb_IntelliJ IDEA', 'jb_kotlin', 'jb_phpstorm', 'jb_pycharm', 'jb_pycharm_edu', 'jb_resharper', 'jb_resharper_c++', 'jb_rider', 'jb_rubymine', 'jb_teamcity', 'jb_toolbox_app', 'jb_upsource', 'jb_webstorm', 'jb_youtrack', 'joomla', 'jquery', 'js', 'node_js', 'npm', 'php', 'python', 'react', 'redux', 'ruby', 'r_lang', 'sublime_text', 'swift', 'vs_code', 'vue', 'weebly', 'wordpress', 'yii 1'],
+      design: ['acrobat-reader', 'adobe', 'adobe_aero', 'adobe_after_effects', 'adobe_animate', 'adobe_creative-cloud', 'adobe_dimension', 'adobe_fill-and-sign', 'adobe_illustrator', 'adobe_incopy', 'adobe_indesign', 'adobe_lightroom', 'adobe_photoshop-camera', 'adobe_photoshop-express', 'adobe_photoshop', 'adobe_premiere-rush', 'adobe_premiere', 'adobe_spark', 'adobe_stock', 'adobe_xd', 'autodesk', 'behance', 'dribbble', 'figma', 'framer', 'invision', 'marvel', 'procreate', 'sketch', 'zeplin'],
+      messengers: ['discord', 'facetime', 'fb_messenger', 'google meet', 'google_hangouts', 'kakao_talk', 'line', 'messages', 'ms_skype', 'slack', 'spectrum', 'telegram', 'viber', 'wechat', 'whatsapp', 'zoom'],
+      money: ['alfa_bank', 'american_express', 'direct_debit', 'jcb', 'mastercard', 'paypal', 'qiwi', 'sberbank', 'shopify', 'stripe', 'swift', 'tinkoff', 'visa', 'webmoney', 'western_union', 'world_pay', 'yandex_kassa'],
+      music: ['apple_music', 'audition', 'google_play_music', 'grooveshark', 'shazam', 'sound_cloud', 'spotify', 'yandex_music', 'youtube_music'],
+      os: ['android', 'apple', 'blackberry', 'chrome_os', 'elementary', 'fedora', 'freebsd', 'gnome', 'ios', 'linux-mint', 'linux', 'macos', 'microsoft', 'ubuntu'],
+      other: ['airbnb', 'amd', 'angel_list', 'app_store', 'bluetooth', 'dell', 'envato', 'general_electric', 'google', 'google_ads', 'google_play', 'huawei_app_gallery', 'ibm', 'intel', 'kickstarter', 'medium', 'ms_xbox', 'playstation', 'product_hunt', 'steam', 'stumble_upon', 'Taobao', 'tech_crunch', 'tripadvisor', 'yandex'],
+      productivity: ['amazon', 'asana', 'atlassian', 'bamboo', 'basecamp', 'confluence', 'dropbox', 'evernote', 'finder', 'flowmapp', 'g-calendar', 'gmail', 'google docs', 'google maps', 'google meet', 'google-analytics', 'google_drive', 'hubspot', 'intercom', 'jira', 'jira_core', 'jira_ops', 'jira_service_desk', 'kayako', 'mailchimp', 'ms_excel', 'ms_onedrive', 'ms_onenote', 'ms_outlook', 'ms_powerpoint', 'ms_sharepoint', 'ms_word', 'ms_yammer', 'notion', 'opsgenie', 'salesforce', 'sourcetree', 'statuspage', 'teams', 'things', 'treehouse', 'trello', 'workflowy', 'zapier', 'zendesk'],
+      'social-networks': ['askfm', 'badoo', 'Facebook', 'foursquare', 'instagram', 'linkedin', 'meta', 'OK', 'patreon', 'pinterest', 'quora', 'qzone', 'reddit', 'snapchat', 'stack_overflow', 'tiktok', 'tinder', 'tumbler', 'twitter', 'vk', 'weibo'],
+      video: ['appearin', 'coub', 'flickr', 'igtv', 'netflix', 'twitch', 'vimeo', 'youtube']
+   };
+
+   const mainContainer = document.createElement('div');
+   mainContainer.className = 'app-icons-container';
+
+   for (const [category, icons] of Object.entries(categories)) {
+      const categorySection = document.createElement('div');
+      categorySection.className = 'category-section';
+
+      // Add category title
+      const categoryTitle = document.createElement('h3');
+      categoryTitle.className = 'category-title';
+      categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
+      categorySection.appendChild(categoryTitle);
+
+      // Create grid for this category
+      const gridContainer = document.createElement('div');
+      gridContainer.className = 'app-icons-grid';
+
+      icons.forEach(icon => {
+         const iconWrapper = document.createElement('div');
+         iconWrapper.className = 'icon-wrapper';
+
+         const img = document.createElement('img');
+         img.src = `assets/icons/apps/${category}/${icon}.png`;
+         img.alt = icon;
+         img.className = 'app-icon';
+
+         const label = document.createElement('span');
+         label.className = 'icon-label';
+         label.textContent = icon.replace(/_/g, ' ').replace(/jb_/g, '');
+
+         iconWrapper.appendChild(img);
+         iconWrapper.appendChild(label);
+         gridContainer.appendChild(iconWrapper);
+      });
+
+      categorySection.appendChild(gridContainer);
+      mainContainer.appendChild(categorySection);
+   }
+
+   iconContainer.appendChild(mainContainer);
+}
+
+function loadEmojiIcons() {
+   const iconContainer = document.getElementById('other-icons');
+
+   // Add section title
+   const sectionTitle = document.createElement('h2');
+   sectionTitle.className = 'section-title';
+   sectionTitle.id = 'emoji-icons';
+   sectionTitle.innerHTML = '❖ Emoji Icons:';
+   iconContainer.appendChild(sectionTitle);
+
+   const gridContainer = document.createElement('div');
+   gridContainer.className = 'emoji-icons-grid';
+
+   const emojiIcons = [
+      'Angry', 'Confused', 'Confusing-1', 'Confusing', 'Confusion',
+      'Crying', 'Dead skin', 'Dead', 'Detective', 'Eye care',
+      'Eye', 'Eyeem', 'Find', 'Flip', 'Haha',
+      'Handsome', 'Hug', 'Kid', 'Laugh', 'Laughing',
+      'Laughter', 'Love and romance', 'Nervous', 'Romance and love',
+      'Romance', 'Sad face', 'Sad', 'Smiles', 'Spooky',
+      'Star', 'Superstar', 'Tongue out', 'Tongue', 'Toxic',
+      'Wow', 'Yelling'
+   ];
+
+   emojiIcons.forEach(icon => {
+      const iconWrapper = document.createElement('div');
+      iconWrapper.className = 'icon-wrapper';
+
+      const img = document.createElement('img');
+      img.src = `assets/icons/emojis/${icon}.png`;
+      img.alt = icon;
+      img.className = 'emoji-icon';
+
+      const label = document.createElement('span');
+      label.className = 'icon-label';
+      label.textContent = icon.replace(/-1/g, '').replace(/-/g, ' ');
+
+      iconWrapper.appendChild(img);
+      iconWrapper.appendChild(label);
+      gridContainer.appendChild(iconWrapper);
+   });
+
+   iconContainer.appendChild(gridContainer);
+}
+
+function loadFlagIcons() {
+   const iconContainer = document.getElementById('other-icons');
+
+   // Add section title
+   const sectionTitle = document.createElement('h2');
+   sectionTitle.className = 'section-title';
+   sectionTitle.id = 'flag-icons';
+   sectionTitle.innerHTML = '❖ Flag Icons:';
+   iconContainer.appendChild(sectionTitle);
+
+   const gridContainer = document.createElement('div');
+   gridContainer.className = 'flag-icons-grid';
+
+   const flagIcons = [
+      'abkhazia', 'afghanistan', 'aland-islands', 'albania', 'algeria', 'american-samoa', 'andorra', 'angola', 'anguilla', 'antigua-and-barbuda', 'argentina', 'armenia', 'aruba', 'australia', 'austria', 'azerbaijan', 'azores-islands', 'bahamas', 'bahrain', 'balearic-islands', 'bangladesh', 'barbados', 'basque-country', 'belarus', 'belgium', 'belize', 'benin', 'bermuda', 'bhutan-1', 'bhutan', 'bolivia', 'bonaire', 'bosnia-and-herzegovina', 'botswana', 'brazil', 'british-columbia', 'british-indian-ocean-territory', 'british-virgin-islands', 'brunei', 'bulgaria', 'burkina-faso', 'burundi', 'cambodia', 'cameroon', 'canada', 'canary-islands', 'cape-verde', 'cayman-islands', 'central-african-republic', 'ceuta', 'chad', 'chile', 'china', 'christmas-island', 'cocos-island', 'colombia', 'comoros', 'cook-islands', 'corsica', 'costa-rica', 'croatia', 'cuba', 'curacao', 'cyprus', 'czech-republic', 'democratic-republic-of-congo', 'denmark', 'djibouti', 'dominica', 'dominican-republic', 'east-timor', 'ecuador', 'egypt', 'el-salvador', 'england', 'equatorial-guinea', 'eritrea', 'estonia', 'ethiopia', 'european-union', 'falkland-islands', 'faroe-islands', 'fiji', 'finland', 'france', 'french-polynesia', 'gabon', 'galapagos-islands', 'gambia', 'georgia', 'germany', 'ghana', 'gibraltar', 'greece', 'greenland', 'grenada', 'guam', 'guatemala', 'guernsey', 'guinea-bissau', 'guinea', 'guyana', 'haiti', 'hawaii', 'honduras', 'hong-kong', 'hungary', 'iceland', 'india', 'indonesia', 'iran', 'iraq', 'ireland', 'isle-of-man', 'israel', 'italy', 'ivory-coast', 'jamaica', 'japan', 'jersey', 'jordan', 'kazakhstan', 'kenya', 'kiribati', 'kosovo', 'kuwait', 'kyrgyzstan', 'laos', 'latvia', 'lebanon', 'lesotho', 'liberia', 'libya', 'liechtenstein', 'lithuania', 'luxembourg', 'macao', 'madagascar', 'madeira', 'malawi', 'malaysia', 'maldives', 'mali', 'malta', 'marshall-island', 'martinique', 'mauritania', 'mauritius', 'melilla', 'mexico', 'micronesia', 'moldova', 'monaco', 'mongolia', 'montenegro', 'montserrat', 'morocco', 'mozambique', 'myanmar', 'namibia', 'nato', 'nauru', 'nepal', 'netherlands', 'new-zealand', 'nicaragua', 'niger', 'nigeria', 'niue', 'norfolk-island', 'north-korea', 'northern-cyprus', 'northern-marianas-islands', 'norway', 'oman', 'orkney-islands', 'ossetia', 'pakistan', 'palau', 'palestine', 'panama', 'papua-new-guinea', 'paraguay', 'peru', 'philippines', 'pitcairn-islands', 'poland', 'portugal', 'puerto-rico', 'qatar', 'rapa-nui', 'republic-of-macedonia', 'republic-of-the-congo', 'romania', 'russia', 'rwanda', 'saba-island', 'sahrawi-arab-democratic-republic', 'saint-kitts-and-nevis', 'samoa', 'san-marino', 'sao-tome-and-prince', 'sardinia', 'saudi-arabia', 'scotland', 'senegal', 'serbia', 'seychelles', 'sierra-leone', 'singapore', 'sint-eustatius', 'sint-maarten', 'slovakia', 'slovenia', 'solomon-islands', 'somalia', 'somaliland', 'south-africa', 'south-korea', 'south-sudan', 'spain', 'sri-lanka', 'st-barts', 'st-lucia', 'st-vincent-and-the-grenadines', 'sudan', 'suriname', 'swaziland', 'sweden', 'switzerland', 'syria', 'taiwan', 'tajikistan', 'tanzania', 'thailand', 'tibet', 'togo', 'tokelau', 'tonga', 'transnistria', 'trinidad-and-tobago', 'tunisia', 'turkey', 'turkmenistan', 'turks-and-caicos', 'tuvalu', 'uganda', 'ukraine', 'united-arab-emirates', 'united-kingdom', 'united-nations', 'united-states', 'uruguay', 'uzbekistán', 'vanuatu', 'vatican-city', 'venezuela', 'vietnam', 'virgin-islands', 'wales', 'yemen', 'zambia', 'zimbabwe'
+
+   ];
+
+   flagIcons.forEach(icon => {
+      const iconWrapper = document.createElement('div');
+      iconWrapper.className = 'icon-wrapper';
+
+      const img = document.createElement('img');
+      img.src = `assets/icons/flags/${icon}.png`;
+      img.alt = icon;
+      img.className = 'flag-icon';
+
+      const label = document.createElement('span');
+      label.className = 'icon-label';
+      label.textContent = icon.replace(/-/g, ' ');
+
+      iconWrapper.appendChild(img);
+      iconWrapper.appendChild(label);
+      gridContainer.appendChild(iconWrapper);
+   });
+
+   iconContainer.appendChild(gridContainer);
+}
+function loadIntegrationIcons() {
+   const iconContainer = document.getElementById('other-icons');
+
+   // Add section title
+   const sectionTitle = document.createElement('h2');
+   sectionTitle.className = 'section-title';
+   sectionTitle.id = 'integration-icons';
+   sectionTitle.innerHTML = '❖ Integrations:';
+   iconContainer.appendChild(sectionTitle);
+
+   const gridContainer = document.createElement('div');
+   gridContainer.className = 'integration-icons-grid';
+
+   const integrationIcons = [
+      'activecampaign', 'airtable', 'akash', 'anthropic', 'aws', 'bookingcom',
+      'canva', 'channable', 'civitai', 'clickup', 'cohere', 'colossyan',
+      'constantcontact', 'deepl', 'discord', 'dropbox', 'elevenlabs', 'facebook',
+      'fashioncloud', 'ftp', 'google', 'google_cloud', 'google_drive', 'heygen',
+      'hubspot', 'huggingface', 'hyperstack', 'instagram', 'kolsquare', 'lambdalabs',
+      'linkedin', 'mailchimp', 'mailerlite', 'microsoft', 'microsoft_azure',
+      'microsoft_onedrive', 'microsoft_sharepoint', 'microsoft_teams', 'midjourney',
+      'monday', 'nextcloud', 'onesignal', 'openai', 'perplexity', 'perspective',
+      'pinterest', 'reddit', 'replicate', 'rundiffusion', 'runway', 'salesforce',
+      'sap', 'sembly', 'semrush', 'shopify', 'shopware', 'sistrix', 'slack',
+      'snapchat', 'stabilityai', 'telegram', 'threads', 'tiktok', 'twilio',
+      'twitch', 'twitter', 'weclapp', 'whatsapp', 'woocommerce', 'wordpress',
+      'xai', 'xing', 'youtube'
+   ];
+
+   integrationIcons.forEach(icon => {
+      const iconWrapper = document.createElement('div');
+      iconWrapper.className = 'icon-wrapper';
+
+      const img = document.createElement('img');
+      img.src = `assets/icons/integrations/${icon}.webp`;
+      img.alt = icon;
+      img.className = 'integration-icon';
+
+      const label = document.createElement('span');
+      label.className = 'icon-label';
+      label.textContent = icon.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+      iconWrapper.appendChild(img);
+      iconWrapper.appendChild(label);
+      gridContainer.appendChild(iconWrapper);
+   });
+
+   iconContainer.appendChild(gridContainer);
+}
+
+function createIconJumplist() {
+   const jumplist = document.createElement('div');
+   jumplist.className = 'icon-jumplist';
+   const SCROLL_OFFSET = 100; // Adjust this value to change the offset
+
+   const sections = [
+      { id: 'social-icons', title: '❖\u00A0\u00A0\u00A0\u00A0\Social Icons' },
+      { id: 'payment-icons', title: '❖\u00A0\u00A0\u00A0\u00A0\Payments' },
+      { id: 'app-icons', title: '❖\u00A0\u00A0\u00A0\u00A0\App Icons' },
+      { id: 'integration-icons', title: '❖\u00A0\u00A0\u00A0\u00A0\Integrations' },
+      { id: 'emoji-icons', title: '❖\u00A0\u00A0\u00A0\u00A0\Emoji Icons' },
+      { id: 'flag-icons', title: '❖\u00A0\u00A0\u00A0\u00A0\Flag Icons' }
+   ];
+
+   sections.forEach(section => {
+      const link = document.createElement('a');
+      link.href = `#${section.id}`;
+      link.textContent = section.title;
+      link.className = 'jumplist-item';
+
+      link.addEventListener('click', (e) => {
+         e.preventDefault();
+         const element = document.getElementById(section.id);
+         const elementPosition = element.getBoundingClientRect().top;
+         const offsetPosition = elementPosition + window.pageYOffset - SCROLL_OFFSET;
+
+         window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+         });
+      });
+
+      jumplist.appendChild(link);
+   });
+
+   document.getElementById('other-icons').appendChild(jumplist);
+
+   /*/ Add IDs to section titles
+   document.querySelectorAll('.section-title').forEach((title, index) => {
+      if (sections[index]) {
+         title.id = sections[index].id;
+      }
+   });*/
+}
+class Playground {
+   constructor(container) {
+      this.container = container;
+      this.tabs = container.querySelectorAll('.playground__tab');
+      this.contents = container.querySelectorAll('.playground__content');
+      this.init();
+   }
+
+   init() {
+      // Initialize tabs
+      this.tabs.forEach(tab => {
+         tab.addEventListener('click', () => {
+            const tabName = tab.getAttribute('data-tab');
+            this.switchTab(tabName);
+         });
+      });
+
+      // Set first tab as active by default
+      if (this.tabs.length > 0) {
+         const firstTabName = this.tabs[0].getAttribute('data-tab');
+         this.switchTab(firstTabName);
+      }
+   }
+
+   switchTab(tabName) {
+      // Update tab states
+      this.tabs.forEach(tab => {
+         tab.classList.toggle('active', tab.getAttribute('data-tab') === tabName);
+      });
+
+      // Update content visibility
+      this.contents.forEach(content => {
+         content.style.display = content.getAttribute('data-content') === tabName ? 'block' : 'none';
+      });
+   }
+}
+function initPlaygrounds() {
+   const playgroundContainers = document.querySelectorAll('.playground__container');
+
+   if (playgroundContainers.length > 0) {
+      playgroundContainers.forEach(container => {
+         new Playground(container);
+      });
+      console.log(`Initialized ${playgroundContainers.length} playground(s)`);
+   }
+}

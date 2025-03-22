@@ -1,0 +1,56 @@
+<style>
+
+</style>
+
+
+
+<script>
+class Playground {
+  constructor(container) {
+    this.container = container;
+    this.tabs = container.querySelectorAll('.playground__tab');
+    this.contents = container.querySelectorAll('.playground__content');
+
+    this.init();
+  }
+
+  init() {
+    // Set first tab as active by default
+    this.showTab(this.tabs[0].dataset.tab);
+
+    // Add click handlers to tabs
+    this.tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        this.showTab(tab.dataset.tab);
+      });
+    });
+  }
+
+  showTab(tabName) {
+    // Update tab buttons
+    this.tabs.forEach(tab => {
+      tab.classList.toggle('playground__tab--selected', tab.dataset.tab === tabName);
+    });
+
+    // Update content visibility
+    this.contents.forEach(content => {
+      content.classList.toggle('playground__content--active', content.dataset.content === tabName);
+    });
+  }
+
+  setContent(tabName, content) {
+    const targetContent = this.container.querySelector(`[data-content="${tabName}"]`);
+    if (targetContent) {
+      targetContent.innerHTML = content;
+    }
+  }
+}
+
+// Initialize the playground
+const playground = new Playground(document.querySelector('.playground__container'));
+
+// Example usage:
+// playground.setContent('angular', '<your-angular-content>');
+// playground.setContent('javascript', '<your-js-content>');
+// etc...
+</script>

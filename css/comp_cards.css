@@ -58,6 +58,9 @@
     min-height: 150px;
     background-color: var(--card-header-element);
 }
+[data-theme="dark"] .component-icon img{
+   filter:invert(1) brightness(1.25) sepia(100%) saturate(0.6) hue-rotate(180deg);
+}
 
 .component-info {
     padding: 20px 20px 0 20px;

@@ -470,5 +470,13 @@
         "figmaButtonText": "Table cell",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
+    },
+    "other-icons": {
+        "name": "Other icons",
+        "description": "icon collection featuring various categories including social media, payment methods, browsers, operating systems, design tools, and development environments. Each icon is carefully crafted to maintain consistent visual quality while representing well-known brands and applications. Use these icons to enhance user recognition and provide familiar visual references in your interfaces.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2715-222084&t=Y1KOwZKPq6lnMlNG-4",
+        "figmaButtonText": "Other icons",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
     }
 }

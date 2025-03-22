@@ -159,6 +159,11 @@
                 <ion-icon name="help-circle-outline"></ion-icon>
             </button>
         </div>
+        <div class="fab-container" style="bottom: 100px;">
+            <button id="scrollToTopFab" class="fab" onclick="scrollToTop()">
+                <ion-icon name="arrow-up-circle-outline"></ion-icon>
+            </button>
+        </div>
         <button class="sortFab" id="sortFab" onclick="toggleSidebarSorting()">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M21.3,7.6h-6.9c-.9,0-1.5-.7-1.5-1.5h0c0-.9.7-1.5,1.5-1.5h6.9c.9,0,1.5.7,1.5,1.5h0c0,.9-.7,1.5-1.5,1.5ZM22.8,11.7h0c0-.9-.7-1.5-1.5-1.5h-6.2c-.9,0-1.5.7-1.5,1.5h0c0,.9.7,1.5,1.5,1.5h6.2c.9,0,1.5-.7,1.5-1.5ZM22.8,17.2h0c0-.9-.7-1.5-1.5-1.5h-2.8c-.9,0-1.5.7-1.5,1.5h0c0,.9.7,1.5,1.5,1.5h2.8c.9,0,1.5-.7,1.5-1.5ZM2.9,18.8c-.4,0-.7-.1-.9-.3s-.4-.5-.4-.8,0-.6.2-1.1l3.5-10.1c.2-.7.5-1.1.8-1.4s.8-.4,1.4-.4,1,.1,1.4.4.6.8.8,1.4l3.5,10.1c.1.4.2.8.2,1.1s-.1.7-.4.9-.6.3-1,.3-.7-.1-.9-.3-.4-.6-.5-1l-.8-2.4h-4.9l-.8,2.4c-.1.5-.3.8-.5,1s-.5.3-.9.3ZM5.8,13h3.7l-1.8-5.7h-.1l-1.8,5.7Z" />
@@ -234,7 +239,7 @@
             { "category": "Pagination", "items": ["Pagination", "Pagination Dots"] },
             { "category": "Progress Loaders", "items": ["Linear Loader", "Linear Loader (Looping)", "Radial Loader", "Radial Loader (Looping)", "Radial Loader (Looping) 2"] },
             { "category": "Badges & Tags", "items": ["Badge"] },
-            { "category": "Icons", "items": ["Icons"] },
+            { "category": "Icons", "items": ["Icons", "Other Icons"] },
             { "category": "Content", "items": ["Content Frames", "Content Slots", "Content Header", "Content Slot"] },
             { "category": "Lists", "items": ["Check List Item", "Class List Item"] },
             { "category": "Tables", "items": ["Table Cell"] },
@@ -538,6 +543,23 @@
                 behavior:"smooth"
             });
         }
+
+        // Add this code after the existing scrollToTop function
+        const scrollToTopFab = document.getElementById('scrollToTopFab');
+
+        // Add scroll event listener
+        window.addEventListener('scroll', () => {
+            // Show button after scrolling down 300px
+            if (window.scrollY > 300) {
+                scrollToTopFab.style.opacity = '1';
+                scrollToTopFab.style.visibility = 'visible';
+            } else {
+                scrollToTopFab.style.opacity = '0';
+                scrollToTopFab.style.visibility = 'hidden';
+            }
+        });
+
+
         const componentRepository = {};
         function populateComponentRepository() {
             menuData.forEach(category => {
@@ -696,6 +718,7 @@
                         initializeLottieAnimations();
                         initializeScrollAnimations();
                         initializeElementScrollAnimations();
+                        initPlaygrounds();
                         requestAnimationFrame(() => {
                             initializeTabSwitching();
                             initializeVideos();
@@ -757,6 +780,7 @@
                     initializeVideos();
                     initializeScrollAnimations();
                     initializeElementScrollAnimations();
+                    initPlaygrounds();
                     requestAnimationFrame(() => {
                         initializeTabSwitching();
                         initializeVideos();
@@ -771,6 +795,30 @@
                         if (typeof initializePropTables === 'function') {
                             console.log('Initializing property tables for dynamic content...');
                             initializePropTables();
+                        }
+                        // Initialize empty state toggle if on empty-state page
+                        if (pageName === 'empty-state-graphic') {
+                            console.log('Initializing empty state toggle...');
+                            const styleToggle = document.getElementById('styleToggle');
+                            const emptyStateCards = document.querySelectorAll('.empty-state-card');
+                            if (styleToggle && emptyStateCards.length > 0) {
+                                styleToggle.addEventListener('change', function() {
+                                    emptyStateCards.forEach(card => {
+                                        card.classList.toggle('show-accent', this.checked);
+                                    });
+                                });
+                            }
+                        }
+                        // Initialize other icons content
+                        if (pageName === 'other-icons') {
+                            console.log('Initializing other-icons content...');
+                            loadSocialIcons();
+                            loadPaymentIcons();
+                            loadAppIcons();
+                            loadIntegrationIcons();
+                            loadEmojiIcons();
+                            loadFlagIcons();
+                            createIconJumplist();
                         }
                     });
                 });
@@ -1523,6 +1571,7 @@
         });
 
         function openHowToModal() {
+            console.log('Opening modal...');
             const modal = document.getElementById('howToModal');
             modal.style.display = 'flex';
             // Force a reflow before adding the show class
@@ -1530,18 +1579,35 @@
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
 
-            // Get the animation container and initialize a new Lottie animation
+            // Get the animation container
             const container = modal.querySelector('.animation-container');
             if (container) {
-                const animation = lottie.loadAnimation({
-                    container: container,
-                    renderer: 'svg',
-                    loop: true,
-                    autoplay: true,
-                    path: container.getAttribute('data-lottie-path')
-                });
-                // Store the animation instance on the container
-                container.animation = animation;
+                // Clear the container
+                container.innerHTML = '';
+
+                // Get the animation path
+                const animationPath = container.getAttribute('data-lottie-path');
+
+                // Fetch the animation data
+                fetch(animationPath)
+                    .then(response => response.json())
+                    .then(animationData => {
+                        // Create new animation with the fetched data
+                        const animation = lottie.loadAnimation({
+                            container: container,
+                            renderer: 'svg',
+                            loop: true,
+                            autoplay: true,
+                            animationData: animationData
+                        });
+
+                        // Store the animation instance
+                        container.animation = animation;
+                    })
+                    .catch(error => {
+                        console.error('Error loading animation:', error);
+                        container.innerHTML = '<div style="color: red;">Animation failed to load</div>';
+                    });
             }
         }
 
@@ -1550,7 +1616,7 @@
             modal.classList.remove('show');
             modal.classList.add('hide');
 
-            // Get the animation container and destroy the animation
+            // Get the animation container
             const container = modal.querySelector('.animation-container');
             if (container && container.animation) {
                 container.animation.destroy();
@@ -1588,27 +1654,28 @@
     </script>
     <!-- Property Table System -->
     <script src="js/include-prop-tables.js"></script>
-    <script>    <!-- Animation JavaScript -->
+    <!-- Animation JavaScript -->
+    <script>
         // Initialize ScrollTrigger plugin
-            gsap.registerPlugin(ScrollTrigger);
+        gsap.registerPlugin(ScrollTrigger);
 
-            // Wait for DOM to be ready
-            $(document).ready(function() {
-                // Process has-mask-fill elements
-                $('.has-mask-fill').each(function () {
-                    var words = $(this).text();
-                    var total = words;
-                    $(this).empty();
-                    $(this).append($("<span /> ").text(words));
-                });
+        // Wait for DOM to be ready
+        $(document).ready(function() {
+            // Process has-mask-fill elements
+            $('.has-mask-fill').each(function () {
+                var words = $(this).text();
+                var total = words;
+                $(this).empty();
+                $(this).append($("<span /> ").text(words));
+            });
 
             // Special handling for block-title elements
             $('.has-mask-fill.block-title').each(function() {
                 var words = $(this).text().split(" ");
-            var total = words.length;
-            $(this).empty();
-            for (index = 0; index < total; index++) {
-                $(this).append($("<span /> ").text(words[index] + " "));
+                var total = words.length;
+                $(this).empty();
+                for (index = 0; index < total; index++) {
+                    $(this).append($("<span /> ").text(words[index] + " "));
                 }
             });
 
@@ -1616,27 +1683,27 @@
             var hasMaskFill = gsap.utils.toArray('.has-mask-fill');
             hasMaskFill.forEach(function(hMaskFill) {
                 var spanFillMask = hMaskFill.querySelectorAll("span");
-            gsap.to(spanFillMask, {
-                scrollTrigger: {
-                trigger: hMaskFill,
-            start: "top 85%",
+                gsap.to(spanFillMask, {
+                    scrollTrigger: {
+                        trigger: hMaskFill,
+                        start: "top 85%",
                         end: () => `+=${hMaskFill.offsetHeight * 2}`,
-            scrub: 1,
+                        scrub: 1,
                     },
-            duration: 1,
-            backgroundSize: "200% 100%",
-            stagger: 0.5,
-            ease: "none",
+                    duration: 1,
+                    backgroundSize: "200% 100%",
+                    stagger: 0.5,
+                    ease: "none",
                 });
             });
 
             // Process has-opacity elements
             $('.has-opacity').each(function() {
                 var words = $(this).text().split(" ");
-            var total = words.length;
-            $(this).empty();
-            for (index = 0; index < total; index++) {
-                $(this).append($("<span /> ").text(words[index] + " "));
+                var total = words.length;
+                $(this).empty();
+                for (index = 0; index < total; index++) {
+                    $(this).append($("<span /> ").text(words[index] + " "));
                 }
             });
 
@@ -1644,10 +1711,10 @@
             var hasOpacity = gsap.utils.toArray('.has-opacity');
             hasOpacity.forEach(function(hOpacity) {
                 var spanOpacity = hOpacity.querySelectorAll("span");
-            gsap.to(spanOpacity, {
-                scrollTrigger: {
-                trigger: hOpacity,
-            start: "top 85%",
+                gsap.to(spanOpacity, {
+                    scrollTrigger: {
+                        trigger: hOpacity,
+                        start: "top 85%",
                         end: () => `+=${hOpacity.offsetHeight}`,
                         scrub: 1,
                     },
@@ -1667,7 +1734,7 @@
                 <button class="close-modal" onclick="closeHowToModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="animation-container" data-lottie-path="assets/lottie/modal_tut.json" data-lottie-loop="true" data-lottie-autoplay="true">
+                <div class="animation-container" data-lottie-path="assets/lottie/modal_tut.json" data-lottie-loop="true" data-lottie-autoplay="false">
                 </div>
                 <div class="tutorial-info">
                     <p>Here's how to access components in Figma:</p>
