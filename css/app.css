@@ -113,6 +113,41 @@
             scrollbar-highlight-color: var(--scrollbar-thumb-hover);
         }
 
+        .text-color,
+        .text-color path {
+            fill: var(--text-color) !important;
+            color: var(--text-color) !important;
+        }
+        .description-color,
+        .description-color path {
+            fill: var(--description-color) !important;
+            color: var(--description-color) !important;
+        }
+        .bg-color,
+        .bg-color path {
+            fill: var(--bg-color) !important;
+            stroke:var(--bg-color) !important;
+            color: var(--bg-color) !important;
+        }
+        .table-bg,
+        .table-bg path {
+            fill: var(--table-bg) !important;
+            stroke:var(--table-bg) !important;
+            color: var(--table-bg) !important;
+        }
+        .accent-color,
+        .accent-color path {
+            fill: var(--accent-color) !important;
+            stroke:var(--accent-color) !important;
+            color: var(--accent-color) !important;
+        }
+        .variant-bg,
+        .variant-bg path {
+            fill: var(--variant-bg) !important;
+            stroke:var(--variant-bg) !important;
+            color: var(--variant-bg) !important;
+        }
+
         /* Optional: Specify different weights and styles */
         .light {
             font-weight: 300;
@@ -2304,7 +2339,7 @@
 }
 
 #iconModal.hide {
-    animation: modalBackgroundFadeOut 0.5s ease forwards;
+    animation: modalBackgroundFadeOut 0.3s ease forwards;
 }
 
 #iconModal .modal-content {
@@ -2321,12 +2356,12 @@
 }
 
 #iconModal.show .modal-content {
-    animation: modalScaleIn 0.3s ease 0.1s forwards;
+    animation: modalScaleIn 0.3s ease 0.2s forwards;
     opacity: 1;
 }
 
 #iconModal.hide .modal-content {
-    animation: modalScaleOut 0.3s ease forwards;
+    animation: modalScaleOut 0.5s ease 0.2s forwards;
 }
 
 /* Dark mode image inversion for property table images */
@@ -2887,35 +2922,36 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
 
     .icon-jumplist {
         position: fixed;
-        right: -6.65rem;
+        right: -10rem;
         top: 50%;
-        width: 150px;
-        margin-right: 0rem;
+        width: 200px;
+        padding-right: 4rem!important;
         transform: translateY(-50%);
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        background: var(--card-bg);
+        background: var(--table-header-element);
         padding: 1rem;
         border-radius: 8px;
-        box-shadow: var(--card-shadow);
+        box-shadow: var(--card-shadow-hover);
         z-index: 100;
         transition: all 0.2s ease;
     }
     .icon-jumplist:hover {
         position: fixed;
-        right: 0rem;
+        right: -4rem;
         margin-right: .5rem;
         top: 50%;
-        width: 150px;
+        padding-right: 4rem!important;
+        width: 200px;
         transform: translateY(-50%);
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        background: var(--card-bg);
+        background: var(--table-header-element);
         padding: 1rem;
         border-radius: 8px;
-        box-shadow: var(--card-shadow);
+        box-shadow: var(--card-shadow-hover);
         z-index: 100;
         transition: all 0.2s ease;
     }
@@ -2923,20 +2959,20 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     .jumplist-item {
         color: var(--description-color);
         text-decoration: none;
-        font-size: .85rem;
+        font-size: .9rem;
         overflow: hidden;
-        opacity: 0.5;
-        transition: opacity 0.2s ease;
+        opacity: 0.9;
+        transition: all 0.2s ease;
         font-weight: 400;
     }
 
     .icon-jumplist:hover.jumplist-item {
         color: var(--description-color);
         text-decoration: none;
-        font-size: .85rem;
+        font-size: .9rem;
         width: 100%;
-        opacity: 0.8;
-        transition: opacity 0.2s ease;
+        opacity: 0.95;
+        transition: all 0.2s ease;
         font-weight: 400;
     }
 
