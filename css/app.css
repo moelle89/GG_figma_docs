@@ -2201,6 +2201,7 @@
     background: var(--component-bg);
     border-radius: 8px;
     padding: 20px;
+    max-width: 900px;
     box-shadow: var(--card-shadow);
 }
 
