@@ -2540,7 +2540,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     background-color: var(--card-bg);
     border-radius: 12px;
     width: 90%;
-    height: auto;
+    height: 80vh;
     max-width: 800px;
     position: relative;
     transform: translateY(20px);
@@ -2687,7 +2687,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     transform: translateY(20px);
     transition: transform 0.3s ease;
     opacity: 1;
-    height: auto;
+    height: 80vh;
     padding: 0;
 }
 
