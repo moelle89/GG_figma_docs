@@ -67,7 +67,7 @@
             --card-bg: #10141D;
             --fab-border: var(--scrollbar-thumb-hover);
             --fab-fg: #ffffff;
-            --category-header-bg: var(--button-bg);
+            --category-header-bg: hsl(222, 33%, 5%);
             --active-category-bg: var(--category-header-bg);
             --button-bg: hsl(222, 33%, 2%);
             --button-bg-hover: #0a0b0d;
@@ -3046,9 +3046,10 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
 }
 
 .playground__container .fig-container {
-  border-radius: 8px;
-  box-shadow: none;
-  margin-bottom: 0;
+    border-radius: 0 0 8px;
+    /* padding: 14px; */
+    box-shadow: none;
+    margin-bottom: 0;
 }
 
 .playground__tabs {
@@ -3085,8 +3086,16 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
 }
 
 .playground__content {
-  padding: 16px;
+  min-height: 360px;
   display: none;
+}
+.playground__content[data-content="figma"] {
+    padding: 0; /* or any other padding value */
+}
+
+/* Keep default padding for other tabs */
+.playground__content:not([data-content="figma"]) {
+    padding: 16px;
 }
 
 .playground__content--active {
