@@ -41,6 +41,7 @@
     .auto-prop-table-container {
         padding: 0 0px;
         margin-top: 2rem;
+        margin-bottom: -.5rem;
     }
 
     .auto-prop-table-container .prop-table-title {

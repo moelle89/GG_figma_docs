@@ -2705,8 +2705,21 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
 
 @media screen and (max-width: 768px) {
     #howToModal .animation-container {
-        max-width: 470px;
+        max-width: 370px;
     }
+    #howToModal .modal-content {
+        max-width: 370px;
+        min-width: 40vh;
+    }
+    #howToModal .animation-container {
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    min-height: unset;
+    max-height: 350px;
+    overflow: hidden;
+    margin: 0 auto 20px;
+}
 }
 
 #howToModal .tutorial-info kbd {
@@ -3100,4 +3113,24 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
 
 .playground__content--active {
   display: block;
+}
+
+ @media (max-width: 768px) {
+    .playground__content {
+        min-height: auto;
+        display: none;
+    }
+ }
+
+.playground_tab_container {
+    width: 100%;
+    height: 100%;
+    justify-items: center;
+}
+.playground_tab_container h2 {
+    margin-top: 15%;
+    margin-bottom: 15%;
+    font-weight: 300;
+    color: var(--description-color);
+    opacity: .7;
 }
