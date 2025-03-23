@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "GG Figma Documentation",
   "scripts": {
-  "generate-pages": "node scripts/generate-missing-pages.js",
-	"wrap-playgrounds": "node scripts/wrap-playgroundss.js"
+    "generate-pages": "node scripts/generate-missing-pages.js",
+    "wrap-playgrounds": "node scripts/wrap-playgrounds.js"
   }
 }

@@ -175,7 +175,9 @@
                 <path d="M14.9,12l4.9-4.9c.7-.7.7-1.8,0-2.5h0c-.7-.7-1.8-.7-2.5,0l-4.9,4.9-4.9-4.9c-.7-.7-1.8-.7-2.5,0h0c-.7.7-.7,1.9,0,2.5l4.9,4.9-4.9,4.9c-.7.7-.7,1.8,0,2.5h0c.7.7,1.8.7,2.5,0l4.9-4.9,4.9,4.9c.7.7,1.8.7,2.5,0h0c.7-.7.7-1.9,0-2.5l-4.9-4.9Z" />
             </svg>
         </button>
-        <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+        <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+            <ion-icon name="menu"></ion-icon>
+        </button>
         <!-- Theme Toggle Switch -->
         <div class="theme-switch-container">
             <label class="theme-switch">
@@ -183,6 +185,17 @@
                 <span class="theme-slider"></span>
             </label>
             <span class="theme-icon">🌙</span>
+        </div>
+        <!-- Add the new navigation arrows with tooltips -->
+        <div class="section-nav-arrows">
+            <button class="nav-arrow up">
+                <ion-icon name="chevron-up-outline"></ion-icon>
+                <span class="tooltip-up"><span id="prevPageName"></span></span>
+            </button>
+            <button class="nav-arrow down">
+                <ion-icon name="chevron-down-outline"></ion-icon>
+                <span class="tooltip-down"><span id="nextPageName"></span></span>
+            </button>
         </div>
         <div class="content" id="content">
             <!-- Loading indicator -->
@@ -1748,5 +1761,10 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            createIconJumplist();
+        });
+    </script>
 </body>
 </html>
