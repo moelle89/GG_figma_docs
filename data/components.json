@@ -457,7 +457,7 @@
     },
     "checklist-item": {
         "name": "Checklist Item",
-        "description": "",
+        "description": "A checklist item is a task or an item that needs to be completed or checked off a list. It's commonly used in to-do lists, project management tools, or any situation where a list of items needs to be tracked.",
         "figmaLink": "",
         "figmaButtonText": "Checklist Item",
         "imagePath1": "assets/prop_table/empty.png",
@@ -465,7 +465,7 @@
     },
     "table-cell": {
         "name": "Table cell",
-        "description": "",
+        "description": "A table cell is a single unit within a table that holds data or information. It's used to organize and present tabular data in a structured format, allowing users to easily read and interpret the information.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=5424-44421&t=EGh4lSp0Tr7bu25W-4",
         "figmaButtonText": "Table cell",
         "imagePath1": "assets/prop_table/empty.png",
