@@ -188,11 +188,11 @@
         </div>
         <!-- Add the new navigation arrows with tooltips -->
         <div class="section-nav-arrows">
-            <button class="nav-arrow up">
+            <button class="nav-arrow up" onclick="navigateMenuItem('up')">
                 <ion-icon name="chevron-up-outline"></ion-icon>
                 <span class="tooltip-up"><span id="prevPageName"></span></span>
             </button>
-            <button class="nav-arrow down">
+            <button class="nav-arrow down" onclick="navigateMenuItem('down')">
                 <ion-icon name="chevron-down-outline"></ion-icon>
                 <span class="tooltip-down"><span id="nextPageName"></span></span>
             </button>
@@ -492,6 +492,7 @@
                             firstItem.classList.add('active');
                             const pageName = firstItem.getAttribute('data-page');
                             loadContent(pageName);
+                            updateNavigationTooltips();
                             scrollToTop();
                             closeSidebarOnMobile();
                         }
@@ -800,6 +801,16 @@
                         initializeLottieAnimations();
                         if (pageName === 'icons' && typeof initializeIconSearch === 'function') {
                             console.log('Detected icons page, initializing icon search...');
+                            window.scrollTo({
+                                top: 500,
+                                behavior: 'instant'
+                            });
+                            setTimeout(() => {
+                                window.scrollTo({
+                                    top: 0,
+                                    behavior: 'smooth'
+                                });
+                            }, 200);
                             setTimeout(initializeIconSearch, 300);
                             // For icon pages, reinitialize element animations after icon search is complete
                             setTimeout(initializeElementScrollAnimations, 400);
@@ -831,7 +842,16 @@
                             loadIntegrationIcons();
                             loadEmojiIcons();
                             loadFlagIcons();
-                            createIconJumplist();
+                            window.scrollTo({
+                                top: 500,
+                                behavior: 'instant'
+                            });
+                             setTimeout(() => {
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                             }, 200);
                         }
                     });
                 });
@@ -1761,10 +1781,5 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            createIconJumplist();
-        });
-    </script>
 </body>
 </html>

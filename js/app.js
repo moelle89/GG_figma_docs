@@ -726,54 +726,161 @@ function initPlaygrounds() {
    }
 }
 
+function simulateScroll(scrollAmount = 500, delay = 100) {
+   // Scroll down smoothly
+   window.scrollBy({ top: scrollAmount, left: 0, behavior: "smooth" });
+
+   // Wait before scrolling back up
+   setTimeout(() => {
+      window.scrollBy({ top: -scrollAmount, left: 0, behavior: "smooth" });
+   }, delay);
+}
+
 function navigateMenuItem(direction) {
    const activeItem = document.querySelector('.category-item.active');
    if (!activeItem) return;
 
+   // Get all menu items
    const allItems = Array.from(document.querySelectorAll('.category-item'));
    const currentIndex = allItems.indexOf(activeItem);
-   let nextIndex;
 
-   if (direction === 'up') {
-      nextIndex = currentIndex - 1;
-      if (nextIndex < 0) nextIndex = allItems.length - 1;
+   // Check if we're on the "other-icons" page
+   const isOtherIconsPage = activeItem.getAttribute('data-page') === 'other-icons';
+
+   if (isOtherIconsPage) {
+      // Get all icon section headers
+      const sections = [
+         'social-icons',
+         'payment-icons',
+         'app-icons',
+         'integration-icons',
+         'emoji-icons',
+         'flag-icons'
+      ];
+
+      // Find current section based on scroll position
+      const currentPosition = window.pageYOffset + 100; // Adding offset for better detection
+      let currentSectionIndex = -1;
+
+      for (let i = 0; i < sections.length; i++) {
+         const section = document.getElementById(sections[i]);
+         if (section && section.getBoundingClientRect().top + window.pageYOffset <= currentPosition) {
+            currentSectionIndex = i;
+         }
+      }
+
+      if (direction === 'up') {
+         if (currentSectionIndex > 0) {
+            // Navigate to previous section
+            const prevSection = document.getElementById(sections[currentSectionIndex - 1]);
+            if (prevSection) {
+               prevSection.scrollIntoView({ behavior: 'smooth' });
+               updateNavigationTooltips(); // Update tooltips immediately
+               return;
+            }
+         } else {
+            // If at first section, go to previous menu item
+            const prevIndex = currentIndex - 1;
+            if (prevIndex >= 0) {
+               allItems[prevIndex].click();
+               updateNavigationTooltips(); // Update tooltips immediately
+            }
+         }
+      } else { // direction === 'down'
+         if (currentSectionIndex < sections.length - 1) {
+            // Navigate to next section
+            const nextSection = document.getElementById(sections[currentSectionIndex + 1]);
+            if (nextSection) {
+               nextSection.scrollIntoView({ behavior: 'smooth' });
+               updateNavigationTooltips(); // Update tooltips immediately
+               return;
+            }
+         } else {
+            // If at last section, go to next menu item
+            const nextIndex = currentIndex + 1;
+            if (nextIndex < allItems.length) {
+               allItems[nextIndex].click();
+               updateNavigationTooltips(); // Update tooltips immediately
+            }
+         }
+      }
    } else {
-      nextIndex = currentIndex + 1;
-      if (nextIndex >= allItems.length) nextIndex = 0;
-   }
+      // Regular menu navigation
+      let nextIndex;
+      if (direction === 'up') {
+         nextIndex = currentIndex - 1;
+         if (nextIndex < 0) nextIndex = allItems.length - 1;
+      } else {
+         nextIndex = currentIndex + 1;
+         if (nextIndex >= allItems.length) nextIndex = 0;
+      }
 
-   const nextItem = allItems[nextIndex];
-   if (nextItem) {
-      nextItem.click();
-      nextItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      const nextItem = allItems[nextIndex];
+      if (nextItem) {
+         nextItem.click();
+         nextItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+         updateNavigationTooltips(); // Update tooltips immediately
+      }
    }
 }
 
-// Add this function to update tooltips
+// Add event listeners for scroll and load
+document.addEventListener('DOMContentLoaded', function () {
+   updateNavigationTooltips();
+
+   // Initialize navigation when landing on other-icons page
+   const activeItem = document.querySelector('.category-item.active');
+   if (activeItem && activeItem.getAttribute('data-page') === 'other-icons') {
+      setTimeout(updateNavigationTooltips, 100);
+   }
+   // Update tooltips on scroll with debounce
+   let scrollTimeout;
+   window.addEventListener('scroll', function () {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(updateNavigationTooltips, 100);
+   });
+});
+// Update the tooltip update function to handle both cases
 function updateNavigationTooltips() {
    const activeItem = document.querySelector('.category-item.active');
    if (!activeItem) return;
 
-   const allItems = Array.from(document.querySelectorAll('.category-item'));
-   const currentIndex = allItems.indexOf(activeItem);
+   const isOtherIconsPage = activeItem.getAttribute('data-page') === 'other-icons';
 
-   // Calculate previous and next indices
-   const prevIndex = currentIndex - 1 < 0 ? allItems.length - 1 : currentIndex - 1;
-   const nextIndex = currentIndex + 1 >= allItems.length ? 0 : currentIndex + 1;
+   if (isOtherIconsPage) {
+      const sections = [
+         { id: 'social-icons', title: 'Social Icons' },
+         { id: 'payment-icons', title: 'Payments' },
+         { id: 'app-icons', title: 'App Icons' },
+         { id: 'integration-icons', title: 'Integrations' },
+         { id: 'emoji-icons', title: 'Emoji Icons' },
+         { id: 'flag-icons', title: 'Flag Icons' }
+      ];
 
-   // Update tooltips with page names
-   document.getElementById('prevPageName').textContent = allItems[prevIndex].textContent.trim();
-   document.getElementById('nextPageName').textContent = allItems[nextIndex].textContent.trim();
-}
+      const currentPosition = window.pageYOffset;
+      let currentSectionIndex = -1;
 
-// Add click handlers to the arrows
-document.querySelector('.nav-arrow.up').addEventListener('click', () => navigateMenuItem('up'));
-document.querySelector('.nav-arrow.down').addEventListener('click', () => navigateMenuItem('down'));
+      for (let i = 0; i < sections.length; i++) {
+         const section = document.getElementById(sections[i].id);
+         if (section && section.getBoundingClientRect().top + window.pageYOffset <= currentPosition) {
+            currentSectionIndex = i;
+         }
+      }
 
-// Update tooltips when page loads and when navigation occurs
-document.addEventListener('DOMContentLoaded', updateNavigationTooltips);
-document.addEventListener('click', function (e) {
-   if (e.target.closest('.category-item')) {
-      setTimeout(updateNavigationTooltips, 100);
+      if (currentSectionIndex !== -1) {
+         document.getElementById('prevPageName').textContent =
+            currentSectionIndex > 0 ? sections[currentSectionIndex - 1].title : 'Previous Page';
+         document.getElementById('nextPageName').textContent =
+            currentSectionIndex < sections.length - 1 ? sections[currentSectionIndex + 1].title : 'Next Page';
+      }
+   } else {
+      const allItems = Array.from(document.querySelectorAll('.category-item'));
+      const currentIndex = allItems.indexOf(activeItem);
+
+      const prevIndex = currentIndex - 1 < 0 ? allItems.length - 1 : currentIndex - 1;
+      const nextIndex = currentIndex + 1 >= allItems.length ? 0 : currentIndex + 1;
+
+      document.getElementById('prevPageName').textContent = allItems[prevIndex].textContent.trim();
+      document.getElementById('nextPageName').textContent = allItems[nextIndex].textContent.trim();
    }
-});
+}
