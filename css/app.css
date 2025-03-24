@@ -186,7 +186,7 @@
             overflow-y: auto;
             background-color: var(--sidebar-bg);
             border-right: 2px solid var(--border-color);
-            transition: all 0.3s ease;
+            transition: all 0.3s ease 0.1s;
             position: fixed;
             left: 0;
             top: 0;
