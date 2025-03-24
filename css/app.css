@@ -64,7 +64,7 @@
             --category-bg: hsl(222, 30%, 6.5%);
             --fab-bg: var(--table-bg);
             --sortfab-bg: var(--button-bg);
-            --card-bg: #10141D;
+            --card-bg: hsl(222 29% 10% / 1);
             --fab-border: var(--scrollbar-thumb-hover);
             --fab-fg: #ffffff;
             --category-header-bg: hsl(222, 33%, 5%);
@@ -91,7 +91,7 @@
             --table-header-element: var(--category-header-bg);
             --variant-bg: var(--component-bg);
             --component-bg: hsl(222, 33%, 4%);
-            --table-bg: #121721;
+            --table-bg: hsl(220 29% 11% / 1);
             --switch-bg: #2e3647;
             --switch-fg: #121721;
         }
@@ -186,7 +186,7 @@
             overflow-y: auto;
             background-color: var(--sidebar-bg);
             border-right: 2px solid var(--border-color);
-            transition: all 0.3s ease;
+            transition: all 0.3s ease 0.1s;
             position: fixed;
             left: 0;
             top: 0;
