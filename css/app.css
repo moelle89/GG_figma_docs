@@ -46,6 +46,7 @@
             --table-bg: var(--card-bg);
             --switch-bg: #A4ADBE;
             --switch-fg: #ffffff;
+            --component-item: #A4ADBE;
         }
 
         [data-theme="dark"] {
@@ -69,8 +70,8 @@
             --fab-fg: #ffffff;
             --category-header-bg: hsl(222, 33%, 5%);
             --active-category-bg: var(--category-header-bg);
-            --button-bg: hsl(222, 33%, 2%);
-            --button-bg-hover: #0a0b0d;
+            --button-bg: hsl(222, 33%, 2.5%);
+            --button-bg-hover: hsl(220, 13%, 0%);
             --button-comp-accent: #9e4fff;
             --button-comp-accent-hover: #a35ef7;
             --active-item-hover: #161c214d;
@@ -86,14 +87,15 @@
             --content-subtitle: hsl(210, 7%, 85%);
             --description-color: hsl(210, 5%, 80%);
             --tooltip-bg: #ffffffe6;
-            --form-input-bg: var(--button-bg);
+            --form-input-bg: hsl(222, 33%, 4%);
             --card-header-element: var(--card-bg);
             --table-header-element: var(--category-header-bg);
             --variant-bg: var(--component-bg);
-            --component-bg: hsl(222, 33%, 4%);
+            --component-bg: hsl(222, 33%, 4.5%);
             --table-bg: hsl(220 29% 11% / 1);
             --switch-bg: #2e3647;
             --switch-fg: #121721;
+            --component-item: #A4ADBE;
         }
 
        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -146,6 +148,12 @@
             fill: var(--variant-bg) !important;
             stroke:var(--variant-bg) !important;
             color: var(--variant-bg) !important;
+        }
+        .component-item-fill,
+        .component-item-fill path {
+            fill: var(--component-item) !important;
+            stroke:var(--component-item) !important;
+            color: var(--component-item) !important;
         }
 
         /* Optional: Specify different weights and styles */
@@ -316,18 +324,18 @@
             flex: 1;
             padding: 40px;
             margin-left: var(--sidebar-width);
-            transition: opacity 0.4s ease;
+            transition: opacity 0.4s ease 0.1s;
             opacity: 1;
         }
 
         .content.fade-out {
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.1s ease;
         }
 
         .content.fade-in {
             opacity: 0;
-            animation: fadeInContent 0.4s ease .5s forwards;
+            animation: fadeInContent 0.3s ease .5s forwards;
         }
 
         @keyframes fadeInContent {
@@ -847,6 +855,7 @@
                 width: 100%;
                 opacity: 1;
                 box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease 0.1s;
             }
              body.sidebar-open .theme-switch-container,body.sidebar-open .sidebar-toggle, body.sidebar-open .fab-container {
                 bottom: -80px;
@@ -881,6 +890,7 @@
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.3);
+                transition: all 0.3s ease 0.2s;
                 z-index: 999;
             }
         }
@@ -1667,12 +1677,13 @@
         }
 
         .filter-btn {
-            padding: 8px 15px;
+            padding: 8px 20px;
             background: var(--button-bg);
-            border: 1px solid var(--fab-border);
+            border: 2px solid var(--border-color);
             border-radius: 20px;
             color: var(--description-color);
             cursor: pointer;
+            min-height: 38px;
             font-size: 14px;
             transition: all 0.2s ease;
         }
@@ -2040,6 +2051,13 @@
     color: var(--text-color);
     font-size: 14px;
     transition: all 0.3s ease;
+}
+[data-theme="dark"] .search-input {
+    width: 100%;
+    padding: 16px 30px 16px 25px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 30px;
+    background-color: var(--form-input-bg);
 }
 
 .search-input:hover {
@@ -3311,4 +3329,18 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
         right: -80px;
         transition: all 0.3s ease-out, all 0.3s ease;
     }
+}
+
+.component-item .animation-container {
+        max-height: 100px;
+        height: 150px;
+        overflow: hidden;
+}
+
+@media screen and (max-width: 768px) {
+    .component-item .animation-container {
+        max-height: 100px;
+        height: 150px;
+        overflow: hidden;
+}
 }

@@ -675,14 +675,17 @@
                     </div>
                 `;
                     let categoriesHTML = '<div class="components-grid">';
-                    menuData.forEach(category => {
+                    await Promise.all(menuData.map(async category => {
                         if (category.category !== "First Steps") {
                             const categoryId = category.category.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
+                            const lottiePath = `assets/lottie/${categoryId}.json`;
                             const imagePath = `assets/cards/${categoryId}.webp`;
+                            const response = await fetch(lottiePath);
+                            const iconContent = response.ok ? `<div class="animation-container" data-lottie-path="${lottiePath}" data-rederer="svg"></div>` : `<img src="${imagePath}" alt="${category.category} icon">`;
                             categoriesHTML += `
                             <div class="component-item" data-category="${categoryId}">
                                 <div class="component-icon">
-                                    <img src="${imagePath}" alt="${category.category} icon">
+                                    ${iconContent}
                                 </div>
                                 <div class="component-info">
                                     <h3 class="component-title">${category.category}</h3>
@@ -691,7 +694,7 @@
                             </div>
                         `;
                         }
-                    });
+                    }));
                     categoriesHTML += '</div>';
                     let additionalContent = '';
                     try {
@@ -736,7 +739,7 @@
                         requestAnimationFrame(() => {
                             initializeTabSwitching();
                             initializeVideos();
-                            initializeLottieAnimations();
+
                             if (pageName === 'icons' && typeof initializeIconSearch === 'function') {
                                 console.log('Detected icons page, initializing icon search...');
                                 setTimeout(initializeIconSearch, 300);
@@ -749,7 +752,7 @@
                                 initializePropTables();
                             }
                         });
-                    }, 300);
+                    }, 200);
                     return;
                 }
 
