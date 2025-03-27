@@ -1,6 +1,6 @@
 /**
  * Property Table Generator
- * 
+ *
  * This script generates an HTML table from a JSON dataset, displaying properties and their values.
  * It can handle any JSON object structure and automatically creates a visually appealing table.
  */
@@ -31,7 +31,7 @@ class PropTableGenerator {
         // Create container
         const tableContainer = document.createElement('div');
         tableContainer.className = this.options.containerClass;
-        
+
         // Add title if provided
         if (title) {
             const titleElement = document.createElement('h3');
@@ -39,44 +39,44 @@ class PropTableGenerator {
             titleElement.textContent = title;
             tableContainer.appendChild(titleElement);
         }
-        
+
         // Create table
         const table = document.createElement('table');
         table.className = this.options.tableClass;
-        
+
         // Create header row
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
         headerRow.className = this.options.headerClass;
-        
+
         const propertyHeader = document.createElement('th');
         propertyHeader.textContent = 'Property';
         propertyHeader.className = this.options.propertyClass;
-        
+
         const valueHeader = document.createElement('th');
         valueHeader.textContent = 'Value';
         valueHeader.className = this.options.valueClass;
-        
+
         headerRow.appendChild(propertyHeader);
         headerRow.appendChild(valueHeader);
         thead.appendChild(headerRow);
         table.appendChild(thead);
-        
+
         // Create table body
         const tbody = document.createElement('tbody');
-        
+
         // Add rows for each property
         for (const [key, value] of Object.entries(data)) {
             const row = document.createElement('tr');
             row.className = this.options.rowClass;
-            
+
             const propertyCell = document.createElement('td');
             propertyCell.className = `${this.options.cellClass} ${this.options.propertyClass}`;
             propertyCell.textContent = this.formatPropertyName(key);
-            
+
             const valueCell = document.createElement('td');
             valueCell.className = `${this.options.cellClass} ${this.options.valueClass}`;
-            
+
             // Format the value based on its type
             if (Array.isArray(value)) {
                 valueCell.innerHTML = this.formatArrayValue(value);
@@ -87,23 +87,23 @@ class PropTableGenerator {
             } else {
                 valueCell.textContent = value !== null && value !== undefined ? value.toString() : '-';
             }
-            
+
             row.appendChild(propertyCell);
             row.appendChild(valueCell);
             tbody.appendChild(row);
         }
-        
+
         table.appendChild(tbody);
         tableContainer.appendChild(table);
-        
+
         // Append to container if provided
         if (container) {
             container.appendChild(tableContainer);
         }
-        
+
         return tableContainer;
     }
-    
+
     /**
      * Format a property name for display
      * @param {String} name - The property name
@@ -117,7 +117,7 @@ class PropTableGenerator {
             .replace(/^\w/, c => c.toUpperCase()) // Capitalize first letter
             .trim();
     }
-    
+
     /**
      * Format an array value for display
      * @param {Array} array - The array to format
@@ -125,7 +125,7 @@ class PropTableGenerator {
      */
     formatArrayValue(array) {
         if (array.length === 0) return '-';
-        
+
         return array
             .map(item => {
                 if (typeof item === 'object' && item !== null) {
@@ -136,7 +136,7 @@ class PropTableGenerator {
             })
             .join('');
     }
-    
+
     /**
      * Format an object value for display
      * @param {Object} obj - The object to format
@@ -144,12 +144,12 @@ class PropTableGenerator {
      */
     formatObjectValue(obj) {
         if (!obj || Object.keys(obj).length === 0) return '-';
-        
+
         return Object.entries(obj)
             .map(([key, value]) => {
                 const formattedKey = this.formatPropertyName(key);
                 let formattedValue;
-                
+
                 if (Array.isArray(value)) {
                     formattedValue = this.formatArrayValue(value);
                 } else if (typeof value === 'object' && value !== null) {
@@ -159,12 +159,12 @@ class PropTableGenerator {
                 } else {
                     formattedValue = value !== null && value !== undefined ? value.toString() : '-';
                 }
-                
+
                 return `<div class="object-property"><span class="object-key">${formattedKey}:</span> <span class="object-value">${formattedValue}</span></div>`;
             })
             .join('');
     }
-    
+
     /**
      * Create a table from a TypeScript interface definition
      * @param {String} interfaceString - TypeScript interface definition
@@ -177,7 +177,7 @@ class PropTableGenerator {
         const data = this.parseInterfaceString(interfaceString);
         return this.generateTable(data, title, container);
     }
-    
+
     /**
      * Parse a TypeScript interface string into a JavaScript object
      * @param {String} interfaceString - TypeScript interface definition
@@ -185,27 +185,27 @@ class PropTableGenerator {
      */
     parseInterfaceString(interfaceString) {
         const result = {};
-        
+
         // Extract the content between curly braces
         const match = interfaceString.match(/\{([^}]+)\}/);
         if (!match) return result;
-        
+
         const content = match[1];
-        
+
         // Split by semicolons and process each line
         const lines = content.split(';').map(line => line.trim()).filter(line => line);
-        
+
         lines.forEach(line => {
             // Split the line into property name and type
             const parts = line.split(':').map(part => part.trim());
             if (parts.length < 2) return;
-            
+
             const propertyName = parts[0];
             const propertyType = parts.slice(1).join(':').trim();
-            
+
             result[propertyName] = propertyType;
         });
-        
+
         return result;
     }
 }
@@ -234,12 +234,12 @@ window.propTableGenerator = new PropTableGenerator();
  */
 function createPropTable(data, title = null, container = null) {
     const tableGenerator = window.propTableGenerator;
-    
+
     let containerElement = container;
     if (typeof container === 'string') {
         containerElement = document.getElementById(container);
     }
-    
+
     return tableGenerator.generateTable(data, title, containerElement);
 }
 
@@ -251,12 +251,12 @@ function createPropTable(data, title = null, container = null) {
  */
 function createPropTableFromInterface(interfaceString, title = null, container = null) {
     const tableGenerator = window.propTableGenerator;
-    
+
     let containerElement = container;
     if (typeof container === 'string') {
         containerElement = document.getElementById(container);
     }
-    
+
     return tableGenerator.generateTableFromInterface(interfaceString, title, containerElement);
 }
 
@@ -314,18 +314,18 @@ function createPropTable(properties, title, container) {
     const tbody = document.createElement('tbody');
     Object.entries(properties).forEach(([propName, propType]) => {
         const row = document.createElement('tr');
-        
+
         // Property name cell
         const nameCell = document.createElement('td');
         nameCell.textContent = propName;
         row.appendChild(nameCell);
-        
+
         // Type cell
         const typeCell = document.createElement('td');
         const baseType = getBaseType(propType);
         typeCell.textContent = baseType;
         row.appendChild(typeCell);
-        
+
         // Variants cell
         const variantsCell = document.createElement('td');
         const variants = getVariants(propType);
@@ -333,7 +333,7 @@ function createPropTable(properties, title, container) {
             variants.forEach(variant => {
                 const variantSpan = document.createElement('span');
                 variantSpan.className = 'variant-option';
-                
+
                 // Check if this is a default value
                 if (variant.startsWith('default=')) {
                     variantSpan.setAttribute('data-default', 'true');
@@ -341,7 +341,7 @@ function createPropTable(properties, title, container) {
                 } else {
                     variantSpan.textContent = variant;
                 }
-                
+
                 variantsCell.appendChild(variantSpan);
                 // Add a space between variants
                 variantsCell.appendChild(document.createTextNode(' '));
@@ -351,11 +351,11 @@ function createPropTable(properties, title, container) {
             const trueSpan = document.createElement('span');
             trueSpan.className = 'bool-true';
             trueSpan.textContent = 'True';
-            
+
             const falseSpan = document.createElement('span');
             falseSpan.className = 'bool-false';
             falseSpan.textContent = 'False';
-            
+
             variantsCell.appendChild(trueSpan);
             variantsCell.appendChild(document.createTextNode(' '));
             variantsCell.appendChild(falseSpan);
@@ -369,7 +369,7 @@ function createPropTable(properties, title, container) {
             variantsCell.textContent = '-';
         }
         row.appendChild(variantsCell);
-        
+
         tbody.appendChild(row);
     });
     table.appendChild(tbody);
@@ -397,7 +397,7 @@ function getVariants(type) {
     if (!type.includes('|')) {
         return [];
     }
-    
+
     return type
         .split('|')
         .map(v => v.trim().replace(/['"]/g, '').replace(/;$/, '')) // Remove semicolon at the end
@@ -405,4 +405,4 @@ function getVariants(type) {
 }
 
 // Make the function available globally
-window.createPropTable = createPropTable; 
+window.createPropTable = createPropTable;

@@ -155,6 +155,16 @@
             stroke:var(--component-item) !important;
             color: var(--component-item) !important;
         }
+        .component-item-fill-nostroke,
+        .component-item-fill-nostroke path {
+            fill: var(--component-item) !important;
+            color: var(--component-item) !important;
+        }
+        .component-item-bg-nostroke,
+        .component-item-bg-nostroke path {
+            fill: var(--component-bg) !important;
+            color: var(--component-bg) !important;
+        }
 
         /* Optional: Specify different weights and styles */
         .light {
@@ -181,6 +191,11 @@
         body::-webkit-scrollbar {
             width: 6px;
             height: 6px;
+        }
+
+        .hidden {
+            display: none!important;
+            visibility: hidden!important;
         }
 
         .main-container {

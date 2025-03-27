@@ -471,6 +471,33 @@
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
     },
+    "table": {
+        "name": "Table",
+        "description": "",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
+        "figmaProto":"https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
+        "figmaButtonText": "Table",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "view-mode-picker": {
+        "name": "View Mode Picker",
+        "description": "",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
+        "figmaProto":"https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
+        "figmaButtonText": "View Mode Picker",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "project-switch": {
+        "name": "Project Switch",
+        "description": "",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
+        "figmaProto":"https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
+        "figmaButtonText": "Project Switch",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
     "other-icons": {
         "name": "Other icons",
         "description": "icon collection featuring various categories including social media, payment methods, browsers, operating systems, design tools, and development environments. Each icon is carefully crafted to maintain consistent visual quality while representing well-known brands and applications. Use these icons to enhance user recognition and provide familiar visual references in your interfaces.",

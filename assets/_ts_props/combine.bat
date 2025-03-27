@@ -17,4 +17,5 @@ for /r "%inputDir%" %%F in (*.ts) do (
 
 echo Combined TypeScript files into %outputFile%
 
-can you add that it will remove every line that starts with "// File" and replaces "export interface " with ""
+:: Run the Python script to clean the combined JSON
+python clean_json.py

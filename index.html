@@ -255,7 +255,7 @@
             { "category": "Icons", "items": ["Icons", "Other Icons"] },
             { "category": "Content", "items": ["Content Frames", "Content Slots", "Content Header", "Content Slot"] },
             { "category": "Lists", "items": ["Check List Item", "Class List Item"] },
-            { "category": "Tables", "items": ["Table Cell"] },
+            { "category": "Tables", "items": ["Table", "Table Cell"] },
             { "category": "Accordion", "items": ["Accordion", "Accordion Item"] },
             { "category": "Headers", "items": ["Card Header", "Page Header", "Section Header"] },
             { "category": "Dividers", "items": ["Divider"] },
@@ -264,7 +264,7 @@
             { "category": "Inbox", "items": ["Content / Inbox / Classic", "Content / Inbox / Compact", "Mail Navigation List Item"] },
             { "category": "Signup & Login", "items": ["Login Sections", "Signup Sections"] },
             { "category": "Logos", "items": ["GG Logo", "GG Logo Icon", "GG Logo Mark"] },
-            { "category": "Miscellaneous", "items": ["Avatar", "Avatar Labeled", "Avatar Stack"] }
+            { "category": "Miscellaneous", "items": ["Avatar", "Avatar Labeled", "Avatar Stack", "Project Switch", "View Mode Picker"] }
         ];
         let isAlphabeticalSort = false;
 
@@ -669,11 +669,11 @@
                 if (pageName === 'ui-component-lib') {
                     loadingIndicator.classList.remove('active');
                     const contentHeader = `
-                    <div class="content-header">
-                        <h1 class="content-title">❖ Component Library</h1>
-                        <p class="content-subtitle">Select a component category to explore</p>
-                    </div>
-                `;
+                        <div class="content-header">
+                            <h1 class="content-title">❖ Component Library</h1>
+                            <p class="content-subtitle">Select a component category to explore</p>
+                        </div>
+                    `;
                     let categoriesHTML = '<div class="components-grid">';
                     await Promise.all(menuData.map(async category => {
                         if (category.category !== "First Steps") {

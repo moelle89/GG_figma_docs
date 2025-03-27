@@ -1,9 +1,9 @@
- 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Accordion.ts 
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Accordion.ts
 export interface Accordion {
 	property1: 'Default'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\AccordionItem.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\AccordionItem.ts
 export interface AccordionItem {
 	instance: ReactNode; 
 	accordionSubtext: string; 
@@ -11,44 +11,52 @@ export interface AccordionItem {
 	property: 'Default' | 'Hover'; 
 	icon: 'True' | 'False'; 
 	expanded: 'True' | 'False'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Avatar.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Avatar.ts
 export interface Avatar {
 	initials: string; 
 	size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'; 
 	type: 'Default' | 'With line' | 'Online' | 'Offline'; 
 	variant: 'Image' | 'Initial subtle' | 'Initial filled' | 'User subtle' | 'User filled'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\AvatarLabeled.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\AvatarLabeled.ts
 export interface AvatarLabeled {
 	text: string; 
 	subline: string; 
 	sublabel: boolean; 
 	size: 'sm' | 'md' | 'lg' | 'xl'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\AvatarStack.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\AvatarStack.ts
 export interface AvatarStack {
 	3: boolean; 
 	size: 'xs' | 'sm' | 'md' | 'lg'; 
 	number: '5' | '4' | '3' | '2'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Badge.ts 
-export interface Badge {
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Badge.ts
+export interface ❖ Badge {
+	icon: ReactNode; 
+	text: string; 
 	size: 'lg' | 'md' | 'sm'; 
 	type: 'Simple' | 'icon + Label' | 'Just icon' | 'Avatar'; 
 	stroke: 'No' | 'Yes'; 
 	cancel: 'Yes' | 'No'; 
 	color: 'Gray' | 'Success' | 'Primary' | 'Warning' | 'Error' | 'Clear'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\BaseBadge.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\BaseBadge.ts
 export interface BaseBadge {
 	icon: ReactNode; 
 	text: string; 
 	size: 'lg' | 'md' | 'sm'; 
 	type: 'Simple' | 'icon + Label' | 'Just icon' | 'Avatar'; 
 	cancel: 'Yes' | 'No'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Button.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Button.ts
 export interface Button {
 	buttonLabel: string; 
 	iconAfterSwap: ReactNode; 
@@ -59,34 +67,39 @@ export interface Button {
 	type: 'Primary' | 'Secondary' | 'Tertiary' | 'Link 01' | 'Link 02'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
 	cornerRadius: 'Default' | 'Pill'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ButtonClose.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ButtonClose.ts
 export interface ButtonClose {
 	size: 'xs' | 'sm' | 'md' | 'lg'; 
 	color: 'Primary' | 'Gray'; 
 	state: 'Default' | 'Hover' | 'Focus'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ButtonGroup.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ButtonGroup.ts
 export interface ButtonGroup {
 	size: 'sm' | 'md' | 'lg'; 
 	type: 'Text only' | 'Icon before' | 'Icon after' | 'Icon only' | 'Arrows'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ButtonGroupButton.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ButtonGroupButton.ts
 export interface ButtonGroupButton {
 	text: string; 
 	icon: ReactNode; 
 	size: 'sm' | 'md' | 'lg'; 
 	type: 'Icon only' | 'Text only' | 'Icon before' | 'Icon after'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ButtonWithIconOnly.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ButtonWithIconOnly.ts
 export interface ButtonWithIconOnly {
 	changeIcon: ReactNode; 
 	size: 'sm' | 'md' | 'lg' | 'xl' | 'xxl'; 
 	type: 'Primary' | 'Secondary' | 'Tertiary'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\CardHeader.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\CardHeader.ts
 export interface CardHeader {
 	actionButtons: boolean; 
 	caption: boolean; 
@@ -94,15 +107,17 @@ export interface CardHeader {
 	divider: boolean; 
 	dropdownAction: boolean; 
 	property1: 'Default'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Checkbox.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Checkbox.ts
 export interface Checkbox {
 	checked: 'False' | 'True'; 
 	size: 'sm' | 'md' | 'lg'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
 	indeterminate: 'False' | 'True'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\CheckboxLabel.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\CheckboxLabel.ts
 export interface CheckboxLabel {
 	label: boolean; 
 	descriptionText: string; 
@@ -112,24 +127,27 @@ export interface CheckboxLabel {
 	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
 	checked: 'False' | 'True'; 
 	indeterminate: 'False' | 'True'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ChecklistItem.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ChecklistItem.ts
 export interface ChecklistItem {
 	itemTitle: string; 
 	instance: ReactNode; 
 	variant: 'Only icon' | 'Circle line' | 'Circle filled' | 'Custom Icon'; 
 	color: 'Primary' | 'Green' | 'Black'; 
 	size: 'xs' | 'sm' | 'md' | 'lg'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ClassListItem.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ClassListItem.ts
 export interface ClassListItem {
 	divier: boolean; 
 	subtext: string; 
 	titel: string; 
 	icon: boolean; 
 	property1: 'Circle Icon' | 'Circle Icon hover' | 'Square Icon' | 'Square Icon hover'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ContentFrame.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ContentFrame.ts
 export interface ContentFrame {
 	swapSlot: ReactNode; 
 	contentRight: ReactNode; 
@@ -138,60 +156,71 @@ export interface ContentFrame {
 	contentDimm: boolean; 
 	contentHeader: boolean; 
 	grid: '1 Cell' | '2 Cells' | '3 Cells' | '4 Cells' | '2 Rows' | '2 Rows | 2 Cells each' | '2 Rows | 2 Cells 3 Cells' | '2 Rows | 3 Cells each' | '3 Rows'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ContentHeader.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ContentHeader.ts
 export interface ContentHeader {
 	swapSlot2: ReactNode; 
 	swapSlot: ReactNode; 
 	headerGrid: '1 Cell' | '2 Cells' | '2 Rows'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ContentSlot.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ContentSlot.ts
 export interface ContentSlot {
 	text: string; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Divider.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Divider.ts
 export interface Divider {
 	text: string; 
 	variant: 'Default' | 'Text left' | 'Text right' | 'Text middle'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\EmptyState.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\EmptyState.ts
 export interface EmptyState {
 	secondaryButton: boolean; 
 	primaryButton: boolean; 
 	title: string; 
 	subtext: string; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\EmptyStateGraphic.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\EmptyStateGraphic.ts
 export interface EmptyStateGraphic {
 	accent: boolean; 
 	type: 'calendar' | 'code' | 'Category' | 'Comment' | 'Date' | 'Files' | 'Group' | 'Task' | 'Analitics' | 'Upload' | 'Dev Settings' | 'Development 01' | 'Edit' | 'Error' | 'Login' | 'Media' | 'Performance' | 'Settings' | 'Syncronize' | 'Tags' | 'Tracking' | 'Upload Error' | 'Upload Media' | 'Upload Single File' | 'Validation' | 'Web Page' | 'Write Content' | 'add Files' | 'Signature'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\GgLogo.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\GgLogo.ts
 export interface GgLogo {
 	size: 'sm' | 'md' | 'lg'; 
 	color: 'Primary' | 'Black' | 'White'; 
 	logotypeIcon: 'LOGOTYPE' | 'ICON'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\GgLogoIcon.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\GgLogoIcon.ts
 export interface GgLogoIcon {
 	style: 'STROKE' | 'FILLED'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\GgLogoMark.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\GgLogoMark.ts
 export interface GgLogoMark {
 	style: 'STROKE' | 'FILLED'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\HorizontalTabs.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\HorizontalTabs.ts
 export interface HorizontalTabs {
 	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09'; 
 	size: 'md' | 'sm'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\InfoCard.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\InfoCard.ts
 export interface InfoCard {
 	subtext: string; 
 	title: string; 
 	variant: 'With progress 02' | 'With icon 01' | 'With icon 02' | 'With illustration' | 'Simple 02' | 'With progress 01' | 'Simple 01'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Input.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Input.ts
 export interface Input {
 	inputText: string; 
 	hintText: string; 
@@ -205,21 +234,24 @@ export interface Input {
 	label: boolean; 
 	state: 'Default' | 'Hover' | 'Filled' | 'Focus' | 'Disabled' | 'Error'; 
 	variant: 'Default' | 'Phone number' | 'Amount' | 'Website' | 'Card'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\LoginSections.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\LoginSections.ts
 export interface LoginSections {
 	text: string; 
 	variant: 'Simple 01' | 'Simple 02' | 'Simple 03' | 'Simple 04' | 'Simple 05' | 'With image 01' | 'With image 02' | 'With image 03' | 'With image 04' | 'With image 05' | 'With mockup 01' | 'With mockup 02' | 'With mockup 03' | 'With mockup 04' | 'With mockup 05' | 'Gradient 01' | 'Gradient 02' | 'Gradient 03' | 'Gradient 04' | 'Gradient 05'; 
 	mobileLayout: 'True' | 'False'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ModalActions.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ModalActions.ts
 export interface ModalActions {
 	backButton: boolean; 
 	customButton: boolean; 
 	variant: 'Single Button' | '2 Buttons' | '3 Buttons | fill' | '3 Buttons | hug' | '3 Buttons | left' | '3 Buttons | right'; 
 	mobile: 'True' | 'False'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ModalHeader.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ModalHeader.ts
 export interface ModalHeader {
 	featuredIcon: boolean; 
 	instance: ReactNode; 
@@ -230,52 +262,69 @@ export interface ModalHeader {
 	titel: string; 
 	variant: 'Left align 01' | 'Left align 02' | 'Center align'; 
 	mobile: 'True' | 'False'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PageHeader.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PageHeader.ts
 export interface PageHeader {
 	search: boolean; 
 	action: boolean; 
 	caption: boolean; 
 	property1: 'Default'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Pagination.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Pagination.ts
 export interface Pagination {
 	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12' | '13' | '14' | '15' | '16'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PaginationButtonItem.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PaginationButtonItem.ts
 export interface PaginationButtonItem {
 	icon: boolean; 
 	button: 'Previous' | 'Next' | 'Number' | 'Icon only'; 
 	state: 'Default' | 'Selected' | 'Focussed'; 
 	color: 'Primary' | 'Gray'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PaginationDots.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PaginationDots.ts
 export interface PaginationDots {
 	type: 'Dots' | 'Dots filled' | 'Lines' | 'Lines filled'; 
 	size: 'sm' | 'md'; 
 	pages: '2' | '3' | '4' | '5' | '6' | '7'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PaginationDotsItem.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PaginationDotsItem.ts
 export interface PaginationDotsItem {
 	current: 'True' | 'False'; 
 	type: 'Dot' | 'Line'; 
 	size: 'sm' | 'md'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PaginationItem.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\PaginationItem.ts
 export interface PaginationItem {
 	changeIcon: ReactNode; 
 	state: 'Default' | 'Selected' | 'Focussed'; 
 	color: 'Gray' | 'Primary'; 
 	shape: 'Square' | 'Circle'; 
 	type: 'Number' | 'Icon'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\RadioButton.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Project Switch.ts
+export interface ❖ Project Switch {
+	logoIcon: ReactNode; 
+	sublabel: boolean; 
+	subline: string; 
+	text: string; 
+	size: 'sm' | 'md' | 'lg' | 'xl'; 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\RadioButton.ts
 export interface RadioButton {
 	size: 'sm' | 'md'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus' | 'Disabled' | 'Error'; 
 	checked: 'True' | 'False'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\RadioButtonGroup.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\RadioButtonGroup.ts
 export interface RadioButtonGroup {
 	info1: string; 
 	icon: ReactNode; 
@@ -295,8 +344,9 @@ export interface RadioButtonGroup {
 	text1: string; 
 	variant: 'List with description' | 'List verticle' | 'List horizontal' | 'List with inline description' | 'List with radio on right' | 'Simple list with radio on right' | 'Stacked cards 01' | 'Stacked cards 02' | 'Cards'; 
 	size: 'sm' | 'md'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\SectionHeader.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\SectionHeader.ts
 export interface SectionHeader {
 	divider: boolean; 
 	caption: boolean; 
@@ -306,41 +356,53 @@ export interface SectionHeader {
 	buttonGroup: boolean; 
 	search: boolean; 
 	property1: 'Default'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\SignupSection.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\SignupSection.ts
 export interface SignupSection {
 	variant: 'Simple 01' | 'Simple 02' | 'Simple 03' | 'Simple 04' | 'Simple 05' | 'With image 01' | 'With image 02' | 'With image 03' | 'With image 04' | 'With image 05' | 'With mockup 01' | 'With mockup 02' | 'With mockup 03' | 'With mockup 04' | 'With mockup 05' | 'Gradient 01' | 'Gradient 02' | 'Gradient 03' | 'Gradient 04' | 'Gradient 05'; 
 	mobileLayout: 'True' | 'False'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\SocialButton.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\SocialButton.ts
 export interface SocialButton {
 	social: 'Google' | 'Facebook' | 'Apple'; 
 	style: 'Filled' | 'Outline color' | 'Outline gray'; 
 	state: 'Default' | 'Hover' | 'Click' | 'Focus'; 
 	text: 'True' | 'False'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\StoreBadges.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\StoreBadges.ts
 export interface StoreBadges {
 	store: 'Google play' | 'App store' | 'Galaxy store' | 'Microsoft' | 'App gallery' | 'F-droid'; 
 	style: 'Brand' | 'White outline' | 'Black outline'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\TabButton.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\TabButton.ts
 export interface TabButton {
 	icon: boolean; 
 	badge: boolean; 
 	size: 'sm' | 'md'; 
 	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09'; 
 	state: 'Default' | 'Hover' | 'Active'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\TableCell.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Table.ts
+export interface ❖ Table {
+	header: boolean; 
+	variant: '01' | '02' | '03'; 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\TableCell.ts
 export interface Table Cell {
 	title: boolean; 
 	caption: boolean; 
 	text: string; 
 	subtext: string; 
 	type: 'Text' | 'Lead avatar' | 'Lead avatar checkbox' | 'Lead avatar radio' | 'Lead checkbox' | 'Lead radio' | 'Lead toggle' | 'Action dropdown' | 'Check' | 'Checkbox only' | 'Radio only' | 'Toggle only' | 'Button group' | 'Badge' | 'Badge group' | 'Avatar only' | 'Avatar group' | 'Lead logo checkbox' | 'Lead logo radio' | 'Lead file checkbox' | 'Lead file radio'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ToggleLabel.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ToggleLabel.ts
 export interface ToggleLabel {
 	subtext: string; 
 	title: string; 
@@ -348,15 +410,23 @@ export interface ToggleLabel {
 	state: 'Default' | 'Hover' | 'Disabled'; 
 	pressed: 'True' | 'False'; 
 	togglePosition: 'Left' | 'Right'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ToggleSwitch.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ToggleSwitch.ts
 export interface ToggleSwitch {
 	size: 'sm' | 'md'; 
 	state: 'Default' | 'Hover' | 'Disabled'; 
 	pressed: 'True' | 'False'; 
-} 
-// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\VerticalTabs.ts 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\VerticalTabs.ts
 export interface VerticalTabs {
 	variant: '01' | '02' | '03' | '04' | '05' | '06' | '07'; 
 	size: 'sm' | 'md'; 
-} 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\View Mode Picker.ts
+export interface ❖ View Mode Picker {
+	mode: 'Default' | 'Advanced'; 
+}
+

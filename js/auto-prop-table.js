@@ -1,6 +1,6 @@
 /**
  * Auto Property Table Generator
- * 
+ *
  * This script automatically detects the current page and injects
  * a property table from props.json if a matching component is found.
  */
@@ -8,16 +8,16 @@
 (function() {
     // Enable debug mode
     const DEBUG = true;
-    
+
     // Debug log function
     function debugLog(...args) {
         if (DEBUG) {
             console.log('[AutoPropTable]', ...args);
         }
     }
-    
+
     debugLog('Auto Property Table Generator initialized');
-    
+
     // Configuration
     const CONFIG = {
         propsJsonPath: 'assets/_ts_props/props.json',
@@ -31,21 +31,21 @@
      */
     window.initializeAutoPropTables = function() {
         debugLog('Starting property table generation');
-        
+
         // Get the current page name
         const pageName = getCurrentPageName();
         if (!pageName) {
             debugLog('No valid page name found, aborting');
             return;
         }
-        
+
         debugLog('Page name detected:', pageName);
 
         // Load the props.json file
         loadPropsJson()
             .then(propsData => {
                 debugLog('Props data loaded successfully, found', Object.keys(propsData).length, 'components');
-                
+
                 // Find matching component data
                 const componentData = findComponentData(propsData, pageName);
                 if (componentData) {
@@ -75,19 +75,19 @@
             debugLog('Page name from active sidebar item:', pageName);
             return pageName;
         }
-        
+
         // Fallback to URL for direct page loads
         const path = window.location.pathname;
         const pageName = path.split('/').pop();
-        
+
         debugLog('Raw page name from URL:', pageName);
-        
+
         // Return null if we're on the index page
         if (!pageName || pageName === '' || pageName === 'index.html') {
             debugLog('Index page detected, returning null');
             return null;
         }
-        
+
         // Remove .html extension
         const cleanPageName = pageName.replace('.html', '');
         debugLog('Clean page name:', cleanPageName);
@@ -100,7 +100,7 @@
      */
     function loadPropsJson() {
         debugLog('Loading props.json from:', CONFIG.propsJsonPath);
-        
+
         return new Promise((resolve, reject) => {
             fetch(CONFIG.propsJsonPath)
                 .then(response => {
@@ -133,30 +133,30 @@
     function parsePropsJson(jsonText) {
         debugLog('Starting to parse props.json text');
         const result = {};
-        
+
         // Remove the outer braces and split by component
         const componentsText = jsonText.trim().slice(1, -1).trim();
-        
+
         // Split the text by component definitions (looking for "}, " pattern)
         const componentBlocks = componentsText.split(/},\s*(?=[A-Za-z])/);
         debugLog('Found', componentBlocks.length, 'component blocks');
-        
+
         componentBlocks.forEach((block, index) => {
             // Extract component name and properties
             const match = block.match(/([^{]+){\s*([\s\S]+)/);
             if (match) {
                 const componentName = match[1].trim();
                 const propertiesText = match[2].trim();
-                
+
                 debugLog('Parsing component:', componentName);
-                
+
                 // Parse properties
                 const properties = {};
                 const propertyLines = propertiesText.split(/;\s*(?=\w)/);
-                
+
                 propertyLines.forEach(line => {
                     if (!line.trim()) return;
-                    
+
                     // Split by first colon to get property name and type
                     const colonIndex = line.indexOf(':');
                     if (colonIndex > 0) {
@@ -165,14 +165,14 @@
                         properties[propName] = propType;
                     }
                 });
-                
+
                 debugLog('Component', componentName, 'has', Object.keys(properties).length, 'properties');
                 result[componentName] = properties;
             } else {
                 debugLog('Failed to parse component block', index);
             }
         });
-        
+
         debugLog('Finished parsing props.json, found', Object.keys(result).length, 'components');
         return result;
     }
@@ -185,11 +185,11 @@
      */
     function findComponentData(propsData, pageName) {
         debugLog('Finding component data for page:', pageName);
-        
+
         // Get possible component names
         const possibleNames = getPossibleComponentNames(pageName);
         debugLog('Possible component names:', possibleNames);
-        
+
         // Find matching component
         const componentData = findMatchingComponent(propsData, possibleNames);
         if (componentData) {
@@ -231,19 +231,19 @@
         names.push(pageName);
 
         // Pascal case (e.g., "AvatarLabeled")
-        const pascalCase = words.map(word => 
+        const pascalCase = words.map(word =>
             word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         ).join('');
         names.push(pascalCase);
 
         // Space separated (e.g., "Avatar Labeled")
-        const spaceCase = words.map(word => 
+        const spaceCase = words.map(word =>
             word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         ).join(' ');
         names.push(spaceCase);
 
         // No spaces pascal case (e.g., "AvatarStack")
-        const noSpacesPascalCase = words.map(word => 
+        const noSpacesPascalCase = words.map(word =>
             word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         ).join('');
         names.push(noSpacesPascalCase);
@@ -266,7 +266,7 @@
      */
     function findMatchingComponent(propsData, componentNames) {
         debugLog(`Looking for matching component in props data...`);
-        
+
         // Normalize all component names in props data
         const normalizedPropsData = {};
         Object.keys(propsData).forEach(key => {
@@ -283,7 +283,7 @@
 
             // Check normalized match
             const normalizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            const matchingKey = Object.keys(propsData).find(key => 
+            const matchingKey = Object.keys(propsData).find(key =>
                 key.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedName
             );
 
@@ -303,12 +303,12 @@
      */
     function injectPropertyTable(componentData) {
         debugLog('Injecting property table for:', componentData.name);
-        
+
         // Create container for the property table
         const container = document.createElement('div');
         container.id = CONFIG.tableContainerId;
         container.className = 'auto-prop-table-container';
-        
+
         // Generate the table using the PropTableGenerator
         if (typeof createPropTable === 'function') {
             debugLog('Creating property table');
@@ -318,7 +318,7 @@
             console.error('PropTableGenerator not loaded. Make sure to include prop-table-generator.js before this script.');
             return;
         }
-        
+
         // Find the grid-2-col section that contains the section title
         const gridSection = Array.from(document.querySelectorAll('.grid-2-col')).find(grid => {
             return grid.querySelector('.section-title') && grid.querySelector('.two-tone-button');
@@ -338,13 +338,13 @@
             debugLog('Grid section found, inserting table after it');
             gridSection.after(container);
         }
-        
+
         debugLog('Property table injected successfully');
-        
+
         // Add some spacing
         const spacer = document.createElement('div');
         spacer.style.height = '40px';
         container.after(spacer);
         debugLog('Added spacing after table');
     }
-})(); 
+})();

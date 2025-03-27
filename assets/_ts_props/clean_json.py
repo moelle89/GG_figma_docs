@@ -1,7 +1,12 @@
 import re
+import os
+
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+combined_file_path = os.path.join(script_dir, "dist", "combined.json")  # Correct path to combined.json
 
 # Read the file
-with open("combined.json", "r", encoding="utf-8") as file:
+with open(combined_file_path, "r", encoding="utf-8") as file:
     lines = file.readlines()
 
 # Process the content
@@ -14,7 +19,8 @@ formatted_blocks = [block.strip() + "," for block in blocks]  # Add comma at the
 wrapped_content = "{\n" + "\n\n".join(formatted_blocks).rstrip(',') + "\n}"  # Wrap in {}
 
 # Write to a new file
-with open("props.json", "w", encoding="utf-8") as file:
+output_file_path = os.path.join(script_dir, "props.json")  # Output path for props.json
+with open(output_file_path, "w", encoding="utf-8") as file:
     file.write(wrapped_content)
 
 print("Processed file saved as props.json")
