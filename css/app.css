@@ -102,6 +102,7 @@
             [data-theme="dark"] {
                 --bg-color: hsl(222, 30%, 5%);
                 --category-bg: hsl(222, 30%, 7%);
+                --table-bg: hsl(220 29% 13% / 1);
                 --card-bg: hsl(222 29% 11% / 1);
                 --component-bg: hsl(222, 33%, 5.5%);
             }
