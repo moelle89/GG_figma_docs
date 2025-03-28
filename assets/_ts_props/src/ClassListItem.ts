@@ -1,7 +1,7 @@
-export interface ClassListItem {
-	divier: boolean; 
+export interface ❖ Class List Item {
+	divider: boolean; 
+	icon: boolean; 
 	subtext: string; 
 	titel: string; 
-	icon: boolean; 
-	property1: 'Circle Icon' | 'Circle Icon hover' | 'Square Icon' | 'Square Icon hover'; 
+	iconShape: 'Circle Icon' | 'Circle Icon hover' | 'Square Icon' | 'Square Icon hover'; 
 }

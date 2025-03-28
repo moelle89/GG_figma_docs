@@ -148,7 +148,10 @@
                 const componentName = match[1].trim();
                 const propertiesText = match[2].trim();
 
-                debugLog('Parsing component:', componentName);
+                // Trim "❖ " from the component name if it exists
+                const cleanedComponentName = componentName.startsWith('❖ ') ? componentName.slice(3) : componentName;
+
+                debugLog('Parsing component:', cleanedComponentName);
 
                 // Parse properties
                 const properties = {};
@@ -166,8 +169,8 @@
                     }
                 });
 
-                debugLog('Component', componentName, 'has', Object.keys(properties).length, 'properties');
-                result[componentName] = properties;
+                debugLog('Component', cleanedComponentName, 'has', Object.keys(properties).length, 'properties');
+                result[cleanedComponentName] = properties; // Use cleanedComponentName here
             } else {
                 debugLog('Failed to parse component block', index);
             }

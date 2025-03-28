@@ -475,7 +475,7 @@
         "name": "Table",
         "description": "",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
-        "figmaProto":"https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
         "figmaButtonText": "Table",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
@@ -484,17 +484,8 @@
         "name": "View Mode Picker",
         "description": "",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
-        "figmaProto":"https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6175-50301&t=yvbIWiNAY0ORJaDD-4",
         "figmaButtonText": "View Mode Picker",
-        "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
-    },
-    "project-switch": {
-        "name": "Project Switch",
-        "description": "",
-        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
-        "figmaProto":"https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
-        "figmaButtonText": "Project Switch",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
     },
@@ -503,6 +494,51 @@
         "description": "icon collection featuring various categories including social media, payment methods, browsers, operating systems, design tools, and development environments. Each icon is carefully crafted to maintain consistent visual quality while representing well-known brands and applications. Use these icons to enhance user recognition and provide familiar visual references in your interfaces.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2715-222084&t=Y1KOwZKPq6lnMlNG-4",
         "figmaButtonText": "Other icons",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "ui-component-lib": {
+        "name": "UI component lib",
+        "description": "",
+        "figmaLink": "",
+        "figmaProto": "",
+        "figmaButtonText": "UI component lib",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "documentation": {
+        "name": "Documentation",
+        "description": "",
+        "figmaLink": "",
+        "figmaProto": "",
+        "figmaButtonText": "Documentation",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "content-/-inbox-/-classic": {
+        "name": "Content / Inbox / Classic",
+        "description": "",
+        "figmaLink": "",
+        "figmaProto": "",
+        "figmaButtonText": "Content / Inbox / Classic",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "content-/-inbox-/-compact": {
+        "name": "Content / Inbox / Compact",
+        "description": "",
+        "figmaLink": "",
+        "figmaProto": "",
+        "figmaButtonText": "Content / Inbox / Compact",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "project-switch": {
+        "name": "Project Switch",
+        "description": "",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6051-45012&t=mBynr3H54o7ffLwu-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6179-50426&t=mBynr3H54o7ffLwu-4",
+        "figmaButtonText": "Project Switch",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
     }

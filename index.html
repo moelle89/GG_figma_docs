@@ -912,6 +912,14 @@
                 }
             });
         }
+
+        // Function to extract protoId from figmaProto URL
+            function extractProtoId(figmaProto) {
+                const regex = /node-id=(\d+-\d+)/; // Regular expression to match the node-id
+                const match = figmaProto.match(regex); // Execute the regex on the figmaProto string
+                return match ? match[1] : null; // Return the protoId or null if not found
+            }
+
         function injectComponentInfo(pageName) {
             setTimeout(() => {
                 console.log(`Injecting data for component: ${pageName}`);
@@ -945,6 +953,20 @@
                 } else {
                     console.log('Figma link element not found in the DOM');
                 }
+                            // Extract protoId from the figmaProto URL
+                const figmaProto = componentRepository[pageName]?.figmaProto; // Assuming figmaProto contains the URL
+                const protoId = figmaProto ? extractProtoId(figmaProto) : null; // Use the same method to extract protoId
+                console.log(`ProtoId for ${pageName}: ${protoId}`); // Debugging line
+                const figmaContainer = document.querySelector('[data-figma-link]');
+
+                // Update the iframe src
+                const iframe = document.querySelector('iframe'); // Select the iframe
+                if (iframe && protoId) {
+                    const currentSrc = iframe.getAttribute('src');
+                    const newSrc = currentSrc.replace(/node-id=\d+-\d+/, `node-id=${protoId}`); // Replace the node-id
+                    iframe.setAttribute('src', newSrc); // Set the new src
+                }
+
                 if (componentData.imagePath1 || componentData.imagePath2) {
                     console.log('Found image paths, searching for image elements');
                     const gridContainers = document.querySelectorAll('.grid-2-col');
@@ -1121,80 +1143,103 @@
                 });
             });
         }
-        function initializeVideos() {
-            const videos = document.querySelectorAll('video');
-            if (videos.length === 0) return;
-            videos.forEach((video, index) => {
-                video.id = `video-${index}`;
-                const videoContainer = video.closest('.video-container') || video.parentElement;
-                if (!videoContainer.querySelector('.video-status-indicator')) {
-                    const statusIndicator = document.createElement('div');
-                    statusIndicator.className = 'video-status-indicator';
-                    statusIndicator.textContent = 'Paused';
-                    statusIndicator.id = `indicator-${index}`;
-                    videoContainer.style.position = 'relative';
-                    videoContainer.appendChild(statusIndicator);
-                }
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        const indicator = document.getElementById(`indicator-${index}`);
-                        if (entry.isIntersecting) {
-                            videos.forEach(otherVideo => {
-                                if (otherVideo.id !== video.id) {
-                                    otherVideo.pause();
-                                    const otherIndex = otherVideo.id.split('-')[1];
-                                    const otherIndicator = document.getElementById(`indicator-${otherIndex}`);
-                                    if (otherIndicator) otherIndicator.textContent = 'Paused';
+
+                function initializeVideos() {
+                        console.log('Initializing videos...'); // Log when the function is executed
+                        const videos = document.querySelectorAll('video');
+                        if (videos.length === 0) {
+                            console.log('No videos found.'); // Log if no videos are found
+                            return; // Ensure this is inside the function
+                        }
+                        console.log('Videos found.'); // Log if no videos are found
+                        videos.forEach((video, index) => {
+                            video.id = `video-${index}`;
+                            const videoContainer = video.closest('.video-container') || video.parentElement;
+
+                            // Check for source elements and hide container if source is empty
+                            const sources = videoContainer.querySelectorAll('source');
+                            let hasValidSource = false;
+                            sources.forEach(source => {
+                                if (source.src) {
+                                    hasValidSource = true;
+                                } else {
+                                    console.log(`Empty source found in video container: ${videoContainer.id || 'unknown'}`); // Log if an empty source is found
                                 }
                             });
-                            if (video.paused) {
-                                const playPromise = video.play();
-                                if (playPromise !== undefined) {
-                                    playPromise.then(() => {
-                                        if (indicator) indicator.textContent = 'Playing';
-                                    }).catch(error => {
-                                        console.log("Auto-play prevented:", error);
-                                        if (indicator) indicator.textContent = 'Click to play';
+                            if (!hasValidSource) {
+                                videoContainer.classList.add('hidden');
+                                console.log(`Hiding video container: ${videoContainer.id || 'unknown'}`); // Log when hiding the container
+                            }
+
+                            if (!videoContainer.querySelector('.video-status-indicator')) {
+                                const statusIndicator = document.createElement('div');
+                                statusIndicator.className = 'video-status-indicator';
+                                statusIndicator.textContent = 'Paused';
+                                statusIndicator.id = `indicator-${index}`;
+                                videoContainer.style.position = 'relative';
+                                videoContainer.appendChild(statusIndicator);
+                            }
+                            const observer = new IntersectionObserver((entries) => {
+                                entries.forEach(entry => {
+                                    const indicator = document.getElementById(`indicator-${index}`);
+                                    if (entry.isIntersecting) {
+                                        videos.forEach(otherVideo => {
+                                            if (otherVideo.id !== video.id) {
+                                                otherVideo.pause();
+                                                const otherIndex = otherVideo.id.split('-')[1];
+                                                const otherIndicator = document.getElementById(`indicator-${otherIndex}`);
+                                                if (otherIndicator) otherIndicator.textContent = 'Paused';
+                                            }
+                                        });
+                                        if (video.paused) {
+                                            const playPromise = video.play();
+                                            if (playPromise !== undefined) {
+                                                playPromise.then(() => {
+                                                    if (indicator) indicator.textContent = 'Playing';
+                                                }).catch(error => {
+                                                    console.log("Auto-play prevented:", error);
+                                                    if (indicator) indicator.textContent = 'Click to play';
+                                                });
+                                            }
+                                        }
+                                    } else {
+                                        video.pause();
+                                        if (indicator) indicator.textContent = 'Paused';
+                                    }
+                                });
+                            }, {
+                                threshold: 0.5
+                            });
+                            observer.observe(video);
+                            video.addEventListener('click', () => {
+                                const indicator = document.getElementById(`indicator-${index}`);
+                                if (video.paused) {
+                                    videos.forEach(otherVideo => {
+                                        if (otherVideo.id !== video.id) {
+                                            otherVideo.pause();
+                                            const otherIndex = otherVideo.id.split('-')[1];
+                                            const otherIndicator = document.getElementById(`indicator-${otherIndex}`);
+                                            if (otherIndicator) otherIndicator.textContent = 'Paused';
+                                        }
                                     });
+                                    video.play();
+                                    if (indicator) indicator.textContent = 'Playing';
+                                } else {
+                                    video.pause();
+                                    if (indicator) indicator.textContent = 'Paused';
                                 }
-                            }
-                        } else {
-                            video.pause();
-                            if (indicator) indicator.textContent = 'Paused';
-                        }
-                    });
-                }, {
-                    threshold: 0.5
-                });
-                observer.observe(video);
-                video.addEventListener('click', () => {
-                    const indicator = document.getElementById(`indicator-${index}`);
-                    if (video.paused) {
-                        videos.forEach(otherVideo => {
-                            if (otherVideo.id !== video.id) {
-                                otherVideo.pause();
-                                const otherIndex = otherVideo.id.split('-')[1];
-                                const otherIndicator = document.getElementById(`indicator-${otherIndex}`);
-                                if (otherIndicator) otherIndicator.textContent = 'Paused';
-                            }
+                            });
+                            video.addEventListener('play', () => {
+                                const indicator = document.getElementById(`indicator-${index}`);
+                                if (indicator) indicator.textContent = 'Playing';
+                            });
+                            video.addEventListener('pause', () => {
+                                const indicator = document.getElementById(`indicator-${index}`);
+                                if (indicator) indicator.textContent = 'Paused';
+                            });
                         });
-                        video.play();
-                        if (indicator) indicator.textContent = 'Playing';
-                    } else {
-                        video.pause();
-                        if (indicator) indicator.textContent = 'Paused';
                     }
-                });
-                video.addEventListener('play', () => {
-                    const indicator = document.getElementById(`indicator-${index}`);
-                    if (indicator) indicator.textContent = 'Playing';
-                });
-                video.addEventListener('pause', () => {
-                    const indicator = document.getElementById(`indicator-${index}`);
-                    if (indicator) indicator.textContent = 'Paused';
-                });
-            });
-        }
+
         function initializeSearch() {
             const searchInput = document.getElementById('sidebarSearch');
             const noResults = document.getElementById('noResults');

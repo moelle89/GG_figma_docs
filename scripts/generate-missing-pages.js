@@ -29,7 +29,7 @@ const pageTemplate = (componentName, protoId) => `
 <div class="video-container">
     <div class="video-ratio-container">
         <video controls autoplay muted loop>
-            <source src="https://placehold.co/1920x1080" type="video/mp4">
+            <source type="video/mp4">
             Your browser does not support the video tag.
         </video>
     </div>

@@ -72,7 +72,7 @@
             --active-category-bg: var(--category-header-bg);
             --button-bg: hsl(222, 33%, 2.5%);
             --button-bg-hover: hsl(220, 13%, 0%);
-            --button-comp-accent: #9e4fff;
+            --button-comp-accent: hsl(264 153% 71% / 1);
             --button-comp-accent-hover: #a35ef7;
             --active-item-hover: #161c214d;
             --category-border: #15171900;
@@ -1408,7 +1408,7 @@
             .fig-container {
                 width: 100%;
                 max-width: 900px;
-                height: 30vw!important;
+                height: 35vw!important
             }
         }
 
@@ -1587,6 +1587,7 @@
             }
             .grid-2-col {
                 grid-template-columns: 1fr;
+                margin-bottom: 40px !important;
             }
 
             .grid-3-col {

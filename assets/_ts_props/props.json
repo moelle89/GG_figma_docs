@@ -32,7 +32,7 @@ AvatarStack {
 	number: '5' | '4' | '3' | '2'; 
 },
 
-❖ Badge {
+Badge {
 	icon: ReactNode; 
 	text: string; 
 	size: 'lg' | 'md' | 'sm'; 
@@ -123,12 +123,12 @@ ChecklistItem {
 	size: 'xs' | 'sm' | 'md' | 'lg'; 
 },
 
-ClassListItem {
-	divier: boolean; 
+Class List Item {
+	divider: boolean; 
+	icon: boolean; 
 	subtext: string; 
 	titel: string; 
-	icon: boolean; 
-	property1: 'Circle Icon' | 'Circle Icon hover' | 'Square Icon' | 'Square Icon hover'; 
+	iconShape: 'Circle Icon' | 'Circle Icon hover' | 'Square Icon' | 'Square Icon hover'; 
 },
 
 ContentFrame {
@@ -271,7 +271,7 @@ PaginationItem {
 	type: 'Number' | 'Icon'; 
 },
 
-❖ Project Switch {
+Project Switch {
 	logoIcon: ReactNode; 
 	sublabel: boolean; 
 	subline: string; 
@@ -342,7 +342,7 @@ TabButton {
 	state: 'Default' | 'Hover' | 'Active'; 
 },
 
-❖ Table {
+Table {
 	header: boolean; 
 	variant: '01' | '02' | '03'; 
 },
@@ -375,7 +375,7 @@ VerticalTabs {
 	size: 'sm' | 'md'; 
 },
 
-❖ View Mode Picker {
+View Mode Picker {
 	mode: 'Default' | 'Advanced'; 
 }
 }
