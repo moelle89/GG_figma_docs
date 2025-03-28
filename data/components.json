@@ -480,15 +480,6 @@
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
     },
-    "view-mode-picker": {
-        "name": "View Mode Picker",
-        "description": "",
-        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
-        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6175-50301&t=yvbIWiNAY0ORJaDD-4",
-        "figmaButtonText": "View Mode Picker",
-        "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
-    },
     "other-icons": {
         "name": "Other icons",
         "description": "icon collection featuring various categories including social media, payment methods, browsers, operating systems, design tools, and development environments. Each icon is carefully crafted to maintain consistent visual quality while representing well-known brands and applications. Use these icons to enhance user recognition and provide familiar visual references in your interfaces.",
@@ -539,6 +530,15 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6051-45012&t=mBynr3H54o7ffLwu-4",
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6179-50426&t=mBynr3H54o7ffLwu-4",
         "figmaButtonText": "Project Switch",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "view-mode-picker": {
+        "name": "View Mode Picker",
+        "description": "",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6175-50301&t=yvbIWiNAY0ORJaDD-4",
+        "figmaButtonText": "View Mode Picker",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
     }

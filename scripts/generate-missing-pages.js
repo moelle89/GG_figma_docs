@@ -66,7 +66,7 @@ const pageTemplate = (componentName, protoId) => `
     </div>
     <div class="playground__content" data-content="figma">
         <div class="fig-container">
-            <iframe src="https://www.figma.com/embed?embed_host=moelle&url=https://www.figma.com/proto/t23EtqNAyknCBnrnaEOYwq/Allgemein?page-id=2711%3A1249&node-id=${protoId || 'default-node-id'}&viewport=-12643%2C-17216%2C0.94&t=crNjXrqpuXve3MK8-8&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=${protoId || 'default-node-id'}&show-proto-sidebar=0&hide-ui=1" allowfullscreen>
+            <iframe src="https://www.figma.com/embed?embed_host=moelle&url=https://www.figma.com/proto/t23EtqNAyknCBnrnaEOYwq/Allgemein?page-id=2711%3A1249&node-id=${protoId}&viewport=-12643%2C-17216%2C0.94&t=crNjXrqpuXve3MK8-8&scaling=scale-down-width&content-scaling=fixed&starting-point-node-id=${protoId}&show-proto-sidebar=0&hide-ui=1" allowfullscreen>
             </iframe>
         </div>
     </div>
@@ -134,7 +134,7 @@ allComponents.forEach(componentName => {
         const componentData = componentsData[componentName];
         if (componentData) {
             // Extract protoId if figmaProto exists
-            const protoId = componentData.figmaProto ? extractProtoId(componentData.figmaProto) : null;
+            const protoId = componentData.figmaProto ? extractProtoId(componentData.figmaProto) : 6247 - 49071;
             console.log(`ProtoId for ${componentName}: ${protoId}`); // Debugging line
 
             // Use the name for the page and handle null protoId
