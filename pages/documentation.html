@@ -75,36 +75,47 @@
         <h2 class="section-title">Usage</h2>
 
         <h3>Adding New Components</h3>
+        <p>Adding new components to the library is a simple three-step process:</p>
+
         <ol>
             <li>
-                <p>Create a new component page in the <code>pages/</code> directory:</p>
-                <pre class="code-block"><code>&lt;div class="component-description"&gt;
-    &lt;p&gt;Component description here&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;div class="grid-2-col"&gt;
-    &lt;h2 class="section-title"&gt;Components&lt;/h2&gt;
-    &lt;a href="figma-link" class="two-tone-button" target="_blank"&gt;
-        &lt;!-- Button content --&gt;
-    &lt;/a&gt;
-&lt;/div&gt;
-
-&lt;!-- Component examples and documentation --&gt;</code></pre>
+                <p><strong>Step 1:</strong> Add the new component name to the <code>menuData</code> array in <code>index.html</code>:</p>
+                <pre class="code-block"><code>const menuData = [
+    { "category": "Your Category", "items": ["Your New Component"] },
+    // ... existing categories and items
+];</code></pre>
             </li>
             <li>
-                <p>Add component properties to <code>props.json</code>:</p>
+                <p><strong>Step 2:</strong> Run the fetch script to generate the initial component data:</p>
+                <pre class="code-block"><code>npm run fetch-new-component-data</code></pre>
+                <p>This will automatically:</p>
+                <ul>
+                    <li>Create a new entry in <code>components.json</code> with the following structure:</li>
+                    <li>Generate the component's content page in the <code>/pages</code> directory</li>
+                </ul>
                 <pre class="code-block"><code>{
-    "ComponentName": {
-        "property": "type",
-        "variants": "'option1' | 'option2'",
-        // ... more properties
+    "your-new-component": {
+        "name": "Your New Component",
+        "description": "description",
+        "figmaLink": "url to the actual component within the figma file",
+        "figmaProto": "url to the component's prototype used to present it on this site",
+        "figmaButtonText": "Your New Component",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
     }
 }</code></pre>
             </li>
             <li>
-                <p>Add the component to the navigation menu in <code>index.html</code>.</p>
+                <p><strong>Step 3:</strong> Update the component data in <code>components.json</code>:</p>
+                <ul>
+                    <li>Add the Figma URL of your component to the <code>figmaLink</code> field</li>
+                    <li>Add the prototype URL to the <code>figmaProto</code> field</li>
+                </ul>
             </li>
         </ol>
+        <div class="info-box">
+            <p><strong>Important Note:</strong> The component page will be automatically generated with a standard template. You only need to provide the Figma URLs to make it fully functional.</p>
+        </div>
 
         <h3>Property Table System</h3>
         <p>The property table system automatically:</p>
@@ -146,28 +157,50 @@
             <li>Open <code>index.html</code> in your browser</li>
         </ol>
 
-        <h3>Generating Component Pages</h3>
-        <p>The project includes an automated script for generating missing component pages:</p>
-        <ol>
-            <li>Install Node.js if not already installed</li>
-            <li>Run the page generator:</li>
-        </ol>
-        <pre class="code-block"><code>npm run generate-pages</code></pre>
+        <h3>NPM Scripts</h3>
+        <p>The project includes several npm scripts for managing component data and generating pages:</p>
+        <pre class="code-block"><code># Fetch new component data from Figma and update the documentation
+npm run fetch-new-component-data
 
-        <p>The script will:</p>
+# Combine component data and generate missing pages
+npm run combine-and-generate
+
+# Generate missing component pages
+npm run generate-pages
+
+# Wrap component playgrounds with tabs for different views
+npm run wrap-playgrounds</code></pre>
+
+        <p>Each script performs specific tasks:</p>
         <ul>
-            <li>Check for components listed in both <code>components.json</code> and <code>menuData</code></li>
-            <li>Create missing component pages in the <code>/pages</code> directory</li>
-            <li>Use a standardized template with:
+            <li><strong>fetch-new-component-data:</strong> Updates the component data by:
                 <ul>
-                    <li>Grid layout for component diagrams</li>
-                    <li>Component description section</li>
-                    <li>Figma button with diamond icon</li>
-                    <li>Property table container</li>
+                    <li>Running <code>updateComponents.js</code> to fetch new data from Figma</li>
+                    <li>Automatically running <code>combine-and-generate</code> to process the new data</li>
                 </ul>
             </li>
-            <li>Report the number of pages created</li>
-            <li>Skip existing pages to prevent overwrites</li>
+            <li><strong>combine-and-generate:</strong> Processes component data by:
+                <ul>
+                    <li>Running <code>combine.js</code> to merge component data</li>
+                    <li>Automatically running <code>generate-pages</code> to create missing pages</li>
+                </ul>
+            </li>
+            <li><strong>generate-pages:</strong> Creates missing component pages by:
+                <ul>
+                    <li>Checking for components listed in both <code>components.json</code> and <code>menuData</code></li>
+                    <li>Creating missing pages in the <code>/pages</code> directory</li>
+                    <li>Using a standardized template with proper structure</li>
+                    <li>Skipping existing pages to prevent overwrites</li>
+                </ul>
+            </li>
+            <li><strong>wrap-playgrounds:</strong> Adds interactive playground containers to component pages by:
+                <ul>
+                    <li>Processing all HTML files in the <code>/pages</code> directory</li>
+                    <li>Adding tabbed interfaces for different views (Figma, How-to use, iOS, MD)</li>
+                    <li>Preserving existing content while adding new functionality</li>
+                    <li>Skipping files that already have playground containers</li>
+                </ul>
+            </li>
         </ul>
 
         <h3>Adding Features</h3>
@@ -260,4 +293,16 @@
     .documentation-content strong {
         color: var(--accent-color);
     }
-</style> 
+
+    .info-box {
+        background: var(--code-bg);
+        border-left: 4px solid var(--accent-color);
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+    }
+
+    .info-box p {
+        margin: 0;
+    }
+</style>

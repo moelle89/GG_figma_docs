@@ -62,34 +62,44 @@ The library includes an automatic property table generation system that:
 
 ### Adding New Components
 
-1. Create a new component page in the `pages/` directory:
-```html
-<div class="component-description">
-    <p>Component description here</p>
-</div>
+Adding new components to the library is a simple three-step process:
 
-<div class="grid-2-col">
-    <h2 class="section-title">Components</h2>
-    <a href="figma-link" class="two-tone-button" target="_blank">
-        <!-- Button content -->
-    </a>
-</div>
-
-<!-- Component examples and documentation -->
+1. **Step 1:** Add the new component name to the `menuData` array in `index.html`:
+```javascript
+const menuData = [
+    { "category": "Your Category", "items": ["Your New Component"] },
+    // ... existing categories and items
+];
 ```
 
-2. Add component properties to `props.json`:
-```typescript
+2. **Step 2:** Run the fetch script to generate the initial component data:
+```bash
+npm run fetch-new-component-data
+```
+
+This will automatically:
+- Create a new entry in `components.json` with the following structure:
+- Generate the component's content page in the `/pages` directory
+
+```json
 {
-    "ComponentName": {
-        "property": "type",
-        "variants": "'option1' | 'option2'",
-        // ... more properties
+    "your-new-component": {
+        "name": "Your New Component",
+        "description": "description",
+        "figmaLink": "url to the actual component within the figma file",
+        "figmaProto": "url to the component's prototype used to present it on this site",
+        "figmaButtonText": "Your New Component",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
     }
 }
 ```
 
-3. Add the component to the navigation menu in `index.html`.
+3. **Step 3:** Update the component data in `components.json`:
+- Add the Figma URL of your component to the `figmaLink` field
+- Add the prototype URL to the `figmaProto` field
+
+> **Important Note:** The component page will be automatically generated with a standard template. You only need to provide the Figma URLs to make it fully functional.
 
 ### Property Table System
 
@@ -121,31 +131,51 @@ Modify theme variables in `css/app.css`:
 ### Prerequisites
 - Modern web browser
 - Local web server (for development)
+- Node.js (for running npm scripts)
 
 ### Setup
 1. Clone the repository
 2. Serve the directory using a local web server
 3. Open `index.html` in your browser
 
-### Generating Component Pages
-The project includes an automated script for generating missing component pages:
+### NPM Scripts
+The project includes several npm scripts for managing component data and generating pages:
 
-1. Install Node.js if not already installed
-2. Run the page generator:
 ```bash
+# Fetch new component data from Figma and update the documentation
+npm run fetch-new-component-data
+
+# Combine component data and generate missing pages
+npm run combine-and-generate
+
+# Generate missing component pages
 npm run generate-pages
+
+# Wrap component playgrounds with tabs for different views
+npm run wrap-playgrounds
 ```
 
-The script will:
-- Check for components listed in both `components.json` and `menuData`
-- Create missing component pages in the `/pages` directory
-- Use a standardized template with:
-  - Grid layout for component diagrams
-  - Component description section
-  - Figma button with diamond icon
-  - Property table container
-- Report the number of pages created
-- Skip existing pages to prevent overwrites
+Each script performs specific tasks:
+
+- `fetch-new-component-data`: Updates the component data by:
+  - Running `updateComponents.js` to fetch new data from Figma
+  - Automatically running `combine-and-generate` to process the new data
+
+- `combine-and-generate`: Processes component data by:
+  - Running `combine.js` to merge component data
+  - Automatically running `generate-pages` to create missing pages
+
+- `generate-pages`: Creates missing component pages by:
+  - Checking for components listed in both `components.json` and `menuData`
+  - Creating missing pages in the `/pages` directory
+  - Using a standardized template with proper structure
+  - Skipping existing pages to prevent overwrites
+
+- `wrap-playgrounds`: Adds interactive playground containers to component pages by:
+  - Processing all HTML files in the `/pages` directory
+  - Adding tabbed interfaces for different views (Figma, How-to use, iOS, MD)
+  - Preserving existing content while adding new functionality
+  - Skipping files that already have playground containers
 
 ### Adding Features
 1. Component pages are loaded dynamically from the `pages/` directory
