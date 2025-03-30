@@ -666,6 +666,10 @@
                     }
                 }
 
+                // Update URL without reloading the page
+                const newUrl = pageName === 'ui-component-lib' ? '/' : `/${pageName}`;
+                window.history.pushState({ page: pageName }, '', newUrl);
+
                 if (pageName === 'ui-component-lib') {
                     loadingIndicator.classList.remove('active');
                     const contentHeader = `
@@ -707,13 +711,8 @@
                         additionalContent = '<p class="has-opacity">Additional content could not be loaded.</p>';
                     }
 
-                    // Set content while it's still invisible
                     contentContainer.innerHTML = contentHeader + categoriesHTML + '<div class="additional-content">' + additionalContent + '</div>';
-
-                    // Force a reflow to ensure the browser recognizes the content change
                     contentContainer.offsetWidth;
-
-                    // Remove fade-out class and add fade-in class to start the fade-in animation
                     contentContainer.classList.remove('fade-out');
                     contentContainer.classList.add('fade-in');
 
@@ -738,18 +737,6 @@
                         requestAnimationFrame(() => {
                             initializeTabSwitching();
                             initializeVideos();
-
-                            if (pageName === 'icons' && typeof initializeIconSearch === 'function') {
-                                console.log('Detected icons page, initializing icon search...');
-                                setTimeout(initializeIconSearch, 300);
-                                // For icon pages, reinitialize element animations after icon search is complete
-                                setTimeout(initializeElementScrollAnimations, 400);
-                            }
-                            // Initialize property tables for dynamically loaded content
-                            if (typeof initializePropTables === 'function') {
-                                console.log('Initializing property tables for dynamic content...');
-                                initializePropTables();
-                            }
                         });
                     }, 200);
                     contentContainer.classList.remove('fade-in');
@@ -763,7 +750,6 @@
                 const html = await response.text();
                 loadingIndicator.classList.remove('active');
 
-                // Find the original component name from menuData
                 let componentName = pageName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 menuData.forEach(category => {
                     const item = category.items.find(item =>
@@ -775,21 +761,15 @@
                 });
 
                 const contentHeader = `
-                <div class="content-header">
-                    <h1 class="content-title">❖ ${componentName}</h1>
-                </div>
-            `;
+                    <div class="content-header">
+                        <h1 class="content-title">❖ ${componentName}</h1>
+                    </div>
+                `;
 
-                // Set content while it's still invisible
                 contentContainer.innerHTML = contentHeader + html;
-
-                // Force a reflow to ensure the browser recognizes the content change
                 contentContainer.offsetWidth;
-
-                // Remove fade-out class and add fade-in class to start the fade-in animation
                 contentContainer.classList.remove('fade-out');
                 contentContainer.classList.add('fade-in');
-
 
                 requestAnimationFrame(() => {
                     injectComponentInfo(pageName);
@@ -814,15 +794,12 @@
                                 });
                             }, 200);
                             setTimeout(initializeIconSearch, 300);
-                            // For icon pages, reinitialize element animations after icon search is complete
                             setTimeout(initializeElementScrollAnimations, 400);
                         }
-                        // Initialize property tables for dynamically loaded content
                         if (typeof initializePropTables === 'function') {
                             console.log('Initializing property tables for dynamic content...');
                             initializePropTables();
                         }
-                        // Initialize empty state toggle if on empty-state page
                         if (pageName === 'empty-state-graphic') {
                             console.log('Initializing empty state toggle...');
                             const styleToggle = document.getElementById('styleToggle');
@@ -835,7 +812,6 @@
                                 });
                             }
                         }
-                        // Initialize other icons content
                         if (pageName === 'other-icons') {
                             console.log('Initializing other-icons content...');
                             loadSocialIcons();
@@ -848,12 +824,12 @@
                                 top: 500,
                                 behavior: 'instant'
                             });
-                             setTimeout(() => {
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'smooth'
-                            });
-                             }, 200);
+                            setTimeout(() => {
+                                window.scrollTo({
+                                    top: 0,
+                                    behavior: 'smooth'
+                                });
+                            }, 200);
                         }
                     });
                 });
@@ -864,16 +840,27 @@
                 loadingIndicator.classList.remove('active');
                 contentContainer.classList.remove('fade-out');
                 contentContainer.innerHTML = `
-                <div class="content-header">
-                    <h1 class="content-title">${pageName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h1>
-                    <p class="content-subtitle">Content not found or still in development</p>
-                </div>
-                <div style="text-align: center; padding: 50px;">
-                    <p class="has-opacity">We're still working on this component. Check back soon!</p>
-                </div>
-            `;
+                    <div class="content-header">
+                        <h1 class="content-title">${pageName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h1>
+                        <p class="content-subtitle">Content not found or still in development</p>
+                    </div>
+                    <div style="text-align: center; padding: 50px;">
+                        <p class="has-opacity">We're still working on this component. Check back soon!</p>
+                    </div>
+                `;
             }
         }
+
+        // Add URL handling for browser navigation
+        window.addEventListener('popstate', (event) => {
+            if (event.state && event.state.page) {
+                loadContent(event.state.page);
+            } else {
+                const path = window.location.pathname.substring(1) || 'ui-component-lib';
+                loadContent(path);
+            }
+        });
+
         const debounceTime = 100;
         let debounceTimer;
         const maxWidth = window.innerWidth;
@@ -1567,7 +1554,11 @@
             sortToggleIcon.addEventListener('click', toggleSidebarSorting);
             await loadComponentRepository();
             addCategoryItemListeners();
-            loadContent('ui-component-lib');
+
+            // Get the initial page from URL or default to ui-component-lib
+            const path = window.location.pathname.substring(1) || 'ui-component-lib';
+            loadContent(path);
+
             initializeVideos();
             initializeScrollAnimations();
             initializeElementScrollAnimations();
