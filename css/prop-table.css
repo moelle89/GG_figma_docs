@@ -287,12 +287,12 @@
 }
 
 .bool-true {
-    background: var(--button-comp-accent);
+    background: hsla(142, 75%, 40%, 0.85);
     color: var(--bool-true-text, #ffffff);
 }
 
 .bool-false {
-    background: var(--bool-false-bg, #ec182787);
+    background: var(--bool-false-bg, hsla(356, 85%, 40%, 0.85));
     color: var(--bool-false-text, #ffffff);
 }
 

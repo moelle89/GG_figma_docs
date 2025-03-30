@@ -11,6 +11,7 @@
         "name": "Button",
         "description": "A button is a visual element that allows users to trigger an action or event with a single click. It's often used for calls-to-action, navigation, or form submission.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3010-9168&t=OaCX3hbgJH9gzTAw-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=5237-39747&t=Yx0RSImgupHwVLvt-4",
         "figmaButtonText": "Button",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"

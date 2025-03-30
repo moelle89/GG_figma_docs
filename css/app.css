@@ -52,7 +52,7 @@
         [data-theme="dark"] {
             /* Dark theme variables with #151719 as base */
             --text-color: hsl(210, 4%, 91%);
-            --border-color: #191C24;
+            --border-color: hsla(224, 18%, 25%, 0.3);
             --input-border-color: var(--border-color);
             --hover-color: #5a78960d;
             --purple-accent: #c27327;
@@ -100,7 +100,7 @@
 
         @media screen and (max-width: 768px) {
             [data-theme="dark"] {
-                --bg-color: hsl(222, 30%, 6%);
+                --bg-color: hsl(222, 30%, 7%);
                 --category-bg: hsl(222, 30%, 7%);
                 --table-bg: hsl(220 29% 14% / 1);
                 --card-bg: hsl(222 29% 12% / 1);
@@ -3157,7 +3157,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
   display: flex;
   padding: 14px;
   gap: 10px;
-  border-bottom: 2px solid var(--scrollbar-thumb-hover);
+  border-bottom: 2px solid var(--border-color);
 }
 
 .playground__tab.active {
