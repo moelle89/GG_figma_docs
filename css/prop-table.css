@@ -316,8 +316,8 @@
         width: auto;
     }
 
-    .variant-option {
-        margin: 2px 4px;
+    .variant-option{
+        margin: 4px 4px;
         font-size: 0.8rem;
     }
 }
@@ -417,6 +417,6 @@
         text-align: center;
         border-radius: 60px;
         font-weight: 500;
-        margin: 2px 8px 2px 0;
+        margin: 4px 8px 2px 0;
     }
 }

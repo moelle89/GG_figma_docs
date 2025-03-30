@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>❖ Component Library</title>
+    <meta name="description" content="Explore our comprehensive UI component library with detailed documentation and examples.">
+    <meta property="og:title" content="❖ Component Library">
+    <meta property="og:description" content="Explore our comprehensive UI component library with detailed documentation and examples.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
     <link rel="icon" type="image/png" href="assets/fav/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="assets/fav/favicon.svg" />
     <link rel="shortcut icon" href="assets/fav/favicon.ico" />
@@ -669,6 +674,55 @@
                 // Update URL without reloading the page
                 const newUrl = pageName === 'ui-component-lib' ? '/index.html' : `/index.html?page=${pageName}`;
                 window.history.pushState({ page: pageName }, '', newUrl);
+
+                // Update meta tags and title
+                const componentData = componentRepository[pageName];
+                let pageTitle = '❖ Component Library';
+                let pageDescription = 'Explore our comprehensive UI component library with detailed documentation and examples.';
+                
+                if (componentData) {
+                    const componentName = componentData.name;
+                    pageTitle = `❖ ${componentName} | Component Library`;
+                    pageDescription = componentData.description || `Learn about the ${componentName} component in our UI library.`;
+                }
+
+                // Update document title
+                document.title = pageTitle;
+
+                // Update meta description
+                let metaDescription = document.querySelector('meta[name="description"]');
+                if (!metaDescription) {
+                    metaDescription = document.createElement('meta');
+                    metaDescription.name = 'description';
+                    document.head.appendChild(metaDescription);
+                }
+                metaDescription.content = pageDescription;
+
+                // Update Open Graph meta tags
+                let ogTitle = document.querySelector('meta[property="og:title"]');
+                let ogDescription = document.querySelector('meta[property="og:description"]');
+                let ogUrl = document.querySelector('meta[property="og:url"]');
+
+                if (!ogTitle) {
+                    ogTitle = document.createElement('meta');
+                    ogTitle.setAttribute('property', 'og:title');
+                    document.head.appendChild(ogTitle);
+                }
+                ogTitle.content = pageTitle;
+
+                if (!ogDescription) {
+                    ogDescription = document.createElement('meta');
+                    ogDescription.setAttribute('property', 'og:description');
+                    document.head.appendChild(ogDescription);
+                }
+                ogDescription.content = pageDescription;
+
+                if (!ogUrl) {
+                    ogUrl = document.createElement('meta');
+                    ogUrl.setAttribute('property', 'og:url');
+                    document.head.appendChild(ogUrl);
+                }
+                ogUrl.content = window.location.href;
 
                 if (pageName === 'ui-component-lib') {
                     loadingIndicator.classList.remove('active');
