@@ -60,17 +60,17 @@
             --purple-accent-light: #dc9450;
             --primary-color: #C27327;
             --primary-hover-color: #CA8233;
-            --bg-color: hsl(222, 30%, 6.5%);
+            --bg-color: hsl(220, 30%, 7%);
             --sidebar-bg: var(--category-bg);
-            --category-bg: hsl(222, 30%, 6.5%);
+            --category-bg: hsl(220, 30%, 7%);
             --fab-bg: var(--table-bg);
             --sortfab-bg: var(--button-bg);
-            --card-bg: hsl(222 29% 10% / 1);
+            --card-bg: hsl(220 29% 10% / 1);
             --fab-border: var(--scrollbar-thumb-hover);
             --fab-fg: #ffffff;
-            --category-header-bg: hsl(222, 33%, 5%);
+            --category-header-bg: hsl(220, 33%, 5.5%);
             --active-category-bg: var(--category-header-bg);
-            --button-bg: hsl(222, 33%, 2.5%);
+            --button-bg: hsl(220, 33%, 2.5%);
             --button-bg-hover: hsl(220, 13%, 0%);
             --button-comp-accent: hsl(264 153% 71% / 1);
             --button-comp-accent-hover: #a35ef7;
@@ -87,12 +87,12 @@
             --content-subtitle: hsl(210, 7%, 85%);
             --description-color: hsl(210, 5%, 80%);
             --tooltip-bg: #ffffffe6;
-            --form-input-bg: hsl(222, 33%, 4%);
+            --form-input-bg: hsl(220, 33%, 4%);
             --card-header-element: var(--card-bg);
             --table-header-element: var(--category-header-bg);
             --variant-bg: var(--component-bg);
-            --component-bg: hsl(222, 33%, 4.5%);
-            --table-bg: hsl(220 29% 11% / 1);
+            --component-bg: hsl(220, 33%, 5%);
+            --table-bg: hsl(220 29% 10% / 1);
             --switch-bg: #2e3647;
             --switch-fg: #121721;
             --component-item: #A4ADBE;
@@ -100,11 +100,12 @@
 
         @media screen and (max-width: 768px) {
             [data-theme="dark"] {
-                --bg-color: hsl(222, 30%, 5%);
+                --bg-color: hsl(222, 30%, 6%);
                 --category-bg: hsl(222, 30%, 7%);
-                --table-bg: hsl(220 29% 13% / 1);
-                --card-bg: hsl(222 29% 11% / 1);
-                --component-bg: hsl(222, 33%, 5.5%);
+                --table-bg: hsl(220 29% 14% / 1);
+                --card-bg: hsl(222 29% 12% / 1);
+                --component-bg: hsl(222, 33%, 7.5%);
+                --category-header-bg: hsl(222, 33%, 8%);
             }
         }
 
@@ -3156,7 +3157,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
   display: flex;
   padding: 14px;
   gap: 10px;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 2px solid var(--scrollbar-thumb-hover);
 }
 
 .playground__tab.active {

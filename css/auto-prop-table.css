@@ -5,7 +5,7 @@
  */
 
 .auto-prop-table-container {
-    margin: 20px 0;
+    margin: 40px 0;
     max-width: 900px;
     padding: 0 0;
 }
@@ -28,7 +28,7 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .auto-prop-table-container {
-        padding: 0 15px;
+        padding: 0 0;
     }
 
     .auto-prop-table-container .prop-table-title {

@@ -322,24 +322,31 @@
             return;
         }
 
-        // Find the grid-2-col section that contains the section title
-        const gridSection = Array.from(document.querySelectorAll('.grid-2-col')).find(grid => {
-            return grid.querySelector('.section-title') && grid.querySelector('.two-tone-button');
-        });
-
-        if (!gridSection) {
-            debugLog('Grid section not found, falling back to content container');
-            // Fallback to content container if grid section not found
-            const contentContainer = document.querySelector('.content');
-            if (!contentContainer) {
-                debugLog('Content container not found');
-                console.error('Content container not found');
-                return;
-            }
-            contentContainer.appendChild(container);
+        // Check for playground__container
+        const playgroundContainer = document.querySelector('.playground__container');
+        if (playgroundContainer) {
+            debugLog('playground__container found, inserting table under it');
+            playgroundContainer.after(container); // Change made here to append after
         } else {
-            debugLog('Grid section found, inserting table after it');
-            gridSection.after(container);
+            // Find the grid-2-col section that contains the section title
+            const gridSection = Array.from(document.querySelectorAll('.grid-2-col')).find(grid => {
+                return grid.querySelector('.section-title') && grid.querySelector('.two-tone-button');
+            });
+
+            if (!gridSection) {
+                debugLog('Grid section not found, falling back to content container');
+                // Fallback to content container if grid section not found
+                const contentContainer = document.querySelector('.content');
+                if (!contentContainer) {
+                    debugLog('Content container not found');
+                    console.error('Content container not found');
+                    return;
+                }
+                contentContainer.appendChild(container);
+            } else {
+                debugLog('Grid section found, inserting table after it');
+                gridSection.after(container);
+            }
         }
 
         debugLog('Property table injected successfully');

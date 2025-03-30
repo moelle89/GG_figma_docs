@@ -729,7 +729,6 @@
                                 });
                             });
                         });
-                        contentContainer.classList.remove('fade-in');
                         initializeVideos();
                         initializeImageSliders();
                         initializeLottieAnimations();
@@ -753,6 +752,7 @@
                             }
                         });
                     }, 200);
+                    contentContainer.classList.remove('fade-in');
                     return;
                 }
 
@@ -790,8 +790,7 @@
                 contentContainer.classList.remove('fade-out');
                 contentContainer.classList.add('fade-in');
 
-                await new Promise(resolve => setTimeout(resolve, 300));
-                contentContainer.classList.remove('fade-in');
+
                 requestAnimationFrame(() => {
                     injectComponentInfo(pageName);
                     initializeVideos();
@@ -858,6 +857,8 @@
                         }
                     });
                 });
+                await new Promise(resolve => setTimeout(resolve, 200));
+                contentContainer.classList.remove('fade-in');
             } catch (error) {
                 console.error('Error loading content:', error);
                 loadingIndicator.classList.remove('active');
