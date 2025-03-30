@@ -667,7 +667,7 @@
                 }
 
                 // Update URL without reloading the page
-                const newUrl = pageName === 'ui-component-lib' ? '/' : `/${pageName}`;
+                const newUrl = pageName === 'ui-component-lib' ? '/index.html' : `/index.html?page=${pageName}`;
                 window.history.pushState({ page: pageName }, '', newUrl);
 
                 if (pageName === 'ui-component-lib') {
@@ -1555,9 +1555,9 @@
             await loadComponentRepository();
             addCategoryItemListeners();
 
-            // Get the initial page from URL or default to ui-component-lib
-            const path = window.location.pathname.substring(1) || 'ui-component-lib';
-            loadContent(path);
+            // Get the initial page from URL parameters or default to ui-component-lib
+            const page = getPageFromUrl();
+            loadContent(page);
 
             initializeVideos();
             initializeScrollAnimations();
@@ -1725,6 +1725,32 @@
                 }
             });
         });
+
+        // Add URL parameter handling
+        function getPageFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = urlParams.get('page');
+            return pageParam || 'ui-component-lib';
+        }
+
+        // Update the popstate event handler
+        window.addEventListener('popstate', (event) => {
+            const page = getPageFromUrl();
+            loadContent(page);
+        });
+
+        // Add a function to handle direct URL access
+        function handleDirectUrlAccess() {
+            const currentUrl = window.location.href;
+            if (!currentUrl.includes('index.html')) {
+                const page = getPageFromUrl();
+                const newUrl = page === 'ui-component-lib' ? '/index.html' : `/index.html?page=${page}`;
+                window.history.replaceState({ page: page }, '', newUrl);
+            }
+        }
+
+        // Call handleDirectUrlAccess when the page loads
+        window.addEventListener('load', handleDirectUrlAccess);
     </script>
     <!-- Property Table System -->
     <script src="js/include-prop-tables.js"></script>
