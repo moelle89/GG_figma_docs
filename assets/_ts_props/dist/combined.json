@@ -176,6 +176,11 @@ export interface Divider {
 	variant: 'Default' | 'Text left' | 'Text right' | 'Text middle'; 
 }
 
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\drop-down-list.ts
+export interface ❖ Dropdown List {
+	state: 'Closed' | 'Closed - Op 1' | 'Closed - Op 2' | 'Closed - Op 3' | 'Closed - Op 4' | 'Closed - Op 5' | 'Closed - Op 6' | 'Open'; 
+}
+
 // File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\EmptyState.ts
 export interface EmptyState {
 	secondaryButton: boolean; 

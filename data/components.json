@@ -474,7 +474,7 @@
     },
     "table": {
         "name": "Table",
-        "description": "",
+        "description": "A table is a structured format used to organize and present data in rows and columns. It allows users to easily read, compare, and interpret information, making it an essential component for displaying tabular data in applications.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
         "figmaButtonText": "Table",
@@ -527,7 +527,7 @@
     },
     "project-switch": {
         "name": "Project Switch",
-        "description": "",
+        "description": "A project switch is an interactive element that allows users to easily toggle between different projects or contexts within an application. It enhances user experience by providing quick access to various project settings or views.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6051-45012&t=mBynr3H54o7ffLwu-4",
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6179-50426&t=mBynr3H54o7ffLwu-4",
         "figmaButtonText": "Project Switch",
@@ -536,10 +536,19 @@
     },
     "view-mode-picker": {
         "name": "View Mode Picker",
-        "description": "",
+        "description": "A view mode picker is an interactive element that enables users to select different display modes for content. It allows users to switch between various layouts or perspectives, enhancing the flexibility and usability of the interface.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6175-50301&t=yvbIWiNAY0ORJaDD-4",
         "figmaButtonText": "View Mode Picker",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "drop-down-list": {
+        "name": "Drop-Down List",
+        "description": "A drop-down list is an interactive element that presents a list of options for users to choose from. It allows for efficient selection of a single option from a predefined set, commonly used in forms and navigation menus.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6439-51942&t=SNoXMaZxpU1AP5ri-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6494-50367&t=SNoXMaZxpU1AP5ri-4",
+        "figmaButtonText": "Drop-Down List",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
     }
