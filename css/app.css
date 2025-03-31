@@ -97,6 +97,7 @@
             --switch-bg: #2e3647;
             --switch-fg: #121721;
             --component-item: #A4ADBE;
+            --breadcrump-shadow: 0px -2px 2px #0104090f,0px -4px 6px #00000025;
         }
 
         @media screen and (max-width: 768px) {
@@ -1272,7 +1273,7 @@
         }
 
         [data-theme="dark"] .info-box {
-            background-color: var(--info-bg-color-dark, #1e3a5f);
+            background-color: var(--info-bg-color-dark, var(--info-bg-color-dark, hsl(209 39% 25% / .6)));
             border-color: var(--info-border-color-dark, #2a5285);
             color: var(--info-text-color-dark, #a8d7ff);
         }
@@ -1280,7 +1281,7 @@
         .info-box h3 {
             margin-top: 0px;
             margin-bottom: 10px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
         }
 
@@ -1912,13 +1913,13 @@
 
         .toast {
             position: fixed;
-            bottom: 20px;
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #333;
+            background-color: var(--switch-bg);
             color: white;
             padding: 10px 20px;
-            border-radius: 4px;
+            border-radius: 8px;
             z-index: 2000;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -2866,6 +2867,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     text-align: center;
     position: relative;
     box-shadow: var(--card-shadow);
+    cursor: pointer;
 }
 
 #other-icons .app-icons-container .icon-wrapper img {
@@ -2926,6 +2928,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     text-align: center;
     position: relative;
     box-shadow: var(--card-shadow);
+    cursor: pointer;
 }
 
 #other-icons .emoji-icons-grid .icon-wrapper {
@@ -2943,6 +2946,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     text-align: center;
     position: relative;
     box-shadow: var(--card-shadow);
+    cursor: pointer;
 }
 
 #other-icons .app-icons-grid .icon-label {
@@ -3000,6 +3004,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
     text-align: center;
     position: relative;
     box-shadow: var(--card-shadow);
+    cursor: pointer;
 }
 
 #other-icons .integration-icons-grid .icon-wrapper img {
@@ -3384,10 +3389,22 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--button-bg);
+            background: var(--category-bg);
             padding: 0.5rem 1rem;
             z-index: 100;
-            border-bottom: 1px solid var(--border-color);
+            border-top: 1px solid var(--category-bg);
+            box-shadow: var(--breadcrump-shadow);
+            display: none;
+        }
+        [data-theme="dark"] .breadcrumb-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--category-bg);
+            padding: 0.5rem 1rem;
+            z-index: 100;
+            border-top: 1px solid var(--border-color);
             box-shadow: var(--breadcrump-shadow);
             display: none;
         }
@@ -3443,4 +3460,22 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
             padding-bottom: 1rem;
         }
 
+}
+.info-box {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    max-width: 900px;
+    padding: 15px;
+    margin: 0 0 40px 0;
+    box-shadow: var(--card-shadow);
+}
+
+.info-box h3 {
+    margin-top: 0; /* Remove top margin */
+    color: var(--text-color); /* Darker text color for the heading */
+}
+
+.info-box p {
+    color: var(--description-color); /* Slightly lighter text color for the paragraph */
 }

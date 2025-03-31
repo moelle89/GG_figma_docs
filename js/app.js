@@ -322,6 +322,24 @@ function addCategoryItemListeners() {
    });
 }
 
+function copyToClipboard(text) {
+   const textarea = document.createElement('textarea');
+   textarea.value = text;
+   document.body.appendChild(textarea);
+   textarea.select();
+   document.execCommand('copy');
+   document.body.removeChild(textarea);
+}
+
+function showToast(message) {
+   const toast = document.getElementById('toast');
+   toast.textContent = message;
+   toast.classList.add('show');
+   setTimeout(() => {
+      toast.classList.remove('show');
+   }, 2000);
+}
+
 function loadSocialIcons() {
    const iconContainer = document.getElementById('other-icons');
    const suffixes = [
@@ -385,6 +403,12 @@ function loadSocialIcons() {
          label.className = 'icon-label';
          label.textContent = icon;
 
+         // Add click event to copy label text
+         iconWrapper.onclick = () => {
+            copyToClipboard(icon);
+            showToast(`${icon} copied to clipboard!`);
+         };
+
          iconWrapper.appendChild(img);
          iconGrid.appendChild(iconWrapper);
       });
@@ -427,6 +451,12 @@ function loadPaymentIcons() {
       const label = document.createElement('span');
       label.className = 'icon-label';
       label.textContent = icon.replace(/_/g, ' ');
+
+      // Add click event to copy label text
+      iconWrapper.onclick = () => {
+         copyToClipboard(icon);
+         showToast(`${icon} copied to clipboard!`);
+      };
 
       iconWrapper.appendChild(img);
       iconWrapper.appendChild(label);
@@ -490,6 +520,12 @@ function loadAppIcons() {
          label.className = 'icon-label';
          label.textContent = icon.replace(/_/g, ' ').replace(/jb_/g, '');
 
+         // Add click event to copy label text
+         iconWrapper.onclick = () => {
+            copyToClipboard(icon);
+            showToast(`${icon} copied to clipboard!`);
+         };
+
          iconWrapper.appendChild(img);
          iconWrapper.appendChild(label);
          gridContainer.appendChild(iconWrapper);
@@ -539,6 +575,12 @@ function loadEmojiIcons() {
       label.className = 'icon-label';
       label.textContent = icon.replace(/-1/g, '').replace(/-/g, ' ');
 
+      // Add click event to copy label text
+      iconWrapper.onclick = () => {
+         copyToClipboard(icon);
+         showToast(`${icon} copied to clipboard!`);
+      };
+
       iconWrapper.appendChild(img);
       iconWrapper.appendChild(label);
       gridContainer.appendChild(iconWrapper);
@@ -577,6 +619,12 @@ function loadFlagIcons() {
       const label = document.createElement('span');
       label.className = 'icon-label';
       label.textContent = icon.replace(/-/g, ' ');
+
+      // Add click event to copy label text
+      iconWrapper.onclick = () => {
+         copyToClipboard(icon);
+         showToast(`${icon} copied to clipboard!`);
+      };
 
       iconWrapper.appendChild(img);
       iconWrapper.appendChild(label);
@@ -626,6 +674,12 @@ function loadIntegrationIcons() {
       const label = document.createElement('span');
       label.className = 'icon-label';
       label.textContent = icon.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+      // Add click event to copy label text
+      iconWrapper.onclick = () => {
+         copyToClipboard(icon);
+         showToast(`${icon} copied to clipboard!`);
+      };
 
       iconWrapper.appendChild(img);
       iconWrapper.appendChild(label);
