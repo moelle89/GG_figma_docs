@@ -756,6 +756,7 @@
                 let ogTitle = document.querySelector('meta[property="og:title"]');
                 let ogDescription = document.querySelector('meta[property="og:description"]');
                 let ogUrl = document.querySelector('meta[property="og:url"]');
+                let ogType = document.querySelector('meta[property="og:type"]');
 
                 if (!ogTitle) {
                     ogTitle = document.createElement('meta');
@@ -777,6 +778,39 @@
                     document.head.appendChild(ogUrl);
                 }
                 ogUrl.content = window.location.href;
+
+                if (!ogType) {
+                    ogType = document.createElement('meta');
+                    ogType.setAttribute('property', 'og:type');
+                    document.head.appendChild(ogType);
+                }
+                ogType.content = 'website';
+
+                // Add Twitter Card meta tags
+                let twitterCard = document.querySelector('meta[name="twitter:card"]');
+                let twitterTitle = document.querySelector('meta[name="twitter:title"]');
+                let twitterDescription = document.querySelector('meta[name="twitter:description"]');
+
+                if (!twitterCard) {
+                    twitterCard = document.createElement('meta');
+                    twitterCard.name = 'twitter:card';
+                    document.head.appendChild(twitterCard);
+                }
+                twitterCard.content = 'summary_large_image';
+
+                if (!twitterTitle) {
+                    twitterTitle = document.createElement('meta');
+                    twitterTitle.name = 'twitter:title';
+                    document.head.appendChild(twitterTitle);
+                }
+                twitterTitle.content = pageTitle;
+
+                if (!twitterDescription) {
+                    twitterDescription = document.createElement('meta');
+                    twitterDescription.name = 'twitter:description';
+                    document.head.appendChild(twitterDescription);
+                }
+                twitterDescription.content = pageDescription;
 
                 if (pageName === 'ui-component-lib') {
                     loadingIndicator.classList.remove('active');
