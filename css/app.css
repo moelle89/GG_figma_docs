@@ -1267,6 +1267,7 @@
             border: 1px solid var(--info-border-color, #a8d7ff);
             border-radius: 4px;
             padding: 15px;
+            max-width: 900px;
             margin-top: 15px;
             margin-bottom: 20px;
             color: var(--info-text-color, #0066cc);
