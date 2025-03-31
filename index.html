@@ -143,10 +143,14 @@
             opacity: 1;
             transform: translateX(0);
         }
+
     </style>
 </head>
 <body>
     <div class="main-container">
+        <div class="breadcrumb-container" id="breadcrumbContainer">
+            <div class="breadcrumb" id="breadcrumb"></div>
+        </div>
         <div class="sidebar" id="sidebar">
             <div class="sidebar-search">
                 <div class="search-container">
@@ -521,7 +525,7 @@
                 regenerateSidebarMenu(sortedMenuData);
             } else {
                 sortFab.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M21.3,7.6h-6.9c-.9,0-1.5-.7-1.5-1.5h0c0-.9.7-1.5,1.5-1.5h6.9c.9,0,1.5.7,1.5,1.5h0c0,.9-.7,1.5-1.5,1.5ZM22.8,11.7h0c0-.9-.7-1.5-1.5-1.5h-6.2c-.9,0-1.5.7-1.5,1.5h0c0,.9.7,1.5,1.5,1.5h6.2c.9,0,1.5-.7,1.5-1.5ZM22.8,17.2h0c0-.9-.7-1.5-1.5-1.5h-2.8c-.9,0-1.5.7-1.5,1.5h0c0,.9.7,1.5,1.5,1.5h2.8c.9,0,1.5-.7,1.5-1.5ZM2.9,18.8c-.4,0-.7-.1-.9-.3s-.4-.5-.4-.8,0-.6.2-1.1l3.5-10.1c.2-.7.5-1.1.8-1.4s.8-.4,1.4-.4,1,.1,1.4.4.6.8.8,1.4l3.5,10.1c.1.4.2.8.2,1.1s-.1.7-.4.9-.6.3-1,.3-.7-.1-.9-.3-.4-.6-.5-1l-.8-2.4h-4.9l-.8,2.4c-.1.5-.3.8-.5,1s-.5.3-.9.3ZM5.8,13h3.7l-1.8-5.7h-.1l-1.8,5.7Z"/>
+                <path d="M21.3,7.6h-6.9c-.9,0-1.5-.7-1.5-1.5h0c0-.9.7-1.5,1.5-1.5h6.9c.9,0,1.5.7,1.5,1.5h0c0,.9-.7,1.5-1.5,1.5ZM22.8,11.7h0c0-.9-.7-1.5-1.5-1.5h-6.2c-.9,0-1.5.7-1.5,1.5h0c0,.9.7,1.5,1.5,1.5h6.2c.9,0,1.5-.7,1.5-1.5ZM22.8,17.2h0c0-.9-.7-1.5-1.5-1.5h-2.8c-.9,0-1.5.7-1.5,1.5h0c0,.9.7,1.5,1.5,1.5h2.8c.9,0,1.5-.7,1.5-1.5ZM2.9,18.8c-.4,0-.7-.1-.9-.3s-.4-.5-.4-.8,0-.6.2-1.1l3.5-10.1c.2-.7.5-1.1.8-1.4s.8-.4,1.4-.4,1,.1,1.4.4.6.8.8,1.4l3.5,10.1c.1.4.2.8.2,1.1s-.1.7-.4.9-.6.3-1,.3-.7-.1-.9-.3-.4-.6-.5-1l-.8-2.4h-4.9l-.8,2.4c-.1.5-.3.8-.5,1s-.5.3-.9.3ZM5.8,13h3.7l-1.8-5.7h-.1l-1.8,5.7Z" />
             </svg>
             <span class="sortFab-tooltip">Alphabetical Sorting</span>`;
                 regenerateSidebarMenu(menuData);
@@ -657,6 +661,56 @@
                 const allCategories = document.querySelectorAll('.category');
                 const allItems = document.querySelectorAll('.category-item');
                 const targetItem = Array.from(allItems).find(item => item.getAttribute('data-page') === pageName);
+
+                // Update breadcrumb
+                const breadcrumbContainer = document.getElementById('breadcrumbContainer');
+                const breadcrumb = document.getElementById('breadcrumb');
+
+                if (pageName === 'ui-component-lib') {
+                    breadcrumbContainer.classList.remove('visible');
+                } else {
+                    breadcrumbContainer.classList.add('visible');
+                    let breadcrumbHTML = '';
+
+                    // Add home link
+                    breadcrumbHTML += `
+                        <div class="breadcrumb-item">
+                            <a href="/index.html">Component Library</a>
+                        </div>
+                    `;
+
+                    if (targetItem) {
+                        const parentCategory = targetItem.closest('.category');
+                        if (parentCategory) {
+                            const categoryHeader = parentCategory.querySelector('.category-header');
+                            const categoryName = categoryHeader.textContent.trim();
+
+                            // Add category
+                            breadcrumbHTML += `
+                                <div class="breadcrumb-item">
+                                    <a href="/index.html?page=${categoryName.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-')}">${categoryName}</a>
+                                </div>
+                            `;
+
+                            // Add all items in the category
+                            const categoryItems = parentCategory.querySelectorAll('.category-item');
+                            categoryItems.forEach((item, index) => {
+                                const itemName = item.textContent.trim();
+                                const itemPage = item.getAttribute('data-page');
+                                const isActive = item === targetItem;
+
+                                breadcrumbHTML += `
+                                    <div class="breadcrumb-item ${isActive ? 'active' : ''}">
+                                        ${isActive ? `❖ ${itemName}` : `<a href="/index.html?page=${itemPage}">${itemName}</a>`}
+                                    </div>
+                                `;
+                            });
+                        }
+                    }
+
+                    breadcrumb.innerHTML = breadcrumbHTML;
+                }
+
                 if (targetItem) {
                     allItems.forEach(i => i.classList.remove('active'));
                     targetItem.classList.add('active');
@@ -667,7 +721,7 @@
                     const parentCategory = targetItem.closest('.category');
                     if (parentCategory) {
                         parentCategory.classList.add('active');
-                        parentCategory.querySelector('.toggle-icon').textContent = '⬤';
+                        parentCategory.querySelector('.toggle-icon').textContent = ' ⬤';
                     }
                 }
 
@@ -679,7 +733,7 @@
                 const componentData = componentRepository[pageName];
                 let pageTitle = '❖ Component Library';
                 let pageDescription = 'Explore our comprehensive UI component library with detailed documentation and examples.';
-                
+
                 if (componentData) {
                     const componentName = componentData.name;
                     pageTitle = `❖ ${componentName} | Component Library`;
