@@ -504,6 +504,8 @@
                             updateNavigationTooltips();
                             scrollToTop();
                             closeSidebarOnMobile();
+                            // Add scroll to category items
+                            scrollToCategoryItems(parent);
                         }
                     }
                 });
@@ -1858,6 +1860,31 @@
 
         // Call handleDirectUrlAccess when the page loads
         window.addEventListener('load', handleDirectUrlAccess);
+
+        function scrollToCategoryItems(category) {
+            const categoryItems = category.querySelector('.category-items');
+            if (categoryItems) {
+                const sidebar = document.getElementById('sidebar');
+                const categoryRect = category.getBoundingClientRect();
+                const sidebarRect = sidebar.getBoundingClientRect();
+                const viewportMiddle = sidebarRect.height / 2;
+
+                // Only scroll if the category is below the middle of the viewport
+                if (categoryRect.top > viewportMiddle) {
+                    // Calculate a more balanced scroll position that keeps items in the middle third of the viewport
+                    const targetPosition = viewportMiddle - (categoryRect.height / 2);
+                    const scrollTop = categoryRect.top - sidebarRect.top + sidebar.scrollTop - targetPosition;
+
+                    // Add a small delay to ensure the items are expanded
+                    setTimeout(() => {
+                        sidebar.scrollTo({
+                            top: scrollTop,
+                            behavior: 'smooth'
+                        });
+                    }, 100);
+                }
+            }
+        }
     </script>
     <!-- Property Table System -->
     <script src="js/include-prop-tables.js"></script>
