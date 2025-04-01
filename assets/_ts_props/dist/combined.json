@@ -13,6 +13,18 @@ export interface AccordionItem {
 	expanded: 'True' | 'False'; 
 }
 
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ai shortcuts item.ts
+export interface ❖ AI Shortcuts Item {
+	titel: string; 
+	icon: boolean; 
+	variant: 'Icon + Title' | 'Icon + Title hover' | 'Icon only' | 'Icon only hover'; 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ai shortcuts.ts
+export interface ❖ AI Shortcuts {
+	variant: 'Default' | 'Compact'; 
+}
+
 // File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Avatar.ts
 export interface Avatar {
 	initials: string; 
@@ -168,6 +180,14 @@ export interface ContentHeader {
 // File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\ContentSlot.ts
 export interface ContentSlot {
 	text: string; 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\date-picker.ts
+export interface ❖ Date picker {
+	month: string; 
+	actions: boolean; 
+	type: 'Single' | 'Single with help buttons' | 'Dual' | 'Dual with help buttons'; 
+	showRange: 'False' | 'True'; 
 }
 
 // File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Divider.ts

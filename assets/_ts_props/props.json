@@ -12,6 +12,16 @@ AccordionItem {
 	expanded: 'True' | 'False'; 
 },
 
+AI Shortcuts Item {
+	titel: string; 
+	icon: boolean; 
+	variant: 'Icon + Title' | 'Icon + Title hover' | 'Icon only' | 'Icon only hover'; 
+},
+
+AI Shortcuts {
+	variant: 'Default' | 'Compact'; 
+},
+
 Avatar {
 	initials: string; 
 	size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'; 
@@ -149,6 +159,13 @@ ContentHeader {
 
 ContentSlot {
 	text: string; 
+},
+
+Date picker {
+	month: string; 
+	actions: boolean; 
+	type: 'Single' | 'Single with help buttons' | 'Dual' | 'Dual with help buttons'; 
+	showRange: 'False' | 'True'; 
 },
 
 Divider {

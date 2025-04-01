@@ -551,5 +551,41 @@
         "figmaButtonText": "Drop-Down List",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
+    },
+    "date-picker": {
+        "name": "Date Picker",
+        "description": "A date picker is an interactive element that allows users to select a date from a calendar interface. It simplifies the process of date selection, ensuring accuracy and enhancing user experience in forms and scheduling applications.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6547-45802&t=9BjPSAw6FmFDHIOh-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6547-56103&t=9BjPSAw6FmFDHIOh-4",
+        "figmaButtonText": "Date Picker",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "color-picker": {
+        "name": "Color Picker",
+        "description": "A color picker is an interactive element that allows users to select a color from a palette or spectrum. It provides a visual interface for choosing colors, enhancing the customization and design capabilities within applications.",
+        "figmaLink": "",
+        "figmaProto": "",
+        "figmaButtonText": "Color Picker",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "ai-shortcuts": {
+        "name": "AI Shortcuts",
+        "description": "AI Shortcuts are icon-only or icon-plus-text elements designed to guide users to the main features of the application. They provide quick access to essential functionalities, enhancing user navigation and improving overall efficiency in utilizing the application's capabilities.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6599-176888&t=UtnpNuRUMShY5rMh-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6599-188624&t=UtnpNuRUMShY5rMh-4",
+        "figmaButtonText": "AI Shortcuts",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
+    },
+    "ai-shortcuts-item": {
+        "name": "AI Shortcuts Item",
+        "description": "AI Shortcuts are icon-only or icon-plus-text elements designed to guide users to the main features of the application. They provide quick access to essential functionalities, enhancing user navigation and improving overall efficiency in utilizing the application's capabilities.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6599-177262&t=3zwJwAXN76n9obq4-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6624-49531&t=3zwJwAXN76n9obq4-4",
+        "figmaButtonText": "AI Shortcuts Item",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png"
     }
 }
