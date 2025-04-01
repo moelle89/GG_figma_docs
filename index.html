@@ -243,40 +243,6 @@
             transform: scale(0.7);
         }
 
-        /* Update grid styles to handle single items */
-        .grid-2-col {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .grid-2-col.single-column {
-            grid-template-columns: 1fr;
-        }
-
-        .grid-2-col.single-column .grid-item:not(.hidden) {
-            grid-column: 1 / -1;
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        /* Remove any existing single-column specific positioning */
-        .grid-2-col .grid-item {
-            width: 100%;
-        }
-
-        .grid-2-col .grid-item.hidden {
-            display: none;
-        }
-
-        /* Ensure images in grid items scale properly */
-        .grid-2-col .grid-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
         .nested-section-header {
             display: flex;
             align-items: center;
