@@ -38,7 +38,8 @@ function updateComponents() {
                "figmaProto": "",
                "figmaButtonText": item,
                "imagePath1": "assets/prop_table/empty.png",
-               "imagePath2": "assets/prop_table/empty.png"
+               "imagePath2": "assets/prop_table/empty.png",
+               "nestedComponents": []
             };
             newItemsAdded = true;
             console.log(`Added new item: ${item}`);

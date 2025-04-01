@@ -143,6 +143,161 @@
             transform: translateX(0);
         }
 
+        /* Add styles for nested component buttons */
+        .nested-components-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .nested-component-button {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            font-size: 14px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nested-component-button .diamond-icon {
+            margin-left: 8px;
+            transform: scale(0.7);
+        }
+
+        /* Dark theme support */
+
+        .nested-components-section {
+            margin-top: -2rem;
+            padding: 1.5rem;
+            /* background: var(--card-bg); */
+            max-width: 900px;
+            border-radius: 8px;
+        }
+
+        .nested-components-section .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .nested-components-section .section-description {
+            font-size: 0.8rem;
+            color: var(--description-color)!important;
+            margin-bottom: 1rem;
+        }
+
+        .nested-components-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .nested-component-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: var(--button-bg);
+            border: 1.5px solid #d4d6da;
+            border-radius: 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0px 0px 0px var(--button-bg-hover),0px 1px 1px var(--button-bg-hover);
+            gap: 0.5rem;
+        }
+        [data-theme="dark"] .nested-component-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: var(--table-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: none;
+            gap: 0.5rem;
+        }
+
+        .nested-component-button:hover {
+            background: var(--card-bg);
+            box-shadow: 0px 1px 2px var(--button-bg-hover),0px 1px 3px #02081425;
+        }
+        [data-theme="dark"] .nested-component-button:hover {
+            background: var(--border-color);
+            border-color: var(--border-color);
+            box-shadow: none;
+        }
+
+        .nested-component-button .diamond-icon {
+            transform: scale(0.7);
+        }
+
+        /* Update grid styles to handle single items */
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .grid-2-col.single-column {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-2-col.single-column .grid-item:not(.hidden) {
+            grid-column: 1 / -1;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Remove any existing single-column specific positioning */
+        .grid-2-col .grid-item {
+            width: 100%;
+        }
+
+        .grid-2-col .grid-item.hidden {
+            display: none;
+        }
+
+        /* Ensure images in grid items scale properly */
+        .grid-2-col .grid-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .nested-section-header {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-bottom: 1rem;
+        }
+
+        .nested-components-section .section-title {
+            font-size: .9rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+
+        .nested-components-section .section-description {
+            font-size: .9rem;
+            font-weight: 400;
+            margin: 0;
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
@@ -1035,6 +1190,92 @@
                 } else {
                     console.log('Description element not found in the DOM');
                 }
+
+                // Handle nested components if they exist
+                if (componentData.nestedComponents && Array.isArray(componentData.nestedComponents) && componentData.nestedComponents.length > 0) {
+                    console.log('Found nested components:', componentData.nestedComponents);
+
+                    // Remove any existing nested components container to prevent duplicates
+                    const existingContainer = document.querySelector('.nested-components-section');
+                    if (existingContainer) {
+                        existingContainer.remove();
+                    }
+
+                    // Create section for nested components
+                    const nestedSection = document.createElement('div');
+                    nestedSection.className = 'nested-components-section';
+
+                    // Create header container for title and description
+                    const headerContainer = document.createElement('div');
+                    headerContainer.className = 'nested-section-header';
+
+                    // Add title for nested components section
+                    const sectionTitle = document.createElement('h3');
+                    sectionTitle.className = 'section-title';
+                    sectionTitle.textContent = 'Nested Components';
+                    headerContainer.appendChild(sectionTitle);
+
+                    const sectionDescription = document.createElement('p');
+                    sectionDescription.className = 'section-description';
+                    sectionDescription.textContent = 'The following items are used to setup this component:';
+                    headerContainer.appendChild(sectionDescription);
+
+                    nestedSection.appendChild(headerContainer);
+
+                    // Create container for nested component buttons
+                    const nestedContainer = document.createElement('div');
+                    nestedContainer.className = 'nested-components-container';
+
+                    // Create buttons for each nested component
+                    componentData.nestedComponents.forEach(nestedId => {
+                        const nestedData = componentRepository[nestedId];
+                        if (nestedData) {
+                            const button = document.createElement('a');
+                            button.href = `#${nestedId}`;
+                            button.className = 'nested-component-button';
+                            button.innerHTML = `
+                                ${nestedData.name}
+                                <div class="diamond-icon">
+                                    <div class="diamond-group">
+                                        <div class="diamond-item"></div>
+                                        <div class="diamond-item"></div>
+                                        <div class="diamond-item"></div>
+                                        <div class="diamond-item"></div>
+                                    </div>
+                                </div>
+                            `;
+
+                            // Add click handler to navigate to the nested component
+                            button.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                const itemId = nestedId;
+                                document.querySelectorAll('.category-item').forEach(item => {
+                                    if (item.getAttribute('data-page') === itemId) {
+                                        item.click();
+                                    }
+                                });
+                            });
+
+                            nestedContainer.appendChild(button);
+                        }
+                    });
+
+                    nestedSection.appendChild(nestedContainer);
+
+                    // Find the appropriate insertion point - after the grid-2-col section
+                    const gridSection = document.querySelector('.grid-2-col');
+                    if (gridSection) {
+                        gridSection.after(nestedSection);
+                    } else {
+                        // Fallback: insert after the Figma button if grid section not found
+                        const figmaButton = document.querySelector('.two-tone-button');
+                        if (figmaButton) {
+                            const parentElement = figmaButton.parentElement;
+                            parentElement.after(nestedSection);
+                        }
+                    }
+                }
+
                 const figmaLink = document.querySelector('.two-tone-button') ||
                     document.querySelector('[data-figma-link]') ||
                     document.querySelector('a[href*="figma.com"]');

@@ -158,7 +158,8 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3037-10024&t=OaCX3hbgJH9gzTAw-4",
         "figmaButtonText": "Empty state",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["empty-state-graphic", "button"]
     },
     "empty-state-graphic": {
         "name": "Empty state graphic",
@@ -446,7 +447,8 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3065-11678&t=OaCX3hbgJH9gzTAw-4",
         "figmaButtonText": "Avatar labeled",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["avatar"]
     },
     "avatar-stack": {
         "name": "Avatar stack",
@@ -454,7 +456,8 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3065-11755&t=OaCX3hbgJH9gzTAw-4",
         "figmaButtonText": "Avatar stack",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["avatar"]
     },
     "checklist-item": {
         "name": "Checklist Item",
@@ -576,6 +579,7 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6599-176888&t=UtnpNuRUMShY5rMh-4",
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6599-188624&t=UtnpNuRUMShY5rMh-4",
         "figmaButtonText": "AI Shortcuts",
+        "nestedComponents": ["ai-shortcuts-item"],
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
     },
