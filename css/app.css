@@ -3387,7 +3387,7 @@ p, h1, h2, h3, h4, h5, h6, span:not(.icon), pre, code {
         }
         .nested-components-section {
             margin-top: -2rem;
-            padding: 1.5rem 0.5rem;
+            padding: 1.5rem 0.5rem!important;
             /* background: var(--card-bg); */
             max-width: 900px;
             border-radius: 8px;
