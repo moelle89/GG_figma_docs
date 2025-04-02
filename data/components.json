@@ -159,7 +159,10 @@
         "figmaButtonText": "Empty state",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["empty-state-graphic", "button"]
+        "nestedComponents": [
+            "empty-state-graphic",
+            "button"
+        ]
     },
     "empty-state-graphic": {
         "name": "Empty state graphic",
@@ -183,7 +186,8 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3099-110181&t=OaCX3hbgJH9gzTAw-4",
         "figmaButtonText": "Info card",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["button", "featured-icon"]
     },
     "content---inbox---classic": {
         "name": "Content / Inbox / Classic",
@@ -223,7 +227,8 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=2894-112652&t=OaCX3hbgJH9gzTAw-4",
         "figmaButtonText": "Class list item",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["featured-icon"]
     },
     "gg-logo": {
         "name": "GG LOGO",
@@ -359,7 +364,8 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3223-20328&t=OaCX3hbgJH9gzTAw-4",
         "figmaButtonText": "Horizontal tabs",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["tab-button"]
     },
     "vertical-tabs": {
         "name": "Vertical tabs",
@@ -367,7 +373,8 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3223-20473&t=OaCX3hbgJH9gzTAw-4",
         "figmaButtonText": "Vertical tabs",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["tab-button"]
     },
     "tab-button": {
         "name": "Tab button",
@@ -448,7 +455,9 @@
         "figmaButtonText": "Avatar labeled",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["avatar"]
+        "nestedComponents": [
+            "avatar"
+        ]
     },
     "avatar-stack": {
         "name": "Avatar stack",
@@ -457,7 +466,9 @@
         "figmaButtonText": "Avatar stack",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["avatar"]
+        "nestedComponents": [
+            "avatar"
+        ]
     },
     "checklist-item": {
         "name": "Checklist Item",
@@ -471,6 +482,7 @@
         "name": "Table cell",
         "description": "A table cell is a single unit within a table that holds data or information. It's used to organize and present tabular data in a structured format, allowing users to easily read and interpret the information.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=5424-44421&t=EGh4lSp0Tr7bu25W-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=5433-37434&t=xDlsjeGq7nrWBs1b-4",
         "figmaButtonText": "Table cell",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
@@ -479,10 +491,11 @@
         "name": "Table",
         "description": "A table is a structured format used to organize and present data in rows and columns. It allows users to easily read, compare, and interpret information, making it an essential component for displaying tabular data in applications.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-63348&t=irvE3E7qlKWcJsA9-4",
-        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6010-165915&t=lbg7gKxg1MnUdqQB-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=5433-37434&t=xDlsjeGq7nrWBs1b-4",
         "figmaButtonText": "Table",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["table-cell"]
     },
     "other-icons": {
         "name": "Other icons",
@@ -590,6 +603,27 @@
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6624-49531&t=3zwJwAXN76n9obq4-4",
         "figmaButtonText": "AI Shortcuts Item",
         "imagePath1": "assets/prop_table/empty.png",
-        "imagePath2": "assets/prop_table/empty.png"
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": ["featured-icon"]
+    },
+    "featured-icon": {
+        "name": "Featured Icon",
+        "description": "A featured icon is a visual element that is placed on a round or square-shaped background, available in various themed styles. It serves to highlight important features or actions within an application, enhancing visual appeal and user engagement.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=3237-22256&t=xDlsjeGq7nrWBs1b-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6798-50640&t=xDlsjeGq7nrWBs1b-4",
+        "figmaButtonText": "Featured Icon",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
+    },
+    "menu-list-item": {
+        "name": "Menu List Item",
+        "description": "A menu list item is a text link that can include an optional icon as a lead. It serves as a navigational element within a menu, allowing users to easily access different sections or features of the application, enhancing usability and organization.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6581-174930&t=xDlsjeGq7nrWBs1b-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6798-51171&t=xDlsjeGq7nrWBs1b-4",
+        "figmaButtonText": "Menu List Item",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
     }
 }

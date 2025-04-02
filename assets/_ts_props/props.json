@@ -189,6 +189,14 @@ EmptyStateGraphic {
 	type: 'calendar' | 'code' | 'Category' | 'Comment' | 'Date' | 'Files' | 'Group' | 'Task' | 'Analitics' | 'Upload' | 'Dev Settings' | 'Development 01' | 'Edit' | 'Error' | 'Login' | 'Media' | 'Performance' | 'Settings' | 'Syncronize' | 'Tags' | 'Tracking' | 'Upload Error' | 'Upload Media' | 'Upload Single File' | 'Validation' | 'Web Page' | 'Write Content' | 'add Files' | 'Signature'; 
 },
 
+Featured icon {
+	border: boolean; 
+	icon: ReactNode; 
+	size: 'sm' | 'md' | 'lg'; 
+	shape: 'Square' | 'Circle'; 
+	variant: 'Primary filled' | 'Primary subtle' | 'Gray subtle' | 'Primary outline' | 'Gray outline' | 'Dark filled' | 'Primary dark filled' | 'Success' | 'Error' | 'Warning' | 'Card'; 
+},
+
 GgLogo {
 	size: 'sm' | 'md' | 'lg'; 
 	color: 'Primary' | 'Black' | 'White'; 
@@ -233,6 +241,14 @@ LoginSections {
 	text: string; 
 	variant: 'Simple 01' | 'Simple 02' | 'Simple 03' | 'Simple 04' | 'Simple 05' | 'With image 01' | 'With image 02' | 'With image 03' | 'With image 04' | 'With image 05' | 'With mockup 01' | 'With mockup 02' | 'With mockup 03' | 'With mockup 04' | 'With mockup 05' | 'Gradient 01' | 'Gradient 02' | 'Gradient 03' | 'Gradient 04' | 'Gradient 05'; 
 	mobileLayout: 'True' | 'False'; 
+},
+
+Menu List Item {
+	icon: ReactNode; 
+	viewIcon: boolean; 
+	menuItem: string; 
+	size: 'sm' | 'md' | 'xl' | 'xxl'; 
+	state: 'Default' | 'Hover' | 'Selected'; 
 },
 
 ModalActions {
