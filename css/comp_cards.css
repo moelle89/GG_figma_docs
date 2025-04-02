@@ -18,6 +18,14 @@
     color: var(--text-color);
     text-decoration: none;
 }
+
+.component-item:hover {
+    cursor: pointer;
+    translate: 0 -2px;
+    background-color: var(--table-header-element);
+    box-shadow: var(--card-shadow-hover);
+}
+
 /* Add media query for mobile devices */
 @media screen and (max-width: 768px) {
     .components-grid {
@@ -36,21 +44,23 @@
     .component-info {
         padding: 15px 15px 0 15px; /* Reduce padding on mobile */
     }
+    .component-item {
+        box-shadow: var(--card-shadow-small);
+    }
+    .component-item:hover {
+        cursor: pointer;
+        translate: 0;
+        background-color: var(--table-header-element);
+        box-shadow: var(--card-shadow-small);
+    }
 }
 
 /* For very small screens */
 @media screen and (max-width: 480px) {
     .components-grid {
-        gap: 10px;
+        gap: 12px;
         margin: 20px 0;
     }
-}
-
-.component-item:hover {
-    cursor: pointer;
-    translate: 0 -2px;
-    background-color: var(--table-header-element);
-    box-shadow: var(--card-shadow-hover);
 }
 
 .component-icon {
@@ -82,8 +92,8 @@
 }
 
 .component-card-description {
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 11.25px;
+    line-height: 1.35;
     margin-bottom: 20px !important;
     color: var(--description-color);
 }

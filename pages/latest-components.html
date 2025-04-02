@@ -1,4 +1,40 @@
 <!-- pages/latest-components.html -->
+<style>
+    .component-icon {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-height: 120px;
+        min-height: 100px;
+        overflow: hidden;
+
+        background-color: var(--card-header-element);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .component-card-description {
+            font-size: 0.7rem;
+            color: var(--description-color);
+            margin: 0;
+            max-height: 80px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            line-height: 1.7;
+    }
+    @media screen and (max-width: 768px) {
+        .component-icon img {
+            transform: scale(1);
+            object-fit: cover !important;
+        }
+        .component-item {
+            box-shadow: var(--card-shadow-small);
+        }
+    }
+</style>
 <div class="">
-    <p class="content-subtitle" style="margin-bottom: -30px!important;">Explore the most recently added components.</p>
+    <p class="content-subtitle">Explore the most recently added components.</p>
 </div>

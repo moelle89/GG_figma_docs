@@ -38,6 +38,7 @@
             --tooltip-bg: #262626e6;
             --form-input-bg: var(--fab-fg);
             --card-shadow: 0px 1px 1px #0208140f,0px 2px 4px #02081414;
+            --card-shadow-small: 0px 1px 1px #0208140f,0px 1px 2px #02081414;
             --breadcrump-shadow: 0px -1px 1px #0208140f,0px -1px 4px #02081414;
             --card-shadow-hover: 0px 1px 4px #02081418,0px 4px 8px #0208141f;
             --card-header-element: hsl(0, 0%, 98%);
