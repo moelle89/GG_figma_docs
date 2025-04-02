@@ -1062,6 +1062,9 @@
                                 });
                             }, 200);
                         }
+                        if (pageName === 'latest-components') {
+                            loadLatestComponents();
+                        }
                     });
                 });
                 await new Promise(resolve => setTimeout(resolve, 200));
@@ -1856,6 +1859,54 @@
             setupEventListeners();
             console.log('Icon search component initialized');
         };
+
+    async function loadLatestComponents() {
+        try {
+            const response = await fetch('data/components.json');
+            if (!response.ok) {
+                throw new Error(`Failed to load component data: ${response.status}`);
+            }
+
+            const components = await response.json();
+            console.log('Fetched components:', components); // Log the fetched components
+
+            // Convert the components object into an array
+            const componentsArray = Object.values(components);
+
+            // Get the last 10 entries
+            const latestComponents = componentsArray.slice(-10);
+
+            // Get the container where buttons will be displayed
+            const latestComponentsContainer = document.getElementById('latest-components-list');
+            latestComponentsContainer.innerHTML = ''; // Clear existing content
+
+            // Create themed links for each latest component
+            latestComponents.forEach(component => {
+                const link = document.createElement('a');
+                link.href = `#${component.name.toLowerCase().replace(/\s+/g, '-')}`; // Create a link to the component
+                link.className = 'nested-component-button';
+                link.innerHTML = `
+                ${component.name}
+                <div class="diamond-icon">
+                    <div class="diamond-group">
+                        <div class="diamond-item"></div>
+                        <div class="diamond-item"></div>
+                        <div class="diamond-item"></div>
+                        <div class="diamond-item"></div>
+                    </div>
+                </div>
+            `;
+                link.onclick = (e) => {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    loadContent(component.id); // Load the content for the component
+                };
+                latestComponentsContainer.appendChild(link);
+            });
+        } catch (error) {
+            console.error('Error loading latest components:', error);
+        }
+    }
+
 
         async function initializeApp() {
             initializeSearch();

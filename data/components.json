@@ -659,7 +659,7 @@
         "figmaButtonText": "Product Card Horizontal",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": []
+        "nestedComponents": ["button", "badge"]
     },
     "product-card-vertical": {
         "name": "Product Card Vertical",
@@ -669,6 +669,6 @@
         "figmaButtonText": "Product Card Vertical",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": []
+        "nestedComponents": ["button", "badge"]
     }
 }
