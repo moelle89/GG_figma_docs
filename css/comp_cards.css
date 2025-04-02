@@ -14,8 +14,10 @@
     background-color: var(--component-bg);
     box-shadow: var(--card-shadow);
     transition: transform 0.2s ease, translate 0.2s ease-out, box-shadow 0.2s ease-out;
+    cursor: pointer;
+    color: var(--text-color);
+    text-decoration: none;
 }
-
 /* Add media query for mobile devices */
 @media screen and (max-width: 768px) {
     .components-grid {
@@ -47,6 +49,7 @@
 .component-item:hover {
     cursor: pointer;
     translate: 0 -2px;
+    background-color: var(--table-header-element);
     box-shadow: var(--card-shadow-hover);
 }
 
@@ -57,6 +60,11 @@
     justify-content: center;
     min-height: 150px;
     background-color: var(--card-header-element);
+}
+.component-item .component-icon img{
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 /*
 [data-theme="dark"] .component-icon img{

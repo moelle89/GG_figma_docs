@@ -1860,53 +1860,116 @@
             console.log('Icon search component initialized');
         };
 
-    async function loadLatestComponents() {
-        try {
-            const response = await fetch('data/components.json');
-            if (!response.ok) {
-                throw new Error(`Failed to load component data: ${response.status}`);
+        async function loadLatestComponents() {
+            console.log('Loading latest components...');
+
+            // Define components to ignore
+            const ignoreList = [
+                'ui-component-lib',
+                'documentation',
+                'latest-components',
+                'component-manager'
+            ];
+
+            // Get all components and filter out ignored ones
+            const components = Object.entries(componentRepository)
+                .filter(([id]) => !ignoreList.includes(id))
+                .sort((a, b) => {
+                    // Sort by last modified date if available, otherwise by name
+                    const dateA = a[1].lastModified || '';
+                    const dateB = b[1].lastModified || '';
+                    return dateB.localeCompare(dateA);
+                });
+
+            // Get the last 10 components from the filtered list
+            const lastTenComponents = components.slice(-10);
+
+            // Create a container for the latest components
+            const container = document.createElement('div');
+            container.className = 'latest-components-container';
+
+            // Create a grid for the components
+            const grid = document.createElement('div');
+            grid.className = 'components-grid';
+
+            // Add each component as a button
+            for (const [id, data] of lastTenComponents) {
+                // Check if component-specific image exists
+                const componentImagePath = `assets/img/${id}.png`;
+                const defaultImagePath = 'assets/img/component.png';
+
+                // Try to fetch the component-specific image
+                try {
+                    const response = await fetch(componentImagePath);
+                    const imagePath = response.ok ? componentImagePath : defaultImagePath;
+
+                    const button = document.createElement('a');
+                    button.href = `#${id}`;
+                    button.className = 'component-item';
+                    button.innerHTML = `
+                        <div class="component-icon">
+                            <img src="${imagePath}" alt="${data.name} icon">
+                        </div>
+                        <div class="component-info">
+                            <h3 class="component-title">${data.name}</h3>
+                            <p class="component-card-description">${data.description || 'No description available'}</p>
+                        </div>
+                    `;
+
+                    // Add click handler to navigate to the component
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        document.querySelectorAll('.category-item').forEach(item => {
+                            if (item.getAttribute('data-page') === id) {
+                                item.click();
+                            }
+                        });
+                    });
+
+                    grid.appendChild(button);
+                } catch (error) {
+                    console.error(`Error checking image for component ${id}:`, error);
+                    // Use default image if there's an error
+                    const button = document.createElement('a');
+                    button.href = `#${id}`;
+                    button.className = 'component-item';
+                    button.innerHTML = `
+                        <div class="component-icon">
+                            <img src="${defaultImagePath}" alt="${data.name} icon">
+                        </div>
+                        <div class="component-info">
+                            <h3 class="component-title">${data.name}</h3>
+                            <p class="component-card-description">${data.description || 'No description available'}</p>
+                        </div>
+                    `;
+
+                    // Add click handler to navigate to the component
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        document.querySelectorAll('.category-item').forEach(item => {
+                            if (item.getAttribute('data-page') === id) {
+                                item.click();
+                            }
+                        });
+                    });
+
+                    grid.appendChild(button);
+                }
             }
 
-            const components = await response.json();
-            console.log('Fetched components:', components); // Log the fetched components
+            container.appendChild(grid);
 
-            // Convert the components object into an array
-            const componentsArray = Object.values(components);
+            // Find the content container and append our new container
+            const contentContainer = document.getElementById('content');
+            const existingContent = contentContainer.querySelector('.latest-components-container');
+            if (existingContent) {
+                existingContent.remove();
+            }
+            contentContainer.appendChild(container);
 
-            // Get the last 10 entries
-            const latestComponents = componentsArray.slice(-10);
-
-            // Get the container where buttons will be displayed
-            const latestComponentsContainer = document.getElementById('latest-components-list');
-            latestComponentsContainer.innerHTML = ''; // Clear existing content
-
-            // Create themed links for each latest component
-            latestComponents.forEach(component => {
-                const link = document.createElement('a');
-                link.href = `#${component.name.toLowerCase().replace(/\s+/g, '-')}`; // Create a link to the component
-                link.className = 'nested-component-button';
-                link.innerHTML = `
-                ${component.name}
-                <div class="diamond-icon">
-                    <div class="diamond-group">
-                        <div class="diamond-item"></div>
-                        <div class="diamond-item"></div>
-                        <div class="diamond-item"></div>
-                        <div class="diamond-item"></div>
-                    </div>
-                </div>
-            `;
-                link.onclick = (e) => {
-                    e.preventDefault(); // Prevent default anchor behavior
-                    loadContent(component.id); // Load the content for the component
-                };
-                latestComponentsContainer.appendChild(link);
-            });
-        } catch (error) {
-            console.error('Error loading latest components:', error);
+            // Initialize animations for the new content
+            initializeElementScrollAnimations();
         }
-    }
-
 
         async function initializeApp() {
             initializeSearch();
