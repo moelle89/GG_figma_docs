@@ -308,6 +308,25 @@ PaginationItem {
 	type: 'Number' | 'Icon'; 
 },
 
+Product Card Horizontal {
+	rating: boolean; 
+	tags: boolean; 
+	description: boolean; 
+	description: string; 
+	title: string; 
+	imagePadding: boolean; 
+	imagePosition: 'left' | 'right'; 
+},
+
+Product Card Vertical {
+	rating: boolean; 
+	tags: boolean; 
+	description: string; 
+	description: boolean; 
+	title: string; 
+	imagePadding: boolean; 
+},
+
 Project Switch {
 	logoIcon: ReactNode; 
 	sublabel: boolean; 

@@ -351,6 +351,27 @@ export interface PaginationItem {
 	type: 'Number' | 'Icon'; 
 }
 
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\product card horizontal.ts
+export interface ❖ Product Card Horizontal {
+	rating: boolean; 
+	tags: boolean; 
+	description: boolean; 
+	description: string; 
+	title: string; 
+	imagePadding: boolean; 
+	imagePosition: 'left' | 'right'; 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\product card vertical.ts
+export interface ❖ Product Card Vertical {
+	rating: boolean; 
+	tags: boolean; 
+	description: string; 
+	description: boolean; 
+	title: string; 
+	imagePadding: boolean; 
+}
+
 // File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Project Switch.ts
 export interface ❖ Project Switch {
 	logoIcon: ReactNode; 

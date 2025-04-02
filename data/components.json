@@ -187,7 +187,10 @@
         "figmaButtonText": "Info card",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["button", "featured-icon"]
+        "nestedComponents": [
+            "button",
+            "featured-icon"
+        ]
     },
     "content---inbox---classic": {
         "name": "Content / Inbox / Classic",
@@ -228,7 +231,9 @@
         "figmaButtonText": "Class list item",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["featured-icon"]
+        "nestedComponents": [
+            "featured-icon"
+        ]
     },
     "gg-logo": {
         "name": "GG LOGO",
@@ -365,7 +370,9 @@
         "figmaButtonText": "Horizontal tabs",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["tab-button"]
+        "nestedComponents": [
+            "tab-button"
+        ]
     },
     "vertical-tabs": {
         "name": "Vertical tabs",
@@ -374,7 +381,9 @@
         "figmaButtonText": "Vertical tabs",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["tab-button"]
+        "nestedComponents": [
+            "tab-button"
+        ]
     },
     "tab-button": {
         "name": "Tab button",
@@ -495,7 +504,9 @@
         "figmaButtonText": "Table",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["table-cell"]
+        "nestedComponents": [
+            "table-cell"
+        ]
     },
     "other-icons": {
         "name": "Other icons",
@@ -592,7 +603,9 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6599-176888&t=UtnpNuRUMShY5rMh-4",
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6599-188624&t=UtnpNuRUMShY5rMh-4",
         "figmaButtonText": "AI Shortcuts",
-        "nestedComponents": ["ai-shortcuts-item"],
+        "nestedComponents": [
+            "ai-shortcuts-item"
+        ],
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png"
     },
@@ -604,7 +617,9 @@
         "figmaButtonText": "AI Shortcuts Item",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["featured-icon"]
+        "nestedComponents": [
+            "featured-icon"
+        ]
     },
     "featured-icon": {
         "name": "Featured Icon",
@@ -622,6 +637,36 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6581-174930&t=xDlsjeGq7nrWBs1b-4",
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6798-51171&t=xDlsjeGq7nrWBs1b-4",
         "figmaButtonText": "Menu List Item",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
+    },
+    "latest-components": {
+        "name": "Latest Components",
+        "description": "",
+        "figmaLink": "",
+        "figmaProto": "",
+        "figmaButtonText": "Latest Components",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
+    },
+    "product-card-horizontal": {
+        "name": "Product Card Horizontal",
+        "description": "A product card horizontal is a visual element designed to showcase product information in a horizontal layout. It typically includes an image, product title, description, and pricing details, making it ideal for displaying multiple products side by side in a compact format. This layout enhances user engagement by providing a clear and organized view of product offerings.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6865-51677&t=UiZGDDRyE2FAzCOB-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6865-55591&t=UiZGDDRyE2FAzCOB-4",
+        "figmaButtonText": "Product Card Horizontal",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
+    },
+    "product-card-vertical": {
+        "name": "Product Card Vertical",
+        "description": "A product card vertical is a visual element designed to present product information in a vertical layout. It usually features an image, product title, description, and pricing details, allowing for a more detailed view of each product. This layout is particularly effective for showcasing individual products in a list or grid format, enhancing the user's ability to browse and compare options.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6865-51734&t=UiZGDDRyE2FAzCOB-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=6865-55854&t=UiZGDDRyE2FAzCOB-4",
+        "figmaButtonText": "Product Card Vertical",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
         "nestedComponents": []
