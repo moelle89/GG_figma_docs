@@ -1,6 +1,6 @@
 figma.showUI(__html__, {
-  width: 320,
-  height: 700,
+  width: 280,
+  height: 860,
   themeColors: true
 });
 // ===================================
@@ -20,7 +20,7 @@ async function loadComponentsFromCurrentFile() {
   // Return cached results if available
   if (cache.components) {
     figma.ui.postMessage({
-      status: `Found ${cache.components.length} components in the current file.`,
+      status: `Found ${cache.components.length} components.`,
       components: cache.components
     });
     return;
@@ -65,8 +65,8 @@ async function loadComponentsFromCurrentFile() {
       const component = components[i];
       try {
         // Get the default variant if it's a component set
-        const targetComponent = component.type === "COMPONENT_SET" 
-          ? component.defaultVariant 
+        const targetComponent = component.type === "COMPONENT_SET"
+          ? component.defaultVariant
           : component;
 
         // Export the component as a PNG
@@ -110,7 +110,7 @@ async function loadComponentsFromCurrentFile() {
     cache.components = formattedComponents;
 
     figma.ui.postMessage({
-      status: `Found ${components.length} components in the current file.`,
+      status: `Found ${components.length} components.`,
       components: formattedComponents
     });
   } catch (error) {
@@ -127,7 +127,7 @@ async function loadIconComponentsFromCurrentFile() {
   // Return cached results if available
   if (cache.icons) {
     figma.ui.postMessage({
-      iconsStatus: `Found ${cache.icons.length} icons in the app-icons section.`,
+      iconsStatus: `Found ${cache.icons.length} icons.`,
       icons: cache.icons
     });
     return;
@@ -173,8 +173,8 @@ async function loadIconComponentsFromCurrentFile() {
       const component = components[i];
       try {
         // Get the default variant if it's a component set
-        const targetComponent = component.type === "COMPONENT_SET" 
-          ? component.defaultVariant 
+        const targetComponent = component.type === "COMPONENT_SET"
+          ? component.defaultVariant
           : component;
 
         // Export the component as a PNG
@@ -218,7 +218,7 @@ async function loadIconComponentsFromCurrentFile() {
     cache.icons = formattedComponents;
 
     figma.ui.postMessage({
-      iconsStatus: `Found ${components.length} icons in the app-icons section.`,
+      iconsStatus: `Found ${components.length} icons.`,
       icons: formattedComponents
     });
   } catch (error) {
