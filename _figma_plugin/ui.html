@@ -5,7 +5,7 @@
   <style>
     body {
       font-family: "Inter", sans-serif;
-      padding: 16px;
+      padding: 10px;
       margin: 0;
       height: 100vh;
       box-sizing: border-box;
@@ -105,13 +105,13 @@
     }
 
     .component-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 4px;
-      width: 260px;
-      transition: background-color 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 4px;
+        width: 280px;
+        transition: background-color 0.2s;
     }
 
     .component-content:hover {
@@ -120,7 +120,7 @@
 
     .component-name {
       flex-grow: 1;
-      font-size: .9rem;
+      font-size: .8rem;
       font-weight: 600;
     }
 
@@ -157,7 +157,7 @@
     #status-message,
     #icons-status-message {
       margin-top: 8px;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       color: var(--figma-color-text-secondary);
       padding: 8px;
     }
@@ -198,6 +198,44 @@
 
     .tab-content.active {
       display: block;
+    }
+    ::-webkit-scrollbar {
+      width: 6px; /* Thinner scrollbar */
+    }
+    /* Style the scrollbar for webkit browsers */
+    #component-list::-webkit-scrollbar,
+    #icons-list::-webkit-scrollbar {
+      width: 6px; /* Thinner scrollbar */
+    }
+
+    #component-list::-webkit-scrollbar-track,
+    #icons-list::-webkit-scrollbar-track {
+      background: transparent; /* Transparent track */
+    }
+
+    #component-list::-webkit-scrollbar-thumb,
+    #icons-list::-webkit-scrollbar-thumb {
+      background: var(--figma-color-text-tertiary);
+      border-radius: 6px;
+      opacity: 0.5;
+    }
+
+  ::-webkit-scrollbar-thumb {
+      background: var(--figma-color-text-tertiary);
+      border-radius: 6px;
+      opacity: 0.5;
+    }
+
+    #component-list::-webkit-scrollbar-thumb:hover,
+    #icons-list::-webkit-scrollbar-thumb:hover {
+      background: var(--figma-color-text-secondary);
+    }
+
+    /* For Firefox */
+    #component-list,
+    #icons-list {
+      scrollbar-width: thin;
+      scrollbar-color: var(--figma-color-text-tertiary) transparent;
     }
   </style>
 </head>

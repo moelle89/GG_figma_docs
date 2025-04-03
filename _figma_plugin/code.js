@@ -110,7 +110,7 @@ async function loadIconComponentsFromCurrentFile() {
     // Find components with the "app-icons" parent
     const components = componentsPage.findAll(node =>
       (node.type === "COMPONENT" || node.type === "COMPONENT_SET") &&
-      node.parent && node.parent.name === "app-icons" // Check if the parent is the "app-icons" section
+      node.parent && node.parent.name === "icons" // Check if the parent is the "app-icons" section
     );
 
     if (components.length === 0) {
