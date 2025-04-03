@@ -68,7 +68,7 @@ window.onmessage = (event) => {
 </script>
 <style>
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: "Inter", sans-serif;
     padding: 16px;
     margin: 0;
     height: 100vh;
@@ -85,45 +85,74 @@ window.onmessage = (event) => {
     top: 0;
     background: var(--figma-color-bg);
     padding: 8px 0;
-    border-bottom: 1px solid var(--figma-color-border);
     margin-bottom: 8px;
   }
-  #search-input {
+#search-input {
     width: 100%;
-    padding: 8px;
-    border: 1px solid var(--figma-color-border);
-    border-radius: 4px;
+    padding: 14px;
+    border: 2px solid var(--figma-color-border);
+    border-radius: 10px;
     font-size: 14px;
     box-sizing: border-box;
     background: var(--figma-color-bg);
     color: var(--figma-color-text);
-  }
+}
   #search-input::placeholder {
     color: var(--figma-color-text-tertiary);
   }
+
   #component-list {
     list-style: none;
     padding: 0;
-    margin: 16px 0;
-    height: calc(100vh - 120px);
+    margin-top: 0;
+    height: 500px;
+    display: inline-table;
   }
+
+    /* Style the scrollbar for webkit browsers (Chrome, Safari, etc.) */
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--figma-color-bg);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--figma-color-border);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--figma-color-text-tertiary);
+    }
+
+    /* Hide scrollbar for Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: var(--figma-color-border) transparent;
+  }
+
   .component-item {
     margin: 4px 0;
+    width: 85vw;
   }
-  .component-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-  }
+    .component-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 4px;
+        width: 260px;
+        transition: background-color 0.2s;
+    }
   .component-content:hover {
     background-color: var(--figma-color-bg-hover);
   }
-  .component-name {
+.component-name {
     flex-grow: 1;
-  }
+    font-size: .9rem;
+    font-weight: 600;
+}
   .component-actions {
     display: flex;
     gap: 8px;
@@ -150,14 +179,14 @@ window.onmessage = (event) => {
     font-style: italic;
   }
 </style>
-<h2>Component Library</h2>
+<h4>GetGenius.AI Component Library</h4>
 <div class="search-container">
   <input type="text" id="search-input" placeholder="Search components...">
 </div>
 <ul id="component-list"></ul>
 `, {
-    width: 400,
-    height: 600,
+    width: 320,
+    height: 700,
     themeColors: true
 });
 
