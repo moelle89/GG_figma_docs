@@ -57,15 +57,54 @@ async function loadComponentsFromCurrentFile() {
       return;
     }
 
-    // Get thumbnails for each component
-    const formattedComponents = await Promise.all(components.map(async component => {
-      const thumbnail = await component.createThumbnailAsync();
-      return {
-        id: component.id,
-        name: component.name,
-        thumbnail: thumbnail ? thumbnail.toString('base64') : null
-      };
-    }));
+    // Process components in smaller batches
+    const BATCH_SIZE = 3;
+    const formattedComponents = [];
+
+    for (let i = 0; i < components.length; i++) {
+      const component = components[i];
+      try {
+        // Get the default variant if it's a component set
+        const targetComponent = component.type === "COMPONENT_SET" 
+          ? component.defaultVariant 
+          : component;
+
+        // Export the component as a PNG
+        const exportSettings = {
+          format: "PNG",
+          constraint: { type: "SCALE", value: 2 }
+        };
+
+        const bytes = await targetComponent.exportAsync(exportSettings);
+        const base64Image = figma.base64Encode(bytes);
+
+        formattedComponents.push({
+          id: component.id,
+          name: component.name,
+          thumbnail: base64Image
+        });
+
+        // Update progress every few components
+        if (i % BATCH_SIZE === 0 || i === components.length - 1) {
+          figma.ui.postMessage({
+            status: `Loading components... (${i + 1}/${components.length})`
+          });
+        }
+
+        // Small delay between batches to prevent memory issues
+        if (i % BATCH_SIZE === BATCH_SIZE - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      } catch (error) {
+        console.warn(`Failed to export component ${component.name}:`, error);
+        formattedComponents.push({
+          id: component.id,
+          name: component.name,
+          colorHash: stringToColor(component.name),
+          firstChar: component.name.charAt(0).toUpperCase()
+        });
+      }
+    }
 
     // Store in cache
     cache.components = formattedComponents;
@@ -115,7 +154,7 @@ async function loadIconComponentsFromCurrentFile() {
     // Find components with the "app-icons" parent
     const components = componentsPage.findAll(node =>
       (node.type === "COMPONENT" || node.type === "COMPONENT_SET") &&
-      node.parent && node.parent.name === "icons" // Check if the parent is the "app-icons" section
+      node.parent && node.parent.name === "icons"
     );
 
     if (components.length === 0) {
@@ -126,10 +165,54 @@ async function loadIconComponentsFromCurrentFile() {
       return;
     }
 
-    const formattedComponents = components.map(component => ({
-      id: component.id,
-      name: component.name
-    }));
+    // Process icons in smaller batches
+    const BATCH_SIZE = 3;
+    const formattedComponents = [];
+
+    for (let i = 0; i < components.length; i++) {
+      const component = components[i];
+      try {
+        // Get the default variant if it's a component set
+        const targetComponent = component.type === "COMPONENT_SET" 
+          ? component.defaultVariant 
+          : component;
+
+        // Export the component as a PNG
+        const exportSettings = {
+          format: "PNG",
+          constraint: { type: "SCALE", value: 2 }
+        };
+
+        const bytes = await targetComponent.exportAsync(exportSettings);
+        const base64Image = figma.base64Encode(bytes);
+
+        formattedComponents.push({
+          id: component.id,
+          name: component.name,
+          thumbnail: base64Image
+        });
+
+        // Update progress every few icons
+        if (i % BATCH_SIZE === 0 || i === components.length - 1) {
+          figma.ui.postMessage({
+            iconsStatus: `Loading icons... (${i + 1}/${components.length})`
+          });
+        }
+
+        // Small delay between batches to prevent memory issues
+        if (i % BATCH_SIZE === BATCH_SIZE - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      } catch (error) {
+        console.warn(`Failed to export icon ${component.name}:`, error);
+        formattedComponents.push({
+          id: component.id,
+          name: component.name,
+          colorHash: stringToColor(component.name),
+          firstChar: component.name.charAt(0).toUpperCase()
+        });
+      }
+    }
 
     // Store in cache
     cache.icons = formattedComponents;
@@ -145,6 +228,22 @@ async function loadIconComponentsFromCurrentFile() {
       icons: []
     });
   }
+}
+
+// Function to generate a color from a string
+function stringToColor(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xFF;
+    color += ('00' + value.toString(16)).substr(-2);
+  }
+
+  return color;
 }
 
 // Function to reload and refresh the cache

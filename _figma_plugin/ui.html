@@ -28,7 +28,7 @@
       gap: 8px;
     }
 
-    #search-input,
+    #components-search-input,
     #icons-search-input {
       flex-grow: 1;
       padding: 10px;
@@ -40,7 +40,7 @@
       color: var(--figma-color-text);
     }
 
-    #search-input::placeholder,
+    #components-search-input::placeholder,
     #icons-search-input::placeholder {
       color: var(--figma-color-text-tertiary);
     }
@@ -61,7 +61,7 @@
       background: var(--figma-color-bg-hover);
     }
 
-    #component-list,
+    #components-list,
     #icons-list {
       list-style: none;
       padding: 0;
@@ -71,29 +71,29 @@
     }
 
     /* Style the scrollbar for webkit browsers (Chrome, Safari, etc.) */
-    #component-list::-webkit-scrollbar,
+    #components-list::-webkit-scrollbar,
     #icons-list::-webkit-scrollbar {
       width: 8px;
     }
 
-    #component-list::-webkit-scrollbar-track,
+    #components-list::-webkit-scrollbar-track,
     #icons-list::-webkit-scrollbar-track {
       background: var(--figma-color-bg);
     }
 
-    #component-list::-webkit-scrollbar-thumb,
+    #components-list::-webkit-scrollbar-thumb,
     #icons-list::-webkit-scrollbar-thumb {
       background: var(--figma-color-border);
       border-radius: 4px;
     }
 
-    #component-list::-webkit-scrollbar-thumb:hover,
+    #components-list::-webkit-scrollbar-thumb:hover,
     #icons-list::-webkit-scrollbar-thumb:hover {
       background: var(--figma-color-text-tertiary);
     }
 
     /* Hide scrollbar for Firefox */
-    #component-list,
+    #components-list,
     #icons-list {
       scrollbar-width: thin;
       scrollbar-color: var(--figma-color-border) transparent;
@@ -121,15 +121,26 @@
         gap: 8px;
     }
 
-    .component-thumbnail {
-        width: 32px;
-        height: 32px;
-        object-fit: contain;
-        border-radius: 2px;
-        background: var(--figma-color-bg-secondary);
-    }
+	.component-thumbnail {
+		width: 32px;
+		height: 32px;
+		object-fit: contain;
+		padding: 10px;
+		border-radius: 6px;
+		background: #c8c8c84f;
+	}
+	
+	.component-thumbnail-icon {
+		width: 32px;
+		height: 32px;
+		object-fit: contain;
+		padding: 4px;
+		border-radius: 8px;
+		background: white;
+	}
 
     .component-content:hover {
+	 border-radius: 6px;
       background-color: var(--figma-color-bg-hover);
     }
 
@@ -252,6 +263,19 @@
       scrollbar-width: thin;
       scrollbar-color: var(--figma-color-text-tertiary) transparent;
     }
+
+    .icon-swatch {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+      font-family: "Inter", sans-serif;
+      font-weight: bold;
+      font-size: 12px;
+    }
   </style>
 </head>
 
@@ -266,10 +290,10 @@
   <div id="components-tab" class="tab-content active">
     <p id="status-message">Loading components...</p>
     <div class="search-container">
-      <input type="text" id="search-input" placeholder="Search components...">
+      <input type="text" id="components-search-input" placeholder="Search components...">
       <button id="refresh-components" class="refresh-button" title="Refresh components">↻</button>
     </div>
-    <ul id="component-list"></ul>
+    <ul id="components-list"></ul>
   </div>
 
   <div id="icons-tab" class="tab-content">
@@ -346,6 +370,23 @@
         renderIcons();
       }
 
+      // Handle icon updates
+      if (data && data.iconsUpdate) {
+        // Update specific icons with thumbnails
+        const updateStartIndex = data.iconsUpdateStartIndex || 0;
+
+        for (let i = 0; i < data.iconsUpdate.length; i++) {
+          const index = updateStartIndex + i;
+          if (index < iconsData.length) {
+            // Update the icon data
+            iconsData[index] = data.iconsUpdate[i];
+          }
+        }
+
+        // Re-render the current view
+        renderIcons();
+      }
+
       // Handle status messages
       if (data && data.status) {
         document.getElementById('status-message').textContent = data.status;
@@ -369,17 +410,17 @@
 
     // Update the renderComponents function
     function renderComponents(searchTerm = '') {
-      const list = document.getElementById('component-list');
-      list.innerHTML = '';
-      const searchInput = document.getElementById('search-input');
-      searchTerm = searchTerm || searchInput.value;
+      const componentsList = document.getElementById('components-list');
+      componentsList.innerHTML = '';
+      const componentsSearchInput = document.getElementById('components-search-input');
+      searchTerm = searchTerm || componentsSearchInput.value;
 
       const filteredComponents = componentsData.filter(component =>
         component.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
       if (filteredComponents.length === 0) {
-        list.innerHTML = '<li style="color: #666; font-style: italic;">No components found</li>';
+        componentsList.innerHTML = '<li style="color: #666; font-style: italic;">No components found</li>';
         return;
       }
 
@@ -391,22 +432,32 @@
         const content = document.createElement('div');
         content.className = 'component-content';
 
-        // Create left container for thumbnail and name
+        // Create left container for thumbnail/swatch and name
         const leftContent = document.createElement('div');
         leftContent.className = 'component-left';
 
-        // Add thumbnail if available
         if (component.thumbnail) {
+          // Use actual thumbnail
           const thumbnail = document.createElement('img');
           thumbnail.className = 'component-thumbnail';
           thumbnail.src = `data:image/png;base64,${component.thumbnail}`;
           thumbnail.alt = component.name;
           leftContent.appendChild(thumbnail);
+        } else {
+          // Fallback to color swatch with first letter
+          const colorSwatch = document.createElement('div');
+          colorSwatch.className = 'component-thumbnail icon-swatch';
+          colorSwatch.style.backgroundColor = component.colorHash || '#cccccc';
+          if (component.firstChar) {
+            colorSwatch.textContent = component.firstChar;
+            colorSwatch.style.color = getContrastColor(component.colorHash);
+          }
+          leftContent.appendChild(colorSwatch);
         }
 
         // Component name (clickable)
         const name = document.createElement('span');
-        name.textContent = component.name.replace('❖ ', '');
+        name.textContent = component.name;
         name.className = 'component-name';
         name.style.cursor = 'pointer';
         name.onclick = () => {
@@ -433,7 +484,7 @@
         actions.appendChild(gotoBtn);
         content.appendChild(actions);
         item.appendChild(content);
-        list.appendChild(item);
+        componentsList.appendChild(item);
       });
     }
 
@@ -461,6 +512,29 @@
         const content = document.createElement('div');
         content.className = 'component-content';
 
+        // Create left container for thumbnail/swatch and name
+        const leftContent = document.createElement('div');
+        leftContent.className = 'component-left';
+
+        if (icon.thumbnail) {
+          // Use actual thumbnail
+          const thumbnail = document.createElement('img');
+          thumbnail.className = 'component-thumbnail-icon';
+          thumbnail.src = `data:image/png;base64,${icon.thumbnail}`;
+          thumbnail.alt = icon.name;
+          leftContent.appendChild(thumbnail);
+        } else {
+          // Fallback to color swatch with first letter
+          const colorSwatch = document.createElement('div');
+          colorSwatch.className = 'component-thumbnail icon-swatch';
+          colorSwatch.style.backgroundColor = icon.colorHash || '#cccccc';
+          if (icon.firstChar) {
+            colorSwatch.textContent = icon.firstChar;
+            colorSwatch.style.color = getContrastColor(icon.colorHash);
+          }
+          leftContent.appendChild(colorSwatch);
+        }
+
         // Icon name (clickable)
         const name = document.createElement('span');
         name.textContent = icon.name;
@@ -469,7 +543,9 @@
         name.onclick = () => {
           parent.postMessage({ pluginMessage: { type: 'create-instance', id: icon.id } }, '*');
         };
-        content.appendChild(name);
+        leftContent.appendChild(name);
+
+        content.appendChild(leftContent);
 
         // Actions container
         const actions = document.createElement('div');
@@ -492,8 +568,25 @@
       });
     }
 
+    // Function to determine text color based on background color
+    function getContrastColor(hexColor) {
+      // Remove the # if it's there
+      hexColor = hexColor.replace('#', '');
+
+      // Convert to RGB
+      const r = parseInt(hexColor.substr(0, 2), 16);
+      const g = parseInt(hexColor.substr(2, 2), 16);
+      const b = parseInt(hexColor.substr(4, 2), 16);
+
+      // Calculate brightness (YIQ formula)
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+      // Return white for dark colors, black for light colors
+      return brightness > 128 ? '#000000' : '#ffffff';
+    }
+
     // Add search functionality for components
-    document.getElementById('search-input').addEventListener('input', (e) => {
+    document.getElementById('components-search-input').addEventListener('input', (e) => {
       renderComponents(e.target.value);
     });
 
