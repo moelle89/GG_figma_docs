@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      padding: 16px;
+      margin: 0;
+      height: 100vh;
+      box-sizing: border-box;
+      color: var(--figma-color-text);
+      background-color: var(--figma-color-bg);
+    }
+
+    h4 {
+      margin-top: 0;
+      color: var(--figma-color-text);
+    }
+
+    .search-container {
+      position: sticky;
+      top: 0;
+      background: var(--figma-color-bg);
+      padding: 8px 0;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 8px;
+    }
+
+    #search-input,
+    #icons-search-input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 2px solid var(--figma-color-border);
+      border-radius: 10px;
+      font-size: 14px;
+      box-sizing: border-box;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+    }
+
+    #search-input::placeholder,
+    #icons-search-input::placeholder {
+      color: var(--figma-color-text-tertiary);
+    }
+
+    .refresh-button {
+      background: var(--figma-color-bg-secondary);
+      border: 1px solid var(--figma-color-border);
+      border-radius: 10px;
+      padding: 6px 12px;
+      cursor: pointer;
+      color: var(--figma-color-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .refresh-button:hover {
+      background: var(--figma-color-bg-hover);
+    }
+
+    #component-list,
+    #icons-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 0;
+      height: 500px;
+      display: inline-table;
+    }
+
+    /* Style the scrollbar for webkit browsers (Chrome, Safari, etc.) */
+    #component-list::-webkit-scrollbar,
+    #icons-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #component-list::-webkit-scrollbar-track,
+    #icons-list::-webkit-scrollbar-track {
+      background: var(--figma-color-bg);
+    }
+
+    #component-list::-webkit-scrollbar-thumb,
+    #icons-list::-webkit-scrollbar-thumb {
+      background: var(--figma-color-border);
+      border-radius: 4px;
+    }
+
+    #component-list::-webkit-scrollbar-thumb:hover,
+    #icons-list::-webkit-scrollbar-thumb:hover {
+      background: var(--figma-color-text-tertiary);
+    }
+
+    /* Hide scrollbar for Firefox */
+    #component-list,
+    #icons-list {
+      scrollbar-width: thin;
+      scrollbar-color: var(--figma-color-border) transparent;
+    }
+
+    .component-item {
+      margin: 4px 0;
+      width: 85vw;
+    }
+
+    .component-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 4px;
+      width: 260px;
+      transition: background-color 0.2s;
+    }
+
+    .component-content:hover {
+      background-color: var(--figma-color-bg-hover);
+    }
+
+    .component-name {
+      flex-grow: 1;
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .component-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      color: var(--figma-color-text-secondary);
+    }
+
+    .action-button:hover {
+      background-color: var(--figma-color-bg-hover);
+      color: var(--figma-color-text);
+    }
+
+    .component-name:hover {
+      color: var(--figma-color-text-brand);
+    }
+
+    /* Style for the "No components found" message */
+    .component-item li {
+      color: var(--figma-color-text-tertiary);
+      font-style: italic;
+    }
+
+    #status-message,
+    #icons-status-message {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: var(--figma-color-text-secondary);
+      padding: 8px;
+    }
+
+    /* Radio button styles */
+    .source-selector {
+      margin-bottom: 16px;
+    }
+
+    .source-option {
+      margin-right: 12px;
+    }
+
+    /* Tab styles */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--figma-color-border);
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      padding: 8px 16px;
+      cursor: pointer;
+      color: var(--figma-color-text-secondary);
+      border-bottom: 2px solid transparent;
+      margin-right: 4px;
+    }
+
+    .tab.active {
+      color: var(--figma-color-text);
+      border-bottom: 2px solid var(--figma-color-text-brand);
+      font-weight: 500;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <h4>GetGenius.AI Component Library</h4>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="components-tab">Components</div>
+    <div class="tab" data-tab="icons-tab">Icons</div>
+  </div>
+
+  <div id="components-tab" class="tab-content active">
+    <p id="status-message">Loading components...</p>
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="Search components...">
+      <button id="refresh-components" class="refresh-button" title="Refresh components">↻</button>
+    </div>
+    <ul id="component-list"></ul>
+  </div>
+
+  <div id="icons-tab" class="tab-content">
+    <p id="icons-status-message">Loading icons...</p>
+    <div class="search-container">
+      <input type="text" id="icons-search-input" placeholder="Search icons...">
+      <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
+    </div>
+    <ul id="icons-list"></ul>
+  </div>
+
+  <script>
+    // Handle tab switching
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    let componentsData = [];
+    let iconsData = [];
+
+    // Set up refresh buttons
+    document.getElementById('refresh-components').addEventListener('click', () => {
+      document.getElementById('status-message').textContent = "Refreshing components...";
+      parent.postMessage({
+        pluginMessage: {
+          type: 'refresh',
+          target: 'components'
+        }
+      }, '*');
+    });
+
+    document.getElementById('refresh-icons').addEventListener('click', () => {
+      document.getElementById('icons-status-message').textContent = "Refreshing icons...";
+      parent.postMessage({
+        pluginMessage: {
+          type: 'refresh',
+          target: 'icons'
+        }
+      }, '*');
+    });
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+
+        // Notify the plugin about tab change
+        parent.postMessage({
+          pluginMessage: {
+            type: 'tab-change',
+            tab: tabId
+          }
+        }, '*');
+      });
+    });
+
+    // Handle messages from the plugin
+    window.onmessage = (event) => {
+      const data = event.data.pluginMessage;
+
+      // Handle components data (Tab 1)
+      if (data && data.components) {
+        componentsData = data.components;
+        renderComponents();
+      }
+
+      // Handle icons data (Tab 2)
+      if (data && data.icons) {
+        iconsData = data.icons;
+        renderIcons();
+      }
+
+      // Handle status messages
+      if (data && data.status) {
+        document.getElementById('status-message').textContent = data.status;
+      }
+
+      if (data && data.iconsStatus) {
+        document.getElementById('icons-status-message').textContent = data.iconsStatus;
+      }
+
+      // Handle errors
+      if (data && data.error) {
+        document.getElementById('status-message').textContent = data.error;
+        document.getElementById('status-message').style.color = '#FF0000';
+      }
+
+      if (data && data.iconsError) {
+        document.getElementById('icons-status-message').textContent = data.iconsError;
+        document.getElementById('icons-status-message').style.color = '#FF0000';
+      }
+    };
+
+    // Component rendering function
+    function renderComponents(searchTerm = '') {
+      const list = document.getElementById('component-list');
+      list.innerHTML = '';
+      const searchInput = document.getElementById('search-input');
+      searchTerm = searchTerm || searchInput.value;
+
+      const filteredComponents = componentsData.filter(component =>
+        component.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      if (filteredComponents.length === 0) {
+        list.innerHTML = '<li style="color: #666; font-style: italic;">No components found</li>';
+        return;
+      }
+
+      filteredComponents.forEach(component => {
+        const item = document.createElement('li');
+        item.className = 'component-item';
+
+        // Create container for component name and actions
+        const content = document.createElement('div');
+        content.className = 'component-content';
+
+        // Component name (clickable)
+        const name = document.createElement('span');
+        name.textContent = component.name.replace('❖ ', '');
+        name.className = 'component-name';
+        name.style.cursor = 'pointer';
+        name.onclick = () => {
+          parent.postMessage({ pluginMessage: { type: 'create-instance', id: component.id } }, '*');
+        };
+        content.appendChild(name);
+
+        // Actions container
+        const actions = document.createElement('div');
+        actions.className = 'component-actions';
+
+        // Go to component button
+        const gotoBtn = document.createElement('button');
+        gotoBtn.innerHTML = '→';
+        gotoBtn.title = 'Go to Component';
+        gotoBtn.className = 'action-button';
+        gotoBtn.onclick = (e) => {
+          e.stopPropagation();
+          parent.postMessage({ pluginMessage: { type: 'goto-component', id: component.id } }, '*');
+        };
+
+        actions.appendChild(gotoBtn);
+        content.appendChild(actions);
+        item.appendChild(content);
+        list.appendChild(item);
+      });
+    }
+
+    // Icon rendering function
+    function renderIcons(searchTerm = '') {
+      const iconsList = document.getElementById('icons-list');
+      iconsList.innerHTML = '';
+      const iconsSearchInput = document.getElementById('icons-search-input');
+      searchTerm = searchTerm || iconsSearchInput.value;
+
+      const filteredIcons = iconsData.filter(icon =>
+        icon.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      if (filteredIcons.length === 0) {
+        iconsList.innerHTML = '<li style="color: #666; font-style: italic;">No icons found</li>';
+        return;
+      }
+
+      filteredIcons.forEach(icon => {
+        const item = document.createElement('li');
+        item.className = 'component-item';
+
+        // Create container for icon name and actions
+        const content = document.createElement('div');
+        content.className = 'component-content';
+
+        // Icon name (clickable)
+        const name = document.createElement('span');
+        name.textContent = icon.name;
+        name.className = 'component-name';
+        name.style.cursor = 'pointer';
+        name.onclick = () => {
+          parent.postMessage({ pluginMessage: { type: 'create-instance', id: icon.id } }, '*');
+        };
+        content.appendChild(name);
+
+        // Actions container
+        const actions = document.createElement('div');
+        actions.className = 'component-actions';
+
+        // Go to component button
+        const gotoBtn = document.createElement('button');
+        gotoBtn.innerHTML = '→';
+        gotoBtn.title = 'Go to Icon';
+        gotoBtn.className = 'action-button';
+        gotoBtn.onclick = (e) => {
+          e.stopPropagation();
+          parent.postMessage({ pluginMessage: { type: 'goto-component', id: icon.id } }, '*');
+        };
+
+        actions.appendChild(gotoBtn);
+        content.appendChild(actions);
+        item.appendChild(content);
+        iconsList.appendChild(item);
+      });
+    }
+
+    // Add search functionality for components
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      renderComponents(e.target.value);
+    });
+
+    // Add search functionality for icons
+    document.getElementById('icons-search-input').addEventListener('input', (e) => {
+      renderIcons(e.target.value);
+    });
+  </script>
+</body>
+
+</html>

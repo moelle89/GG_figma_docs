@@ -6,26 +6,11 @@ figma.showUI(__html__, {
 // ===================================
 let currentTab = "components-tab";
 
-// Cache for storing loaded components and icons
-const cache = {
-  components: null,
-  icons: null
-};
-
 // Check if the user has the Figma API available (Plugin API 37 or later)
 const hasImportSupport = typeof figma.importComponentByKeyAsync === 'function';
 
 // Function to load components from the current file
 async function loadComponentsFromCurrentFile() {
-  // Return cached results if available
-  if (cache.components) {
-    figma.ui.postMessage({
-      status: `Found ${cache.components.length} components in the current file.`,
-      components: cache.components
-    });
-    return;
-  }
-
   try {
     figma.ui.postMessage({ status: "Loading components from current file..." });
 
@@ -62,9 +47,6 @@ async function loadComponentsFromCurrentFile() {
       name: component.name
     }));
 
-    // Store in cache
-    cache.components = formattedComponents;
-
     figma.ui.postMessage({
       status: `Found ${components.length} components in the current file.`,
       components: formattedComponents
@@ -77,20 +59,10 @@ async function loadComponentsFromCurrentFile() {
     });
   }
 }
-
-// Function to load icons from the current file
+// Function to load components from the current file
 async function loadIconComponentsFromCurrentFile() {
-  // Return cached results if available
-  if (cache.icons) {
-    figma.ui.postMessage({
-      iconsStatus: `Found ${cache.icons.length} icons in the app-icons section.`,
-      icons: cache.icons
-    });
-    return;
-  }
-
   try {
-    figma.ui.postMessage({ iconsStatus: "Loading icons from current file..." });
+    figma.ui.postMessage({ status: "Loading components from current file..." });
 
     await figma.loadAllPagesAsync();
 
@@ -99,24 +71,24 @@ async function loadIconComponentsFromCurrentFile() {
 
     if (!componentsPage) {
       figma.ui.postMessage({
-        iconsError: "No COMPONENTS page found in the current file.",
-        icons: []
+        error: "No COMPONENTS page found in the current file.",
+        components: []
       });
       return;
     }
 
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
 
-    // Find components with the "app-icons" parent
+    // Find components with the ❖ prefix in the "↪ Icons" section
     const components = componentsPage.findAll(node =>
       (node.type === "COMPONENT" || node.type === "COMPONENT_SET") &&
-      node.parent && node.parent.name === "app-icons" // Check if the parent is the "app-icons" section
+      node.parent && node.parent.name === "app-icons" // Check if the parent is the "↪ Icons" section
     );
 
     if (components.length === 0) {
       figma.ui.postMessage({
-        iconsError: "No icon components found in the app-icons section.",
-        icons: []
+        error: "No components with ❖ prefix found in the ↪ Icons section.",
+        components: []
       });
       return;
     }
@@ -126,39 +98,18 @@ async function loadIconComponentsFromCurrentFile() {
       name: component.name
     }));
 
-    // Store in cache
-    cache.icons = formattedComponents;
-
     figma.ui.postMessage({
-      iconsStatus: `Found ${components.length} icons in the app-icons section.`,
-      icons: formattedComponents
+      status: `Found ${components.length} components in the ↪ Icons section.`,
+      components: formattedComponents
     });
   } catch (error) {
-    console.error("Error loading icon components:", error);
+    console.error("Error loading current file components:", error);
     figma.ui.postMessage({
-      iconsError: "Error loading icons: " + error.message,
-      icons: []
+      error: "Error loading components: " + error.message,
+      components: []
     });
   }
 }
-
-// Function to reload and refresh the cache
-function refreshCache(type) {
-  if (type === 'components') {
-    cache.components = null;
-    loadComponentsFromCurrentFile();
-  } else if (type === 'icons') {
-    cache.icons = null;
-    loadIconComponentsFromCurrentFile();
-  } else {
-    // Refresh all
-    cache.components = null;
-    cache.icons = null;
-    loadComponentsFromCurrentFile();
-    loadIconComponentsFromCurrentFile();
-  }
-}
-
 // Start by loading components from the current file
 loadComponentsFromCurrentFile();
 
@@ -171,33 +122,28 @@ figma.ui.onmessage = async msg => {
     currentTab = msg.tab;
 
     if (currentTab === "icons-tab") {
-      // Load icons when switching to that tab
+      // Load design system components when switching to that tab
       loadIconComponentsFromCurrentFile();
     } else if (currentTab === "components-tab") {
       // Load local components when switching to that tab
       loadComponentsFromCurrentFile();
     }
   }
-  else if (msg.type === "refresh") {
-    // Handle refresh requests
-    refreshCache(msg.target);
-    figma.notify("Refreshing components...");
-  }
   else if (msg.type === "create-instance") {
     try {
       let component;
 
-      // Get the component from the current file
-      const node = await figma.getNodeByIdAsync(msg.id);
+        // Otherwise, get the component from the current file
+        const node = await figma.getNodeByIdAsync(msg.id);
 
-      if (node.type === "COMPONENT_SET") {
-        component = node.defaultVariant;
-      } else if (node.type === "COMPONENT") {
-        component = node;
-      } else {
-        figma.notify("Error: Invalid component type", { error: true });
-        return;
-      }
+        if (node.type === "COMPONENT_SET") {
+          component = node.defaultVariant;
+        } else if (node.type === "COMPONENT") {
+          component = node;
+        } else {
+          figma.notify("Error: Invalid component type", { error: true });
+          return;
+        }
 
       // Create instance
       const instance = component.createInstance();
