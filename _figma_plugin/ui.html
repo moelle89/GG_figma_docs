@@ -114,6 +114,21 @@
         transition: background-color 0.2s;
     }
 
+    /* Add these new styles */
+    .component-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .component-thumbnail {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+        border-radius: 2px;
+        background: var(--figma-color-bg-secondary);
+    }
+
     .component-content:hover {
       background-color: var(--figma-color-bg-hover);
     }
@@ -352,7 +367,7 @@
       }
     };
 
-    // Component rendering function
+    // Update the renderComponents function
     function renderComponents(searchTerm = '') {
       const list = document.getElementById('component-list');
       list.innerHTML = '';
@@ -376,6 +391,19 @@
         const content = document.createElement('div');
         content.className = 'component-content';
 
+        // Create left container for thumbnail and name
+        const leftContent = document.createElement('div');
+        leftContent.className = 'component-left';
+
+        // Add thumbnail if available
+        if (component.thumbnail) {
+          const thumbnail = document.createElement('img');
+          thumbnail.className = 'component-thumbnail';
+          thumbnail.src = `data:image/png;base64,${component.thumbnail}`;
+          thumbnail.alt = component.name;
+          leftContent.appendChild(thumbnail);
+        }
+
         // Component name (clickable)
         const name = document.createElement('span');
         name.textContent = component.name.replace('❖ ', '');
@@ -384,7 +412,9 @@
         name.onclick = () => {
           parent.postMessage({ pluginMessage: { type: 'create-instance', id: component.id } }, '*');
         };
-        content.appendChild(name);
+        leftContent.appendChild(name);
+
+        content.appendChild(leftContent);
 
         // Actions container
         const actions = document.createElement('div');

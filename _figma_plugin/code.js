@@ -57,9 +57,14 @@ async function loadComponentsFromCurrentFile() {
       return;
     }
 
-    const formattedComponents = components.map(component => ({
-      id: component.id,
-      name: component.name
+    // Get thumbnails for each component
+    const formattedComponents = await Promise.all(components.map(async component => {
+      const thumbnail = await component.createThumbnailAsync();
+      return {
+        id: component.id,
+        name: component.name,
+        thumbnail: thumbnail ? thumbnail.toString('base64') : null
+      };
     }));
 
     // Store in cache
