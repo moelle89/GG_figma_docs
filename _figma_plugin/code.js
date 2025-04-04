@@ -193,11 +193,10 @@ async function loadIconComponentsFromCurrentFile() {
     // Define all icon sections to look for
     const iconSections = [
       "icons",
-      "Other icons",
-      "Integrations",
       "Apps & Programs",
-      "Payments",
-      "Social Icons"
+      "Integrations",
+      "Emojis",
+      "Flags"
     ];
 
     // Find components from all icon sections
