@@ -41,12 +41,20 @@
     #icons-search-input {
       flex-grow: 1;
       padding: 10px;
-      border: 2px solid var(--figma-color-border);
+      border: 1.5px solid var(--figma-color-border);
       border-radius: 10px;
       font-size: 14px;
       box-sizing: border-box;
       background: var(--figma-color-bg);
       color: var(--figma-color-text);
+      outline: none;
+      transition: all ease .2s;
+    }
+
+    #components-search-input:hover, #components-search-input:focus,
+    #icons-search-input:hover, #icons-search-input:focus {
+      border-color: var(--figma-color-border-hover);
+      outline: none;
     }
 
     #components-search-input::placeholder,
@@ -134,7 +142,7 @@
 		object-fit: contain;
 		padding: 10px;
 		border-radius: 6px;
-		background: #c8c8c84f;
+		background: hsla(0, 0%, 70%, 0.25);
 	}
 
 	.component-thumbnail-icon {
@@ -178,10 +186,6 @@
       color: var(--figma-color-text);
     }
 
-    .component-name:hover {
-      color: var(--figma-color-text-brand);
-    }
-
     /* Style for the "No components found" message */
     .component-item li {
       color: var(--figma-color-text-tertiary);
@@ -192,6 +196,7 @@
     #icons-status-message {
       margin-top: 18px;
       font-size: 0.8rem;
+      font-weight: 500;
       color: var(--figma-color-text-secondary);
       padding: 0px 0px 0px 8px;
     }
@@ -222,12 +227,13 @@
       color: var(--figma-color-text-secondary);
       border-bottom: 2px solid transparent;
       margin-right: 4px;
+      font-weight: 500;
     }
 
     .tab.active {
       color: var(--figma-color-text);
       border-bottom: 2px solid var(--figma-color-text-brand);
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .tab-container {
@@ -438,6 +444,7 @@
     #create-variant:hover {
       border: 1px solid var(--accent-color);
       background: var(--accent-color-alpha60);
+      color: white;
     }
 
     .property-select {
@@ -449,12 +456,124 @@
       color: var(--figma-color-text);
       font-size: 12px;
       cursor: pointer;
+      transition: all ease .2s;
     }
     .property-select option {
       font-size: 12px;
     }
-    .property-select:hover {
-      border: 1px solid var(--accent-color-alpha40);
+    .property-select:hover, .property-select:focus {
+      border-color: var(--figma-color-border-hover);
+      outline: none;
+    }
+
+    /* Add these styles for the property inputs */
+    .property-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 6px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 12px;
+      box-sizing: border-box;
+      transition: all ease .2s;
+    }
+
+    .property-input:hover, .property-input:focus {
+      border-color: var(--figma-color-border-hover);
+      outline: none;
+    }
+
+    .property-checkbox {
+      margin-right: 4px;
+    }
+
+    .property-label {
+      font-size: 11px;
+      color: var(--figma-color-text-secondary);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    /* Toggle switch styles */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 32px;
+      height: 16px;
+      margin-right: 8px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--figma-color-bg-disabled);
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--accent-color);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(16px);
+    }
+
+    /* Multi-line text area styles */
+    .property-textarea {
+      width: 100%;
+      min-height: 60px;
+      padding: 8px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 6px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 12px;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+      resize: vertical;
+      line-height: 1.4;
+      transition: all ease .2s;
+    }
+
+    .property-textarea:hover, .property-textarea:focus {
+      border-color: var(--figma-color-border-hover);
+      outline: none;
+    }
+
+    /* Property container with label and input in one row */
+    .boolean-property {
+      display: flex;
+      align-items: center;
+    }
+
+    .boolean-property .property-label {
+      margin-bottom: 0;
+      opacity: 0;
+      flex: 1;
     }
   </style>
 </head>
@@ -477,7 +596,7 @@
 
     <div id="icons-tab" class="tab-content">
       <p id="icons-status-message">Loading icons...</p>
-      <div class="search-container" style="margin-bottom: 18px!important;">
+      <div class="search-container" style="margin-bottom: 14px!important;">
         <input type="text" id="icons-search-input" placeholder="Search icons...">
         <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
       </div>
@@ -610,23 +729,56 @@
         const variantPropertiesContainer = document.getElementById('variant-properties');
         variantPropertiesContainer.innerHTML = '';
 
-        if (properties) {
-          // Handle variant properties
-          if (properties.type === "COMPONENT_SET") {
-            Object.entries(properties.variantProperties).forEach(([key, definition]) => {
-              console.log("Creating select for property:", key, definition);
-              const propertyGroup = document.createElement('div');
-              propertyGroup.className = 'property-group';
+        if (properties && properties.componentProperties) {
+          // First, handle variant properties as they should appear at the top
+          const variantProps = [];
+          const textProps = [];
+          const otherProps = [];
 
-              const label = document.createElement('div');
-              label.className = 'property-label';
-              label.textContent = key;
+          // Sort properties into categories
+          Object.entries(properties.componentProperties).forEach(([key, definition]) => {
+            // Clean the property name - remove ID suffixes (anything after #)
+            const cleanPropertyName = key.split('#')[0];
 
+            // Store both original key and clean name
+            const propData = {
+              originalKey: key,
+              cleanName: cleanPropertyName,
+              definition: definition
+            };
+
+            // Sort by type
+            if (definition.type === 'VARIANT') {
+              variantProps.push(propData);
+            } else if (definition.type === 'TEXT') {
+              textProps.push(propData);
+            } else {
+              otherProps.push(propData);
+            }
+          });
+
+          // Combine all properties in the desired order
+          const sortedProps = [...variantProps, ...textProps, ...otherProps];
+
+          // Create UI for sorted properties
+          sortedProps.forEach(({originalKey, cleanName, definition}) => {
+            console.log("Creating input for property:", cleanName, definition);
+            const propertyGroup = document.createElement('div');
+            propertyGroup.className = 'property-group';
+
+            const label = document.createElement('div');
+            label.className = 'property-label';
+            label.textContent = cleanName; // Use the clean name without ID suffix
+            propertyGroup.appendChild(label);
+
+            // Create different input types based on property type
+            if (definition.type === 'VARIANT') {
               const select = document.createElement('select');
               select.className = 'property-select';
-              select.dataset.property = key;
+              select.dataset.property = originalKey; // Keep original key for data
+              select.dataset.type = 'VARIANT';
 
-              // Add options based on the variant options
+              // Add options for variant properties
               if (definition.variantOptions) {
                 definition.variantOptions.forEach(option => {
                   const optionEl = document.createElement('option');
@@ -638,12 +790,101 @@
                   select.appendChild(optionEl);
                 });
               }
-
-              propertyGroup.appendChild(label);
               propertyGroup.appendChild(select);
-              variantPropertiesContainer.appendChild(propertyGroup);
-            });
-          }
+            }
+            else if (definition.type === 'TEXT') {
+              // Check if this is a multi-line text property (usually larger text blocks)
+              const isMultiline = originalKey.toLowerCase().includes('description') ||
+                                   originalKey.toLowerCase().includes('content') ||
+                                   definition.defaultValue?.includes('\n') ||
+                                   definition.defaultValue?.length > 80;
+
+              if (isMultiline) {
+                const textarea = document.createElement('textarea');
+                textarea.className = 'property-textarea';
+                textarea.dataset.property = originalKey;
+                textarea.dataset.type = 'TEXT';
+                textarea.value = definition.defaultValue || '';
+                textarea.placeholder = 'Enter text...';
+                textarea.rows = 3;
+
+                // Auto-resize logic
+                textarea.addEventListener('input', function() {
+                  // Reset height to auto to correctly calculate new height
+                  this.style.height = 'auto';
+                  // Set new height based on scrollHeight with small buffer
+                  this.style.height = (this.scrollHeight + 4) + 'px';
+                });
+
+                // Trigger resize on initial load
+                setTimeout(() => {
+                  textarea.style.height = (textarea.scrollHeight + 4) + 'px';
+                }, 10);
+
+                propertyGroup.appendChild(textarea);
+              } else {
+                // Regular single-line text input
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'property-input';
+                input.dataset.property = originalKey;
+                input.dataset.type = 'TEXT';
+                input.value = definition.defaultValue || '';
+                input.placeholder = 'Enter text...';
+                propertyGroup.appendChild(input);
+              }
+            }
+            else if (definition.type === 'BOOLEAN') {
+              // Create a container for the switch and label in one row, replacing the group label
+              const booleanContainer = document.createElement('div');
+              booleanContainer.className = 'boolean-property';
+
+              // The label comes first in the row, using the property label directly
+              const label = document.createElement('div');
+              label.className = 'property-label';
+              label.textContent = cleanName;
+              booleanContainer.appendChild(label);
+
+              // Create the toggle switch
+              const toggleSwitch = document.createElement('label');
+              toggleSwitch.className = 'toggle-switch';
+
+              const checkbox = document.createElement('input');
+              checkbox.type = 'checkbox';
+              checkbox.dataset.property = originalKey;
+              checkbox.dataset.type = 'BOOLEAN';
+              checkbox.checked = definition.defaultValue === 'true';
+
+              const slider = document.createElement('span');
+              slider.className = 'toggle-slider';
+
+              toggleSwitch.appendChild(checkbox);
+              toggleSwitch.appendChild(slider);
+              booleanContainer.appendChild(toggleSwitch);
+
+              // Add the boolean container directly to property group, without a separate label
+              propertyGroup.appendChild(booleanContainer);
+            }
+            else if (definition.type === 'NUMBER') {
+              const input = document.createElement('input');
+              input.type = 'number';
+              input.className = 'property-input';
+              input.dataset.property = originalKey; // Keep original key for data
+              input.dataset.type = 'NUMBER';
+              input.value = definition.defaultValue || 0;
+              propertyGroup.appendChild(input);
+            }
+            else if (definition.type === 'INSTANCE_SWAP') {
+              // For advanced users we could provide component selection
+              const label = document.createElement('div');
+              label.textContent = '(Instance swap not supported in dialog)';
+              label.style.fontSize = '10px';
+              label.style.fontStyle = 'italic';
+              propertyGroup.appendChild(label);
+            }
+
+            variantPropertiesContainer.appendChild(propertyGroup);
+          });
         }
 
         // Show the dialog
@@ -657,9 +898,29 @@
 
         // Collect all selected property values
         const properties = {};
+
+        // Get all variants (dropdowns)
         const selects = document.querySelectorAll('.property-select');
         selects.forEach(select => {
           properties[select.dataset.property] = select.value;
+        });
+
+        // Get text inputs and textareas
+        const textInputs = document.querySelectorAll('.property-input[data-type="TEXT"], .property-textarea');
+        textInputs.forEach(input => {
+          properties[input.dataset.property] = input.value;
+        });
+
+        // Get number inputs
+        const numberInputs = document.querySelectorAll('.property-input[data-type="NUMBER"]');
+        numberInputs.forEach(input => {
+          properties[input.dataset.property] = parseFloat(input.value);
+        });
+
+        // Get checkboxes (now inside toggle switches)
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          properties[checkbox.dataset.property] = checkbox.checked;
         });
 
         // Send message to create instance with selected properties

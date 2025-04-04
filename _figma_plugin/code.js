@@ -384,29 +384,32 @@ figma.ui.onmessage = async msg => {
       const node = await figma.getNodeByIdAsync(msg.componentId);
       let instance;
 
+      // Get an instance
       if (node.type === "COMPONENT_SET") {
-        // Debug logging
-        console.log("Component Set:", node.name);
-        console.log("Component Property Definitions:", node.componentPropertyDefinitions);
-
+        // Find the variant based on variant properties
+        const variantProps = {};
+        
+        // Extract only the variant properties
+        Object.entries(node.componentPropertyDefinitions).forEach(([key, def]) => {
+          if (def.type === 'VARIANT' && msg.properties[key]) {
+            variantProps[key] = msg.properties[key];
+          }
+        });
+        
+        console.log("Finding variant with properties:", variantProps);
+        
         // Find the variant that matches the selected properties
         const variant = node.children.find(child => {
-          // Get the variant name which contains the property values
+          // Parse the variant name
           const variantName = child.name;
-          console.log("Checking variant:", variantName);
-
-          // Parse the variant name (format is typically "Property=Value")
           const variantProperties = variantName.split(", ").reduce((acc, pair) => {
             const [key, value] = pair.split("=");
             acc[key] = value;
             return acc;
           }, {});
-
-          console.log("Parsed variant properties:", variantProperties);
-          console.log("Requested properties:", msg.properties);
-
-          // Check if all requested properties match
-          return Object.entries(msg.properties).every(([key, value]) =>
+          
+          // Check if variant matches all required properties
+          return Object.entries(variantProps).every(([key, value]) =>
             variantProperties[key] === value
           );
         });
@@ -421,6 +424,24 @@ figma.ui.onmessage = async msg => {
         instance = node.createInstance();
       } else {
         throw new Error("Invalid component type: " + node.type);
+      }
+
+      // Set all non-variant instance properties
+      if (instance) {
+        const setProps = {};
+        
+        // Set all properties based on their type
+        Object.entries(msg.properties).forEach(([key, value]) => {
+          if (instance.componentProperties && instance.componentProperties[key]) {
+            // Add to the properties object
+            setProps[key] = value;
+          }
+        });
+        
+        console.log("Setting instance properties:", setProps);
+        if (Object.keys(setProps).length > 0) {
+          instance.setProperties(setProps);
+        }
       }
 
       // Position and select the instance
@@ -457,40 +478,36 @@ async function getComponentProperties(componentId) {
   if (node) {
     let properties = {};
 
-    if (node.type === "COMPONENT_SET") {
-      // Get the property definitions from the component set
-      const variantProperties = {};
+    if (node.type === "COMPONENT_SET" || node.type === "COMPONENT") {
+      // Get all property definitions
+      const componentProps = {};
+      const nodeToCheck = node.type === "COMPONENT_SET" ? node : node;
 
-      // Extract variant properties from component property definitions
-      if (node.componentPropertyDefinitions) {
-        Object.entries(node.componentPropertyDefinitions).forEach(([key, def]) => {
-          if (def.type === 'VARIANT') {
-            variantProperties[key] = {
-              type: def.type,
-              defaultValue: def.defaultValue,
-              variantOptions: def.variantOptions
-            };
-          }
+      // Extract all property types from component property definitions
+      if (nodeToCheck.componentPropertyDefinitions) {
+        Object.entries(nodeToCheck.componentPropertyDefinitions).forEach(([key, def]) => {
+          componentProps[key] = {
+            type: def.type,
+            defaultValue: def.defaultValue,
+            variantOptions: def.type === 'VARIANT' ? def.variantOptions : null
+          };
         });
       }
 
       properties = {
-        type: "COMPONENT_SET",
+        type: node.type,
         id: node.id,
         name: node.name,
-        variantProperties: variantProperties,
-        variants: node.children.map(variant => ({
+        componentProperties: componentProps
+      };
+
+      // Add variants list if it's a component set
+      if (node.type === "COMPONENT_SET") {
+        properties.variants = node.children.map(variant => ({
           id: variant.id,
           name: variant.name
-        }))
-      };
-    } else if (node.type === "COMPONENT") {
-      properties = {
-        type: "COMPONENT",
-        id: node.id,
-        name: node.name,
-        properties: node.componentPropertyDefinitions
-      };
+        }));
+      }
     }
 
     console.log("Component properties:", properties);
