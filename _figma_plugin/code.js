@@ -15,13 +15,42 @@ const cache = {
 // Check if the user has the Figma API available (Plugin API 37 or later)
 const hasImportSupport = typeof figma.importComponentByKeyAsync === 'function';
 
+// Add these helper functions for client storage
+async function saveToClientStorage(key, data) {
+  try {
+    await figma.clientStorage.setAsync(key, data);
+  } catch (error) {
+    console.error(`Error saving to client storage: ${error}`);
+  }
+}
+
+async function loadFromClientStorage(key) {
+  try {
+    return await figma.clientStorage.getAsync(key);
+  } catch (error) {
+    console.error(`Error loading from client storage: ${error}`);
+    return null;
+  }
+}
+
 // Function to load components from the current file
 async function loadComponentsFromCurrentFile() {
-  // Return cached results if available
+  // First try to load from cache
   if (cache.components) {
     figma.ui.postMessage({
       status: `Found ${cache.components.length} components.`,
       components: cache.components
+    });
+    return;
+  }
+
+  // Then try to load from client storage
+  const storedComponents = await loadFromClientStorage('cachedComponents');
+  if (storedComponents) {
+    cache.components = storedComponents;
+    figma.ui.postMessage({
+      status: `Found ${storedComponents.length} components.`,
+      components: storedComponents
     });
     return;
   }
@@ -106,8 +135,9 @@ async function loadComponentsFromCurrentFile() {
       }
     }
 
-    // Store in cache
+    // Store in both cache and client storage
     cache.components = formattedComponents;
+    await saveToClientStorage('cachedComponents', formattedComponents);
 
     figma.ui.postMessage({
       status: `Found ${components.length} components.`,
@@ -124,11 +154,20 @@ async function loadComponentsFromCurrentFile() {
 
 // Function to load icons from the current file
 async function loadIconComponentsFromCurrentFile() {
-  // Return cached results if available
   if (cache.icons) {
     figma.ui.postMessage({
       iconsStatus: `Found ${cache.icons.length} icons.`,
       icons: cache.icons
+    });
+    return;
+  }
+
+  const storedIcons = await loadFromClientStorage('cachedIcons');
+  if (storedIcons) {
+    cache.icons = storedIcons;
+    figma.ui.postMessage({
+      iconsStatus: `Found ${storedIcons.length} icons.`,
+      icons: storedIcons
     });
     return;
   }
@@ -214,8 +253,9 @@ async function loadIconComponentsFromCurrentFile() {
       }
     }
 
-    // Store in cache
+    // Store in both cache and client storage
     cache.icons = formattedComponents;
+    await saveToClientStorage('cachedIcons', formattedComponents);
 
     figma.ui.postMessage({
       iconsStatus: `Found ${components.length} icons.`,
@@ -247,17 +287,21 @@ function stringToColor(str) {
 }
 
 // Function to reload and refresh the cache
-function refreshCache(type) {
+async function refreshCache(type) {
   if (type === 'components') {
     cache.components = null;
+    await figma.clientStorage.deleteAsync('cachedComponents');
     loadComponentsFromCurrentFile();
   } else if (type === 'icons') {
     cache.icons = null;
+    await figma.clientStorage.deleteAsync('cachedIcons');
     loadIconComponentsFromCurrentFile();
   } else {
     // Refresh all
     cache.components = null;
     cache.icons = null;
+    await figma.clientStorage.deleteAsync('cachedComponents');
+    await figma.clientStorage.deleteAsync('cachedIcons');
     loadComponentsFromCurrentFile();
     loadIconComponentsFromCurrentFile();
   }

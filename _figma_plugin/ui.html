@@ -7,10 +7,11 @@
       font-family: "Inter", sans-serif;
       padding: 2px 8px;
       margin: 0;
-      height: 95vh;
+      height: 100vh;
       box-sizing: border-box;
       color: var(--figma-color-text);
       background-color: var(--figma-color-bg);
+      overflow: hidden; /* Prevent body scroll */
     }
 
     h4 {
@@ -21,8 +22,9 @@
     .search-container {
       position: sticky;
       top: 0;
+      z-index: 1;
       background: var(--figma-color-bg);
-      padding: 8px 0;
+      padding: 8px 4px;
       margin-bottom: 8px;
       display: flex;
       gap: 8px;
@@ -61,19 +63,11 @@
       background: var(--figma-color-bg-hover);
     }
 
-    #components-list {
-      list-style: none;
-      padding: 0;
-      margin-top: 0;
-      height: 500px;
-      display: inline-table;
-    }
-
+    #components-list,
     #icons-list {
       list-style: none;
       padding: 0;
       margin-top: 0;
-      height: 500px;
     }
 
     /* Style the scrollbar for webkit browsers (Chrome, Safari, etc.) */
@@ -116,7 +110,7 @@
         align-items: center;
         padding: 2px 4px;
         border-radius: 4px;
-        width: 284px;
+        width: 280px;
         transition: background-color 0.2s;
     }
 
@@ -189,7 +183,7 @@
 
     #status-message,
     #icons-status-message {
-      margin-top: 8px;
+      margin-top: 18px;
       font-size: 0.8rem;
       color: var(--figma-color-text-secondary);
       padding: 0px 0px 0px 8px;
@@ -207,9 +201,12 @@
     /* Tab styles */
     .tabs {
       position: sticky;
+      top: 0;
+      z-index: 2;
       display: flex;
       border-bottom: 1px solid var(--figma-color-border);
-      margin-bottom: 16px;
+      background-color: var(--figma-color-bg);
+      padding-top: 8px;
     }
 
     .tab {
@@ -226,13 +223,23 @@
       font-weight: 500;
     }
 
+    .tab-container {
+      height: calc(100vh - 20px); /* Adjust for body padding */
+      display: flex;
+      flex-direction: column;
+    }
+
     .tab-content {
       display: none;
+      height: 100%;
+      overflow-y: auto;
+      position: relative;
     }
 
     .tab-content.active {
       display: block;
     }
+
     ::-webkit-scrollbar {
       width: 6px; /* Thinner scrollbar */
     }
@@ -299,8 +306,8 @@
       align-items: center;
       text-align: center;
       cursor: pointer;
-      padding: 0px 0px 20px 0px;
-      margin-bottom: 14px;
+      padding: 10px 0px 10px 0px;
+      margin-bottom: 8px;
       border-radius: 6px;
       transition: background-color 0.2s;
   }
@@ -346,27 +353,29 @@
 </head>
 
 <body>
-<div class="tabs">
-    <div class="tab active" data-tab="components-tab">Components</div>
-    <div class="tab" data-tab="icons-tab">Icons</div>
-  </div>
-
-  <div id="components-tab" class="tab-content active">
-    <p id="status-message">Loading components...</p>
-    <div class="search-container">
-      <input type="text" id="components-search-input" placeholder="Search components...">
-      <button id="refresh-components" class="refresh-button" title="Refresh components">↻</button>
+  <div class="tab-container">
+    <div class="tabs">
+      <div class="tab active" data-tab="components-tab">Components</div>
+      <div class="tab" data-tab="icons-tab">Icons</div>
     </div>
-    <ul id="components-list"></ul>
-  </div>
 
-  <div id="icons-tab" class="tab-content">
-    <p id="icons-status-message">Loading icons...</p>
-    <div class="search-container" style="margin-bottom: 18px!important;">
-      <input type="text" id="icons-search-input" placeholder="Search icons...">
-      <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
+    <div id="components-tab" class="tab-content active">
+      <p id="status-message">Loading components...</p>
+      <div class="search-container">
+        <input type="text" id="components-search-input" placeholder="Search components...">
+        <button id="refresh-components" class="refresh-button" title="Refresh components">↻</button>
+      </div>
+      <ul id="components-list"></ul>
     </div>
-    <ul id="icons-list"></ul>
+
+    <div id="icons-tab" class="tab-content">
+      <p id="icons-status-message">Loading icons...</p>
+      <div class="search-container" style="margin-bottom: 18px!important;">
+        <input type="text" id="icons-search-input" placeholder="Search icons...">
+        <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
+      </div>
+      <ul id="icons-list"></ul>
+    </div>
   </div>
 
   <script>
