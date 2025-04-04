@@ -155,6 +155,7 @@ async function loadComponentsFromCurrentFile() {
 // Function to load icons from the current file
 async function loadIconComponentsFromCurrentFile() {
   if (cache.icons) {
+    console.log("Using memory cache for icons", cache.icons.length);
     figma.ui.postMessage({
       iconsStatus: `Found ${cache.icons.length} icons.`,
       icons: cache.icons
@@ -164,6 +165,7 @@ async function loadIconComponentsFromCurrentFile() {
 
   const storedIcons = await loadFromClientStorage('cachedIcons');
   if (storedIcons) {
+    console.log("Using stored cache for icons", storedIcons.length);
     cache.icons = storedIcons;
     figma.ui.postMessage({
       iconsStatus: `Found ${storedIcons.length} icons.`,
@@ -172,6 +174,7 @@ async function loadIconComponentsFromCurrentFile() {
     return;
   }
 
+  console.log("Loading icons from file...");
   try {
     figma.ui.postMessage({ iconsStatus: "Loading icons from current file..." });
 
@@ -194,9 +197,7 @@ async function loadIconComponentsFromCurrentFile() {
     const iconSections = [
       "icons",
       "Apps & Programs",
-      "Integrations",
-      "Emojis",
-      "Flags"
+      "Integrations"
     ];
 
     // Find components from all icon sections
@@ -336,11 +337,27 @@ figma.ui.onmessage = async msg => {
     currentTab = msg.tab;
 
     if (currentTab === "icons-tab") {
-      // Load icons when switching to that tab
-      loadIconComponentsFromCurrentFile();
+      // Only load icons if they're not already cached
+      if (!cache.icons) {
+        loadIconComponentsFromCurrentFile();
+      } else {
+        // Just re-send the cached data
+        figma.ui.postMessage({
+          iconsStatus: `Found ${cache.icons.length} icons.`,
+          icons: cache.icons
+        });
+      }
     } else if (currentTab === "components-tab") {
-      // Load local components when switching to that tab
-      loadComponentsFromCurrentFile();
+      // Only load components if they're not already cached
+      if (!cache.components) {
+        loadComponentsFromCurrentFile();
+      } else {
+        // Just re-send the cached data
+        figma.ui.postMessage({
+          status: `Found ${cache.components.length} components.`,
+          components: cache.components
+        });
+      }
     }
   }
   else if (msg.type === "refresh") {
