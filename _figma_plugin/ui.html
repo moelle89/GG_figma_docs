@@ -276,6 +276,62 @@
       font-weight: bold;
       font-size: 12px;
     }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 8px;
+    }
+
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .icon-item:hover {
+      background-color: var(--figma-color-bg-hover);
+    }
+
+    .icon-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .icon-name {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--figma-color-text);
+      word-break: break-word;
+      max-width: 100%;
+    }
+
+    .icon-actions {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .icon-item:hover .icon-actions {
+      opacity: 1;
+    }
+
+    .component-thumbnail-icon {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      padding: 8px;
+      border-radius: 8px;
+      background: white;
+    }
   </style>
 </head>
 
@@ -489,6 +545,7 @@
     // Icon rendering function
     function renderIcons(searchTerm = '') {
       const iconsList = document.getElementById('icons-list');
+      iconsList.className = 'icon-grid';
       iconsList.innerHTML = '';
       const iconsSearchInput = document.getElementById('icons-search-input');
       searchTerm = searchTerm || iconsSearchInput.value;
@@ -503,16 +560,11 @@
       }
 
       filteredIcons.forEach(icon => {
-        const item = document.createElement('li');
-        item.className = 'component-item';
+        const item = document.createElement('div');
+        item.className = 'icon-item';
 
-        // Create container for icon name and actions
         const content = document.createElement('div');
-        content.className = 'component-content';
-
-        // Create left container for thumbnail/swatch and name
-        const leftContent = document.createElement('div');
-        leftContent.className = 'component-left';
+        content.className = 'icon-content';
 
         if (icon.thumbnail) {
           // Use actual thumbnail
@@ -520,7 +572,7 @@
           thumbnail.className = 'component-thumbnail-icon';
           thumbnail.src = `data:image/png;base64,${icon.thumbnail}`;
           thumbnail.alt = icon.name;
-          leftContent.appendChild(thumbnail);
+          content.appendChild(thumbnail);
         } else {
           // Fallback to color swatch with first letter
           const colorSwatch = document.createElement('div');
@@ -530,24 +582,18 @@
             colorSwatch.textContent = icon.firstChar;
             colorSwatch.style.color = getContrastColor(icon.colorHash);
           }
-          leftContent.appendChild(colorSwatch);
+          content.appendChild(colorSwatch);
         }
 
-        // Icon name (clickable)
+        // Icon name
         const name = document.createElement('span');
         name.textContent = icon.name;
-        name.className = 'component-name';
-        name.style.cursor = 'pointer';
-        name.onclick = () => {
-          parent.postMessage({ pluginMessage: { type: 'create-instance', id: icon.id } }, '*');
-        };
-        leftContent.appendChild(name);
-
-        content.appendChild(leftContent);
+        name.className = 'icon-name';
+        content.appendChild(name);
 
         // Actions container
         const actions = document.createElement('div');
-        actions.className = 'component-actions';
+        actions.className = 'icon-actions';
 
         // Go to component button
         const gotoBtn = document.createElement('button');
@@ -561,6 +607,14 @@
 
         actions.appendChild(gotoBtn);
         content.appendChild(actions);
+
+        // Add click handler to the whole item
+        item.onclick = (e) => {
+          if (e.target !== gotoBtn) {
+            parent.postMessage({ pluginMessage: { type: 'create-instance', id: icon.id } }, '*');
+          }
+        };
+
         item.appendChild(content);
         iconsList.appendChild(item);
       });
