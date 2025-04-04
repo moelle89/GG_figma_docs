@@ -1,5 +1,5 @@
 figma.showUI(__html__, {
-  width: 310,
+  width: 280,
   height: 860,
   themeColors: true
 });
@@ -367,22 +367,63 @@ figma.ui.onmessage = async msg => {
   }
   else if (msg.type === "create-instance") {
     try {
-      let component;
-
-      // Get the component from the current file
       const node = await figma.getNodeByIdAsync(msg.id);
 
+      // Instead of immediately creating the instance, send properties to UI
+      const componentProperties = await getComponentProperties(msg.id);
+      figma.ui.postMessage({
+        type: "show-component-properties",
+        properties: componentProperties
+      });
+    } catch (error) {
+      figma.notify("Error getting component properties: " + error.message, { error: true });
+    }
+  }
+  else if (msg.type === "create-instance-with-properties") {
+    try {
+      const node = await figma.getNodeByIdAsync(msg.componentId);
+      let instance;
+
       if (node.type === "COMPONENT_SET") {
-        component = node.defaultVariant;
+        // Debug logging
+        console.log("Component Set:", node.name);
+        console.log("Component Property Definitions:", node.componentPropertyDefinitions);
+
+        // Find the variant that matches the selected properties
+        const variant = node.children.find(child => {
+          // Get the variant name which contains the property values
+          const variantName = child.name;
+          console.log("Checking variant:", variantName);
+
+          // Parse the variant name (format is typically "Property=Value")
+          const variantProperties = variantName.split(", ").reduce((acc, pair) => {
+            const [key, value] = pair.split("=");
+            acc[key] = value;
+            return acc;
+          }, {});
+
+          console.log("Parsed variant properties:", variantProperties);
+          console.log("Requested properties:", msg.properties);
+
+          // Check if all requested properties match
+          return Object.entries(msg.properties).every(([key, value]) =>
+            variantProperties[key] === value
+          );
+        });
+
+        if (!variant) {
+          console.log("Available variants:", node.children.map(c => c.name));
+          throw new Error("Could not find matching variant for selected properties");
+        }
+
+        instance = variant.createInstance();
       } else if (node.type === "COMPONENT") {
-        component = node;
+        instance = node.createInstance();
       } else {
-        figma.notify("Error: Invalid component type", { error: true });
-        return;
+        throw new Error("Invalid component type: " + node.type);
       }
 
-      // Create instance
-      const instance = component.createInstance();
+      // Position and select the instance
       instance.x = figma.viewport.center.x;
       instance.y = figma.viewport.center.y;
       figma.currentPage.appendChild(instance);
@@ -390,6 +431,7 @@ figma.ui.onmessage = async msg => {
       figma.currentPage.selection = [instance];
       figma.notify("Component instance created successfully!");
     } catch (error) {
+      console.error("Error details:", error);
       figma.notify("Error creating component instance: " + error.message, { error: true });
     }
   }
@@ -409,3 +451,50 @@ figma.ui.onmessage = async msg => {
     }
   }
 };
+
+async function getComponentProperties(componentId) {
+  const node = await figma.getNodeByIdAsync(componentId);
+  if (node) {
+    let properties = {};
+
+    if (node.type === "COMPONENT_SET") {
+      // Get the property definitions from the component set
+      const variantProperties = {};
+
+      // Extract variant properties from component property definitions
+      if (node.componentPropertyDefinitions) {
+        Object.entries(node.componentPropertyDefinitions).forEach(([key, def]) => {
+          if (def.type === 'VARIANT') {
+            variantProperties[key] = {
+              type: def.type,
+              defaultValue: def.defaultValue,
+              variantOptions: def.variantOptions
+            };
+          }
+        });
+      }
+
+      properties = {
+        type: "COMPONENT_SET",
+        id: node.id,
+        name: node.name,
+        variantProperties: variantProperties,
+        variants: node.children.map(variant => ({
+          id: variant.id,
+          name: variant.name
+        }))
+      };
+    } else if (node.type === "COMPONENT") {
+      properties = {
+        type: "COMPONENT",
+        id: node.id,
+        name: node.name,
+        properties: node.componentPropertyDefinitions
+      };
+    }
+
+    console.log("Component properties:", properties);
+    return properties;
+  }
+  return null;
+}
