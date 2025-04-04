@@ -109,7 +109,7 @@ async function loadComponentsFromCurrentFile() {
 
         formattedComponents.push({
           id: component.id,
-          name: component.name,
+          name: component.name.replace('❖ ', ''),
           thumbnail: base64Image
         });
 
@@ -128,9 +128,9 @@ async function loadComponentsFromCurrentFile() {
         console.warn(`Failed to export component ${component.name}:`, error);
         formattedComponents.push({
           id: component.id,
-          name: component.name,
+          name: component.name.replace('❖ ', ''),
           colorHash: stringToColor(component.name),
-          firstChar: component.name.charAt(0).toUpperCase()
+          firstChar: component.name.replace('❖ ', '').charAt(0).toUpperCase()
         });
       }
     }
@@ -190,15 +190,31 @@ async function loadIconComponentsFromCurrentFile() {
 
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
 
-    // Find components with the "app-icons" parent
-    const components = componentsPage.findAll(node =>
-      (node.type === "COMPONENT" || node.type === "COMPONENT_SET") &&
-      node.parent && node.parent.name === "icons"
-    );
+    // Define all icon sections to look for
+    const iconSections = [
+      "icons",
+      "Other icons",
+      "Integrations",
+      "Apps & Programs",
+      "Payments",
+      "Social Icons"
+    ];
 
-    if (components.length === 0) {
+    // Find components from all icon sections
+    let allIcons = [];
+
+    // Collect icons from each section
+    for (const section of iconSections) {
+      const sectionIcons = componentsPage.findAll(node =>
+        (node.type === "COMPONENT" || node.type === "COMPONENT_SET") &&
+        node.parent && node.parent.name === section
+      );
+      allIcons = [...allIcons, ...sectionIcons];
+    }
+
+    if (allIcons.length === 0) {
       figma.ui.postMessage({
-        iconsError: "No icon components found in the app-icons section.",
+        iconsError: "No icon components found in any of the icon sections.",
         icons: []
       });
       return;
@@ -208,8 +224,8 @@ async function loadIconComponentsFromCurrentFile() {
     const BATCH_SIZE = 3;
     const formattedComponents = [];
 
-    for (let i = 0; i < components.length; i++) {
-      const component = components[i];
+    for (let i = 0; i < allIcons.length; i++) {
+      const component = allIcons[i];
       try {
         // Get the default variant if it's a component set
         const targetComponent = component.type === "COMPONENT_SET"
@@ -228,13 +244,14 @@ async function loadIconComponentsFromCurrentFile() {
         formattedComponents.push({
           id: component.id,
           name: component.name,
-          thumbnail: base64Image
+          thumbnail: base64Image,
+          section: component.parent.name // Add section information
         });
 
         // Update progress every few icons
-        if (i % BATCH_SIZE === 0 || i === components.length - 1) {
+        if (i % BATCH_SIZE === 0 || i === allIcons.length - 1) {
           figma.ui.postMessage({
-            iconsStatus: `Loading icons... (${i + 1}/${components.length})`
+            iconsStatus: `Loading icons... (${i + 1}/${allIcons.length})`
           });
         }
 
@@ -248,7 +265,8 @@ async function loadIconComponentsFromCurrentFile() {
           id: component.id,
           name: component.name,
           colorHash: stringToColor(component.name),
-          firstChar: component.name.charAt(0).toUpperCase()
+          firstChar: component.name.charAt(0).toUpperCase(),
+          section: component.parent.name // Add section information
         });
       }
     }
@@ -258,7 +276,7 @@ async function loadIconComponentsFromCurrentFile() {
     await saveToClientStorage('cachedIcons', formattedComponents);
 
     figma.ui.postMessage({
-      iconsStatus: `Found ${components.length} icons.`,
+      iconsStatus: `Found ${allIcons.length} icons.`,
       icons: formattedComponents
     });
   } catch (error) {

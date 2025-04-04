@@ -112,6 +112,7 @@
         border-radius: 4px;
         width: 280px;
         transition: background-color 0.2s;
+        cursor: pointer;
     }
 
     /* Add these new styles */
@@ -505,6 +506,14 @@
         const content = document.createElement('div');
         content.className = 'component-content';
 
+        // Add click handler to the content div
+        content.onclick = (e) => {
+          // Don't trigger if clicking the goto button
+          if (!e.target.closest('.action-button')) {
+            parent.postMessage({ pluginMessage: { type: 'create-instance', id: component.id } }, '*');
+          }
+        };
+
         // Create left container for thumbnail/swatch and name
         const leftContent = document.createElement('div');
         leftContent.className = 'component-left';
@@ -528,14 +537,11 @@
           leftContent.appendChild(colorSwatch);
         }
 
-        // Component name (clickable)
+        // Component name (no longer needs onclick)
         const name = document.createElement('span');
         name.textContent = component.name;
         name.className = 'component-name';
         name.style.cursor = 'pointer';
-        name.onclick = () => {
-          parent.postMessage({ pluginMessage: { type: 'create-instance', id: component.id } }, '*');
-        };
         leftContent.appendChild(name);
 
         content.appendChild(leftContent);
