@@ -206,6 +206,13 @@
       font-weight: 500;
       color: var(--figma-color-text-secondary);
       padding: 0px 0px 0px 8px;
+      cursor: pointer;
+      transition: all ease 0.2s;
+    }
+
+    #status-message:hover,
+    #icons-status-message:hover {
+      color: var(--figma-color-text-brand);
     }
 
     /* Radio button styles */
@@ -1274,6 +1281,77 @@
     document.getElementById('docs-button').addEventListener('click', () => {
       // Open documentation in a new tab
       window.open('http://moelle.bplaced.net/index.html', '_blank');
+    });
+
+    // Add export functionality to status messages
+    document.getElementById('status-message').addEventListener('click', () => {
+      if (componentsData.length === 0) return;
+
+      // Format the data as a simple JSON structure
+      const exportData = componentsData.map(component => ({
+        id: component.id,
+        name: component.name
+      }));
+
+      // Create a fallback copy method using execCommand
+      const textToCopy = JSON.stringify(exportData, null, 2);
+      const textarea = document.createElement('textarea');
+      textarea.value = textToCopy;
+      textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          const originalText = document.getElementById('status-message').textContent;
+          document.getElementById('status-message').textContent = "✓ Components data copied to clipboard!";
+          setTimeout(() => {
+            document.getElementById('status-message').textContent = originalText;
+          }, 2000);
+        } else {
+          console.error('Copy command was unsuccessful');
+        }
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    });
+
+    document.getElementById('icons-status-message').addEventListener('click', () => {
+      if (iconsData.length === 0) return;
+
+      // Format the data as a simple JSON structure
+      const exportData = iconsData.map(icon => ({
+        id: icon.id,
+        name: icon.name
+      }));
+
+      // Create a fallback copy method using execCommand
+      const textToCopy = JSON.stringify(exportData, null, 2);
+      const textarea = document.createElement('textarea');
+      textarea.value = textToCopy;
+      textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          const originalText = document.getElementById('icons-status-message').textContent;
+          document.getElementById('icons-status-message').textContent = "✓ Icons data copied to clipboard!";
+          setTimeout(() => {
+            document.getElementById('icons-status-message').textContent = originalText;
+          }, 2000);
+        } else {
+          console.error('Copy command was unsuccessful');
+        }
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      } finally {
+        document.body.removeChild(textarea);
+      }
     });
   </script>
 </body>
