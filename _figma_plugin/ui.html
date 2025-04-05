@@ -44,6 +44,7 @@
       border: 1.5px solid var(--figma-color-border);
       border-radius: 10px;
       font-size: 14px;
+      width: 100%;
       box-sizing: border-box;
       background: var(--figma-color-bg);
       color: var(--figma-color-text);
@@ -72,10 +73,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all ease .2s;
     }
 
     .refresh-button:hover {
-      background: var(--figma-color-bg-hover);
+      background: var(--figma-color-bg-brand);
+      color: white;
     }
 
     #components-list,
@@ -88,7 +91,7 @@
     /* Style the scrollbar for webkit browsers (Chrome, Safari, etc.) */
     #components-list::-webkit-scrollbar,
     #icons-list::-webkit-scrollbar {
-      width: 8px;
+      width: 4px;
     }
 
     #components-list::-webkit-scrollbar-track,
@@ -222,13 +225,21 @@
       display: flex;
       border-bottom: 1px solid var(--figma-color-border);
       background-color: var(--figma-color-bg);
-      padding-top: 8px;
     }
 
     .tab {
       padding: 8px 16px;
       cursor: pointer;
       color: var(--figma-color-text-secondary);
+      border-bottom: 2px solid transparent;
+      margin-right: 4px;
+      font-weight: 500;
+      transition: color ease .2s;
+    }
+    .tab:hover {
+      padding: 8px 16px;
+      cursor: pointer;
+      color: var(--figma-color-text-primary);
       border-bottom: 2px solid transparent;
       margin-right: 4px;
       font-weight: 500;
@@ -620,6 +631,7 @@
       <div class="search-container" style="margin-bottom: 14px!important;">
         <input type="text" id="icons-search-input" placeholder="Search icons...">
         <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
+        <button id="clear-icons-cache" class="refresh-button" title="Clear Icons Cache">🗑️</button>
       </div>
       <ul id="icons-list"></ul>
     </div>
@@ -666,6 +678,13 @@
           type: 'refresh',
           target: 'icons'
         }
+      }, '*');
+    });
+
+    // Keep this event listener
+    document.getElementById('clear-icons-cache').addEventListener('click', () => {
+      parent.postMessage({
+        pluginMessage: { type: 'clear-icons-cache' }
       }, '*');
     });
 
@@ -1177,6 +1196,24 @@
           thumbnail.className = 'component-thumbnail-icon';
           thumbnail.src = `data:image/png;base64,${icon.thumbnail}`;
           thumbnail.alt = icon.name;
+
+          // Add error handling to the thumbnail image
+          thumbnail.onerror = function() {
+            // Replace with a fallback when image fails to load
+            const parent = this.parentNode;
+            parent.removeChild(this);
+
+            // Create fallback color swatch instead
+            const colorSwatch = document.createElement('div');
+            colorSwatch.className = 'component-thumbnail icon-swatch';
+            colorSwatch.style.backgroundColor = icon.colorHash || '#cccccc';
+            if (icon.firstChar) {
+              colorSwatch.textContent = icon.firstChar;
+              colorSwatch.style.color = getContrastColor(icon.colorHash);
+            }
+            parent.prepend(colorSwatch);
+          };
+
           content.appendChild(thumbnail);
         } else {
           // Fallback to color swatch with first letter
@@ -1196,7 +1233,7 @@
         name.className = 'icon-name';
         content.appendChild(name);
 
-                // Add click handler to the whole item
+        // Add click handler to the whole item
         item.onclick = (e) => {
             parent.postMessage({ pluginMessage: { type: 'create-instance', id: icon.id } }, '*');
         };

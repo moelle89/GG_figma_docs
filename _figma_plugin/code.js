@@ -573,6 +573,13 @@ figma.ui.onmessage = async msg => {
       // Don't show notification for live updates to avoid disruption
     }
   }
+  else if (msg.type === "clear-icons-cache") {
+    // Clear icons cache and reload
+    cache.icons = null;
+    figma.clientStorage.deleteAsync('cachedIcons');
+    figma.notify("Icons cache cleared");
+    loadIconComponentsFromCurrentFile();
+  }
 };
 
 async function getComponentProperties(componentId, instanceId = null) {
