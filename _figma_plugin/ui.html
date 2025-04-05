@@ -577,6 +577,24 @@
       opacity: 0;
       flex: 1;
     }
+
+    /* Documentation button styles */
+    .docs-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 10px;
+      margin-left: auto; /* Push to the right side */
+      color: var(--figma-color-text-secondary);
+      font-size: 16px;
+      transition: all 0.2s ease;
+      border-radius: 4px;
+    }
+
+    .docs-button:hover {
+      background-color: var(--figma-color-bg-hover);
+      color: var(--figma-color-text);
+    }
   </style>
 </head>
 
@@ -585,6 +603,7 @@
     <div class="tabs">
       <div class="tab active" data-tab="components-tab">Components</div>
       <div class="tab" data-tab="icons-tab">Icons</div>
+      <button id="docs-button" class="docs-button" title="Open Documentation">🌐</button>
     </div>
 
     <div id="components-tab" class="tab-content active">
@@ -730,15 +749,15 @@
         currentComponentData = properties;
         const variantPropertiesContainer = document.getElementById('variant-properties');
         variantPropertiesContainer.innerHTML = '';
-        
+
         // Update dialog title to reflect we're editing an existing instance
-        document.querySelector('.dialog-header h4').textContent = data.instanceId ? 
+        document.querySelector('.dialog-header h4').textContent = data.instanceId ?
           "Edit Component Properties" : "Component Properties";
-        
-        // Update the create/update button text
+
+        // Update the button text
         const actionButton = document.getElementById('create-variant');
-        actionButton.textContent = data.instanceId ? "Update Instance" : "Create Instance";
-        
+        actionButton.textContent = data.instanceId ? "Done" : "Create Instance";
+
         // First, handle variant properties as they should appear at the top
         const variantProps = [];
         const textProps = [];
@@ -799,13 +818,13 @@
                 select.appendChild(optionEl);
               });
             }
-            
+
             // Add live update event
             select.addEventListener('change', (e) => {
               if (currentComponentData && currentComponentData.instanceId) {
                 const propUpdate = {};
                 propUpdate[originalKey] = e.target.value;
-                
+
                 parent.postMessage({
                   pluginMessage: {
                     type: 'live-update-property',
@@ -815,7 +834,7 @@
                 }, '*');
               }
             });
-            
+
             propertyGroup.appendChild(select);
           }
           else if (definition.type === 'TEXT') {
@@ -852,7 +871,7 @@
                 if (currentComponentData && currentComponentData.instanceId) {
                   const propUpdate = {};
                   propUpdate[originalKey] = e.target.value;
-                  
+
                   parent.postMessage({
                     pluginMessage: {
                       type: 'live-update-property',
@@ -879,7 +898,7 @@
                 if (currentComponentData && currentComponentData.instanceId) {
                   const propUpdate = {};
                   propUpdate[originalKey] = e.target.value;
-                  
+
                   parent.postMessage({
                     pluginMessage: {
                       type: 'live-update-property',
@@ -929,7 +948,7 @@
               if (currentComponentData && currentComponentData.instanceId) {
                 const propUpdate = {};
                 propUpdate[originalKey] = e.target.checked;
-                
+
                 parent.postMessage({
                   pluginMessage: {
                     type: 'live-update-property',
@@ -953,7 +972,7 @@
               if (currentComponentData && currentComponentData.instanceId) {
                 const propUpdate = {};
                 propUpdate[originalKey] = parseFloat(e.target.value);
-                
+
                 parent.postMessage({
                   pluginMessage: {
                     type: 'live-update-property',
@@ -990,45 +1009,33 @@
       document.getElementById('create-variant').onclick = () => {
         if (!currentComponentData) return;
 
-        // Collect all selected property values
-        const properties = {};
-        
-        // Get all variants (dropdowns)
-        const selects = document.querySelectorAll('.property-select');
-        selects.forEach(select => {
-          properties[select.dataset.property] = select.value;
-        });
+        if (!currentComponentData.instanceId) {
+          // Only collect and send properties if we're creating a new instance
+          const properties = {};
+          // Get all variants (dropdowns)
+          const selects = document.querySelectorAll('.property-select');
+          selects.forEach(select => {
+            properties[select.dataset.property] = select.value;
+          });
 
-        // Get text inputs and textareas
-        const textInputs = document.querySelectorAll('.property-input[data-type="TEXT"], .property-textarea');
-        textInputs.forEach(input => {
-          properties[input.dataset.property] = input.value;
-        });
+          // Get text inputs and textareas
+          const textInputs = document.querySelectorAll('.property-input[data-type="TEXT"], .property-textarea');
+          textInputs.forEach(input => {
+            properties[input.dataset.property] = input.value;
+          });
 
-        // Get number inputs
-        const numberInputs = document.querySelectorAll('.property-input[data-type="NUMBER"]');
-        numberInputs.forEach(input => {
-          properties[input.dataset.property] = parseFloat(input.value);
-        });
+          // Get number inputs
+          const numberInputs = document.querySelectorAll('.property-input[data-type="NUMBER"]');
+          numberInputs.forEach(input => {
+            properties[input.dataset.property] = parseFloat(input.value);
+          });
 
-        // Get checkboxes (now inside toggle switches)
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-          properties[checkbox.dataset.property] = checkbox.checked;
-        });
+          // Get checkboxes (now inside toggle switches)
+          const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+          checkboxes.forEach(checkbox => {
+            properties[checkbox.dataset.property] = checkbox.checked;
+          });
 
-        // Send different message based on whether we're creating or updating
-        if (currentComponentData.instanceId) {
-          // Update existing instance
-          parent.postMessage({
-            pluginMessage: {
-              type: 'update-instance-properties',
-              instanceId: currentComponentData.instanceId,
-              properties: properties
-            }
-          }, '*');
-        } else {
-          // Create new instance (keep existing code)
           parent.postMessage({
             pluginMessage: {
               type: 'create-instance-with-properties',
@@ -1038,7 +1045,7 @@
           }, '*');
         }
 
-        // Close the dialog
+        // Close the dialog - this happens for both create and edit
         document.getElementById('close-dialog').click();
       };
 
@@ -1224,6 +1231,12 @@
     // Add search functionality for icons
     document.getElementById('icons-search-input').addEventListener('input', (e) => {
       renderIcons(e.target.value);
+    });
+
+    // Add event listener for documentation button
+    document.getElementById('docs-button').addEventListener('click', () => {
+      // Open documentation in a new tab
+      window.open('http://moelle.bplaced.net/index.html', '_blank');
     });
   </script>
 </body>
