@@ -101,7 +101,7 @@ async function loadComponentsFromCurrentFile() {
         // Export the component as a PNG
         const exportSettings = {
           format: "PNG",
-          constraint: { type: "SCALE", value: 2 }
+          constraint: { type: "SCALE", value: 1.5 }
         };
 
         const bytes = await targetComponent.exportAsync(exportSettings);
@@ -232,9 +232,9 @@ async function loadIconComponentsFromCurrentFile() {
           ? component.defaultVariant
           : component;
 
-        // Export the component as a PNG
+        // Export the component as a JPG with lower scale
         const exportSettings = {
-          format: "PNG",
+          format: "JPG",
           constraint: { type: "SCALE", value: 2 }
         };
 
@@ -576,9 +576,14 @@ figma.ui.onmessage = async msg => {
   else if (msg.type === "clear-icons-cache") {
     // Clear icons cache and reload
     cache.icons = null;
-    figma.clientStorage.deleteAsync('cachedIcons');
-    figma.notify("Icons cache cleared");
-    loadIconComponentsFromCurrentFile();
+    try {
+      await figma.clientStorage.deleteAsync('cachedIcons');
+      figma.notify("Icons cache cleared");
+      loadIconComponentsFromCurrentFile();
+    } catch (error) {
+      console.error("Error clearing icons cache:", error);
+      figma.notify("Error clearing icons cache: " + error.message, { error: true });
+    }
   }
 };
 
