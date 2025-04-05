@@ -784,7 +784,7 @@
           if (definition.type === 'VARIANT') {
             const select = document.createElement('select');
             select.className = 'property-select';
-            select.dataset.property = originalKey; // Keep original key for data
+            select.dataset.property = originalKey;
             select.dataset.type = 'VARIANT';
 
             // Add options for variant properties
@@ -799,6 +799,23 @@
                 select.appendChild(optionEl);
               });
             }
+            
+            // Add live update event
+            select.addEventListener('change', (e) => {
+              if (currentComponentData && currentComponentData.instanceId) {
+                const propUpdate = {};
+                propUpdate[originalKey] = e.target.value;
+                
+                parent.postMessage({
+                  pluginMessage: {
+                    type: 'live-update-property',
+                    instanceId: currentComponentData.instanceId,
+                    properties: propUpdate
+                  }
+                }, '*');
+              }
+            });
+            
             propertyGroup.appendChild(select);
           }
           else if (definition.type === 'TEXT') {
@@ -830,6 +847,22 @@
                 textarea.style.height = (textarea.scrollHeight + 4) + 'px';
               }, 10);
 
+              // Add live update event
+              textarea.addEventListener('input', (e) => {
+                if (currentComponentData && currentComponentData.instanceId) {
+                  const propUpdate = {};
+                  propUpdate[originalKey] = e.target.value;
+                  
+                  parent.postMessage({
+                    pluginMessage: {
+                      type: 'live-update-property',
+                      instanceId: currentComponentData.instanceId,
+                      properties: propUpdate
+                    }
+                  }, '*');
+                }
+              });
+
               propertyGroup.appendChild(textarea);
             } else {
               // Regular single-line text input
@@ -840,6 +873,23 @@
               input.dataset.type = 'TEXT';
               input.value = definition.defaultValue || '';
               input.placeholder = 'Enter text...';
+
+              // Add live update event
+              input.addEventListener('input', (e) => {
+                if (currentComponentData && currentComponentData.instanceId) {
+                  const propUpdate = {};
+                  propUpdate[originalKey] = e.target.value;
+                  
+                  parent.postMessage({
+                    pluginMessage: {
+                      type: 'live-update-property',
+                      instanceId: currentComponentData.instanceId,
+                      properties: propUpdate
+                    }
+                  }, '*');
+                }
+              });
+
               propertyGroup.appendChild(input);
             }
           }
@@ -873,6 +923,22 @@
 
             // Add the boolean container directly to property group, without a separate label
             propertyGroup.appendChild(booleanContainer);
+
+            // Add live update event
+            checkbox.addEventListener('change', (e) => {
+              if (currentComponentData && currentComponentData.instanceId) {
+                const propUpdate = {};
+                propUpdate[originalKey] = e.target.checked;
+                
+                parent.postMessage({
+                  pluginMessage: {
+                    type: 'live-update-property',
+                    instanceId: currentComponentData.instanceId,
+                    properties: propUpdate
+                  }
+                }, '*');
+              }
+            });
           }
           else if (definition.type === 'NUMBER') {
             const input = document.createElement('input');
@@ -881,6 +947,23 @@
             input.dataset.property = originalKey; // Keep original key for data
             input.dataset.type = 'NUMBER';
             input.value = definition.defaultValue || 0;
+
+            // Add live update event
+            input.addEventListener('input', (e) => {
+              if (currentComponentData && currentComponentData.instanceId) {
+                const propUpdate = {};
+                propUpdate[originalKey] = parseFloat(e.target.value);
+                
+                parent.postMessage({
+                  pluginMessage: {
+                    type: 'live-update-property',
+                    instanceId: currentComponentData.instanceId,
+                    properties: propUpdate
+                  }
+                }, '*');
+              }
+            });
+
             propertyGroup.appendChild(input);
           }
           else if (definition.type === 'INSTANCE_SWAP') {

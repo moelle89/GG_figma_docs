@@ -523,6 +523,56 @@ figma.ui.onmessage = async msg => {
       figma.notify("Error navigating to component: " + error.message, { error: true });
     }
   }
+  else if (msg.type === "live-update-property") {
+    try {
+      const instance = await figma.getNodeByIdAsync(msg.instanceId);
+
+      if (instance && instance.type === "INSTANCE") {
+        const setProps = {};
+
+        // Set the property that changed
+        Object.entries(msg.properties).forEach(([key, value]) => {
+          if (instance.componentProperties && instance.componentProperties[key]) {
+            // Add to the properties object
+            setProps[key] = value;
+          }
+        });
+
+        console.log("Live updating instance property:", setProps);
+        if (Object.keys(setProps).length > 0) {
+          instance.setProperties(setProps);
+        }
+
+        // If it's a variant property, the component might swap entirely
+        // In that case, we need to re-fetch properties and update the UI
+        if (Object.keys(setProps).some(key => {
+          return instance.componentProperties[key] &&
+                 instance.componentProperties[key].type === 'VARIANT';
+        })) {
+          // Wait a tiny bit for the component to update
+          setTimeout(async () => {
+            // Re-fetch the master component
+            const masterComponent = instance.mainComponent;
+            if (masterComponent) {
+              const componentProperties = await getComponentProperties(
+                masterComponent.parent ? masterComponent.parent.id : masterComponent.id,
+                instance.id
+              );
+
+              figma.ui.postMessage({
+                type: "show-component-properties",
+                properties: componentProperties,
+                instanceId: instance.id
+              });
+            }
+          }, 100);
+        }
+      }
+    } catch (error) {
+      console.error("Error during live property update:", error);
+      // Don't show notification for live updates to avoid disruption
+    }
+  }
 };
 
 async function getComponentProperties(componentId, instanceId = null) {
