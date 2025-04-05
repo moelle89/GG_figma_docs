@@ -730,170 +730,175 @@
         currentComponentData = properties;
         const variantPropertiesContainer = document.getElementById('variant-properties');
         variantPropertiesContainer.innerHTML = '';
+        
+        // Update dialog title to reflect we're editing an existing instance
+        document.querySelector('.dialog-header h4').textContent = data.instanceId ? 
+          "Edit Component Properties" : "Component Properties";
+        
+        // Update the create/update button text
+        const actionButton = document.getElementById('create-variant');
+        actionButton.textContent = data.instanceId ? "Update Instance" : "Create Instance";
+        
+        // First, handle variant properties as they should appear at the top
+        const variantProps = [];
+        const textProps = [];
+        const otherProps = [];
 
-        if (properties && properties.componentProperties) {
-          // First, handle variant properties as they should appear at the top
-          const variantProps = [];
-          const textProps = [];
-          const otherProps = [];
+        // Sort properties into categories
+        Object.entries(properties.componentProperties).forEach(([key, definition]) => {
+          // Clean the property name - remove ID suffixes (anything after #)
+          const cleanPropertyName = key.split('#')[0];
 
-          // Sort properties into categories
-          Object.entries(properties.componentProperties).forEach(([key, definition]) => {
-            // Clean the property name - remove ID suffixes (anything after #)
-            const cleanPropertyName = key.split('#')[0];
+          // Store both original key and clean name
+          const propData = {
+            originalKey: key,
+            cleanName: cleanPropertyName,
+            definition: definition
+          };
 
-            // Store both original key and clean name
-            const propData = {
-              originalKey: key,
-              cleanName: cleanPropertyName,
-              definition: definition
-            };
+          // Sort by type
+          if (definition.type === 'VARIANT') {
+            variantProps.push(propData);
+          } else if (definition.type === 'TEXT') {
+            textProps.push(propData);
+          } else {
+            otherProps.push(propData);
+          }
+        });
 
-            // Sort by type
-            if (definition.type === 'VARIANT') {
-              variantProps.push(propData);
-            } else if (definition.type === 'TEXT') {
-              textProps.push(propData);
+        // Combine all properties in the desired order
+        const sortedProps = [...variantProps, ...textProps, ...otherProps];
+
+        // Create UI for sorted properties
+        sortedProps.forEach(({originalKey, cleanName, definition}) => {
+          console.log("Creating input for property:", cleanName, definition);
+          const propertyGroup = document.createElement('div');
+          propertyGroup.className = 'property-group';
+
+          const label = document.createElement('div');
+          label.className = 'property-label';
+          label.textContent = cleanName; // Use the clean name without ID suffix
+          propertyGroup.appendChild(label);
+
+          // Create different input types based on property type
+          if (definition.type === 'VARIANT') {
+            const select = document.createElement('select');
+            select.className = 'property-select';
+            select.dataset.property = originalKey; // Keep original key for data
+            select.dataset.type = 'VARIANT';
+
+            // Add options for variant properties
+            if (definition.variantOptions) {
+              definition.variantOptions.forEach(option => {
+                const optionEl = document.createElement('option');
+                optionEl.value = option;
+                optionEl.textContent = option;
+                if (option === (definition.currentValue || definition.defaultValue)) {
+                  optionEl.selected = true;
+                }
+                select.appendChild(optionEl);
+              });
+            }
+            propertyGroup.appendChild(select);
+          }
+          else if (definition.type === 'TEXT') {
+            // Check if this is a multi-line text property (usually larger text blocks)
+            const isMultiline = originalKey.toLowerCase().includes('description') ||
+                                 originalKey.toLowerCase().includes('content') ||
+                                 definition.defaultValue?.includes('\n') ||
+                                 definition.defaultValue?.length > 80;
+
+            if (isMultiline) {
+              const textarea = document.createElement('textarea');
+              textarea.className = 'property-textarea';
+              textarea.dataset.property = originalKey;
+              textarea.dataset.type = 'TEXT';
+              textarea.value = definition.defaultValue || '';
+              textarea.placeholder = 'Enter text...';
+              textarea.rows = 3;
+
+              // Auto-resize logic
+              textarea.addEventListener('input', function() {
+                // Reset height to auto to correctly calculate new height
+                this.style.height = 'auto';
+                // Set new height based on scrollHeight with small buffer
+                this.style.height = (this.scrollHeight + 4) + 'px';
+              });
+
+              // Trigger resize on initial load
+              setTimeout(() => {
+                textarea.style.height = (textarea.scrollHeight + 4) + 'px';
+              }, 10);
+
+              propertyGroup.appendChild(textarea);
             } else {
-              otherProps.push(propData);
-            }
-          });
-
-          // Combine all properties in the desired order
-          const sortedProps = [...variantProps, ...textProps, ...otherProps];
-
-          // Create UI for sorted properties
-          sortedProps.forEach(({originalKey, cleanName, definition}) => {
-            console.log("Creating input for property:", cleanName, definition);
-            const propertyGroup = document.createElement('div');
-            propertyGroup.className = 'property-group';
-
-            const label = document.createElement('div');
-            label.className = 'property-label';
-            label.textContent = cleanName; // Use the clean name without ID suffix
-            propertyGroup.appendChild(label);
-
-            // Create different input types based on property type
-            if (definition.type === 'VARIANT') {
-              const select = document.createElement('select');
-              select.className = 'property-select';
-              select.dataset.property = originalKey; // Keep original key for data
-              select.dataset.type = 'VARIANT';
-
-              // Add options for variant properties
-              if (definition.variantOptions) {
-                definition.variantOptions.forEach(option => {
-                  const optionEl = document.createElement('option');
-                  optionEl.value = option;
-                  optionEl.textContent = option;
-                  if (option === definition.defaultValue) {
-                    optionEl.selected = true;
-                  }
-                  select.appendChild(optionEl);
-                });
-              }
-              propertyGroup.appendChild(select);
-            }
-            else if (definition.type === 'TEXT') {
-              // Check if this is a multi-line text property (usually larger text blocks)
-              const isMultiline = originalKey.toLowerCase().includes('description') ||
-                                   originalKey.toLowerCase().includes('content') ||
-                                   definition.defaultValue?.includes('\n') ||
-                                   definition.defaultValue?.length > 80;
-
-              if (isMultiline) {
-                const textarea = document.createElement('textarea');
-                textarea.className = 'property-textarea';
-                textarea.dataset.property = originalKey;
-                textarea.dataset.type = 'TEXT';
-                textarea.value = definition.defaultValue || '';
-                textarea.placeholder = 'Enter text...';
-                textarea.rows = 3;
-
-                // Auto-resize logic
-                textarea.addEventListener('input', function() {
-                  // Reset height to auto to correctly calculate new height
-                  this.style.height = 'auto';
-                  // Set new height based on scrollHeight with small buffer
-                  this.style.height = (this.scrollHeight + 4) + 'px';
-                });
-
-                // Trigger resize on initial load
-                setTimeout(() => {
-                  textarea.style.height = (textarea.scrollHeight + 4) + 'px';
-                }, 10);
-
-                propertyGroup.appendChild(textarea);
-              } else {
-                // Regular single-line text input
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'property-input';
-                input.dataset.property = originalKey;
-                input.dataset.type = 'TEXT';
-                input.value = definition.defaultValue || '';
-                input.placeholder = 'Enter text...';
-                propertyGroup.appendChild(input);
-              }
-            }
-            else if (definition.type === 'BOOLEAN') {
-              // Create a container for the switch and label in one row, replacing the group label
-              const booleanContainer = document.createElement('div');
-              booleanContainer.className = 'boolean-property';
-
-              // The label comes first in the row, using the property label directly
-              const label = document.createElement('div');
-              label.className = 'property-label';
-              label.textContent = cleanName;
-              booleanContainer.appendChild(label);
-
-              // Create the toggle switch
-              const toggleSwitch = document.createElement('label');
-              toggleSwitch.className = 'toggle-switch';
-
-              const checkbox = document.createElement('input');
-              checkbox.type = 'checkbox';
-              checkbox.dataset.property = originalKey;
-              checkbox.dataset.type = 'BOOLEAN';
-              checkbox.checked = definition.defaultValue === 'true';
-
-              const slider = document.createElement('span');
-              slider.className = 'toggle-slider';
-
-              toggleSwitch.appendChild(checkbox);
-              toggleSwitch.appendChild(slider);
-              booleanContainer.appendChild(toggleSwitch);
-
-              // Add the boolean container directly to property group, without a separate label
-              propertyGroup.appendChild(booleanContainer);
-            }
-            else if (definition.type === 'NUMBER') {
+              // Regular single-line text input
               const input = document.createElement('input');
-              input.type = 'number';
+              input.type = 'text';
               input.className = 'property-input';
-              input.dataset.property = originalKey; // Keep original key for data
-              input.dataset.type = 'NUMBER';
-              input.value = definition.defaultValue || 0;
+              input.dataset.property = originalKey;
+              input.dataset.type = 'TEXT';
+              input.value = definition.defaultValue || '';
+              input.placeholder = 'Enter text...';
               propertyGroup.appendChild(input);
             }
-            else if (definition.type === 'INSTANCE_SWAP') {
-              // For advanced users we could provide component selection
-              const label = document.createElement('div');
-              label.textContent = '(Instance swap not supported in dialog)';
-              label.style.fontSize = '10px';
-              label.style.fontStyle = 'italic';
-              propertyGroup.appendChild(label);
-            }
+          }
+          else if (definition.type === 'BOOLEAN') {
+            // Create a container for the switch and label in one row, replacing the group label
+            const booleanContainer = document.createElement('div');
+            booleanContainer.className = 'boolean-property';
 
-            variantPropertiesContainer.appendChild(propertyGroup);
-          });
-        }
+            // The label comes first in the row, using the property label directly
+            const label = document.createElement('div');
+            label.className = 'property-label';
+            label.textContent = cleanName;
+            booleanContainer.appendChild(label);
+
+            // Create the toggle switch
+            const toggleSwitch = document.createElement('label');
+            toggleSwitch.className = 'toggle-switch';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.dataset.property = originalKey;
+            checkbox.dataset.type = 'BOOLEAN';
+            checkbox.checked = definition.defaultValue === 'true';
+
+            const slider = document.createElement('span');
+            slider.className = 'toggle-slider';
+
+            toggleSwitch.appendChild(checkbox);
+            toggleSwitch.appendChild(slider);
+            booleanContainer.appendChild(toggleSwitch);
+
+            // Add the boolean container directly to property group, without a separate label
+            propertyGroup.appendChild(booleanContainer);
+          }
+          else if (definition.type === 'NUMBER') {
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'property-input';
+            input.dataset.property = originalKey; // Keep original key for data
+            input.dataset.type = 'NUMBER';
+            input.value = definition.defaultValue || 0;
+            propertyGroup.appendChild(input);
+          }
+          else if (definition.type === 'INSTANCE_SWAP') {
+            // For advanced users we could provide component selection
+            const label = document.createElement('div');
+            label.textContent = '(Instance swap not supported in dialog)';
+            label.style.fontSize = '10px';
+            label.style.fontStyle = 'italic';
+            propertyGroup.appendChild(label);
+          }
+
+          variantPropertiesContainer.appendChild(propertyGroup);
+        });
 
         // Show the dialog with transition
         document.querySelector('.tab-container').style.display = 'none';
         const dialog = document.getElementById('component-properties');
         dialog.style.display = 'flex';
-        // Force a reflow to ensure transition works
         void dialog.offsetWidth;
         dialog.classList.add('visible');
       }
@@ -904,7 +909,7 @@
 
         // Collect all selected property values
         const properties = {};
-
+        
         // Get all variants (dropdowns)
         const selects = document.querySelectorAll('.property-select');
         selects.forEach(select => {
@@ -929,14 +934,26 @@
           properties[checkbox.dataset.property] = checkbox.checked;
         });
 
-        // Send message to create instance with selected properties
-        parent.postMessage({
-          pluginMessage: {
-            type: 'create-instance-with-properties',
-            componentId: currentComponentData.id,
-            properties: properties
-          }
-        }, '*');
+        // Send different message based on whether we're creating or updating
+        if (currentComponentData.instanceId) {
+          // Update existing instance
+          parent.postMessage({
+            pluginMessage: {
+              type: 'update-instance-properties',
+              instanceId: currentComponentData.instanceId,
+              properties: properties
+            }
+          }, '*');
+        } else {
+          // Create new instance (keep existing code)
+          parent.postMessage({
+            pluginMessage: {
+              type: 'create-instance-with-properties',
+              componentId: currentComponentData.id,
+              properties: properties
+            }
+          }, '*');
+        }
 
         // Close the dialog
         document.getElementById('close-dialog').click();

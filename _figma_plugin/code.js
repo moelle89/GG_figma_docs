@@ -368,15 +368,67 @@ figma.ui.onmessage = async msg => {
   else if (msg.type === "create-instance") {
     try {
       const node = await figma.getNodeByIdAsync(msg.id);
+      let instance;
 
-      // Instead of immediately creating the instance, send properties to UI
-      const componentProperties = await getComponentProperties(msg.id);
+      // Create an instance with default properties
+      if (node.type === "COMPONENT_SET") {
+        // Just use the default variant
+        const defaultVariant = node.defaultVariant;
+        instance = defaultVariant.createInstance();
+      } else if (node.type === "COMPONENT") {
+        instance = node.createInstance();
+      } else {
+        throw new Error("Invalid component type: " + node.type);
+      }
+
+      // Position and select the instance
+      instance.x = figma.viewport.center.x;
+      instance.y = figma.viewport.center.y;
+      figma.currentPage.appendChild(instance);
+      figma.viewport.scrollAndZoomIntoView([instance]);
+      figma.currentPage.selection = [instance];
+
+      // Get component properties and send to UI for editing
+      const componentProperties = await getComponentProperties(msg.id, instance.id);
       figma.ui.postMessage({
         type: "show-component-properties",
-        properties: componentProperties
+        properties: componentProperties,
+        instanceId: instance.id
       });
+
     } catch (error) {
-      figma.notify("Error getting component properties: " + error.message, { error: true });
+      figma.notify("Error creating component instance: " + error.message, { error: true });
+    }
+  }
+  else if (msg.type === "update-instance-properties") {
+    try {
+      const instance = await figma.getNodeByIdAsync(msg.instanceId);
+
+      if (instance && instance.type === "INSTANCE") {
+        const setProps = {};
+
+        // Set all properties based on their type
+        Object.entries(msg.properties).forEach(([key, value]) => {
+          if (instance.componentProperties && instance.componentProperties[key]) {
+            // Add to the properties object
+            setProps[key] = value;
+          }
+        });
+
+        console.log("Updating instance properties:", setProps);
+        if (Object.keys(setProps).length > 0) {
+          instance.setProperties(setProps);
+        }
+
+        // Select the instance again to show the changes
+        figma.currentPage.selection = [instance];
+        figma.notify("Component properties updated successfully!");
+      } else {
+        throw new Error("Instance not found or invalid");
+      }
+    } catch (error) {
+      console.error("Error details:", error);
+      figma.notify("Error updating instance properties: " + error.message, { error: true });
     }
   }
   else if (msg.type === "create-instance-with-properties") {
@@ -388,16 +440,16 @@ figma.ui.onmessage = async msg => {
       if (node.type === "COMPONENT_SET") {
         // Find the variant based on variant properties
         const variantProps = {};
-        
+
         // Extract only the variant properties
         Object.entries(node.componentPropertyDefinitions).forEach(([key, def]) => {
           if (def.type === 'VARIANT' && msg.properties[key]) {
             variantProps[key] = msg.properties[key];
           }
         });
-        
+
         console.log("Finding variant with properties:", variantProps);
-        
+
         // Find the variant that matches the selected properties
         const variant = node.children.find(child => {
           // Parse the variant name
@@ -407,7 +459,7 @@ figma.ui.onmessage = async msg => {
             acc[key] = value;
             return acc;
           }, {});
-          
+
           // Check if variant matches all required properties
           return Object.entries(variantProps).every(([key, value]) =>
             variantProperties[key] === value
@@ -429,7 +481,7 @@ figma.ui.onmessage = async msg => {
       // Set all non-variant instance properties
       if (instance) {
         const setProps = {};
-        
+
         // Set all properties based on their type
         Object.entries(msg.properties).forEach(([key, value]) => {
           if (instance.componentProperties && instance.componentProperties[key]) {
@@ -437,7 +489,7 @@ figma.ui.onmessage = async msg => {
             setProps[key] = value;
           }
         });
-        
+
         console.log("Setting instance properties:", setProps);
         if (Object.keys(setProps).length > 0) {
           instance.setProperties(setProps);
@@ -473,8 +525,14 @@ figma.ui.onmessage = async msg => {
   }
 };
 
-async function getComponentProperties(componentId) {
+async function getComponentProperties(componentId, instanceId = null) {
   const node = await figma.getNodeByIdAsync(componentId);
+  let instance = null;
+
+  if (instanceId) {
+    instance = await figma.getNodeByIdAsync(instanceId);
+  }
+
   if (node) {
     let properties = {};
 
@@ -486,9 +544,13 @@ async function getComponentProperties(componentId) {
       // Extract all property types from component property definitions
       if (nodeToCheck.componentPropertyDefinitions) {
         Object.entries(nodeToCheck.componentPropertyDefinitions).forEach(([key, def]) => {
+          const currentValue = instance && instance.componentProperties[key] ?
+            instance.componentProperties[key] : def.defaultValue;
+
           componentProps[key] = {
             type: def.type,
             defaultValue: def.defaultValue,
+            currentValue: currentValue,
             variantOptions: def.type === 'VARIANT' ? def.variantOptions : null
           };
         });
@@ -498,6 +560,7 @@ async function getComponentProperties(componentId) {
         type: node.type,
         id: node.id,
         name: node.name,
+        instanceId: instanceId,
         componentProperties: componentProps
       };
 
