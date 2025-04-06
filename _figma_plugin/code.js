@@ -1,7 +1,7 @@
 // Define the UI sizes at the top of the file
 const UI_SIZES = {
   compact: { width: 240, height: 574 },
-  expanded: { width: 280, height: 860 }
+  expanded: { width: 280, height: 930 } // Use a taller, fixed size for expanded mode
 };
 
 // Use the compact size as default in the showUI call
@@ -609,6 +609,7 @@ figma.ui.onmessage = async msg => {
   else if (msg.type === "resize") {
     const size = msg.size === 'expanded' ? UI_SIZES.expanded : UI_SIZES.compact;
     figma.ui.resize(size.width, size.height);
+    console.log(`Resizing UI to ${size.width}x${size.height}`);
   }
 };
 
