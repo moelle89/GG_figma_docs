@@ -1,6 +1,6 @@
 // Define the UI sizes at the top of the file
 const UI_SIZES = {
-  compact: { width: 240, height: 560 },
+  compact: { width: 240, height: 574 },
   expanded: { width: 280, height: 860 }
 };
 
@@ -243,7 +243,7 @@ async function loadIconComponentsFromCurrentFile() {
         // Export the component as a JPG with minimal scale to reduce storage size
         const exportSettings = {
           format: "JPG",
-          constraint: { type: "SCALE", value: 0.8 }
+          constraint: { type: "SCALE", value: 1 }
         };
 
         const bytes = await targetComponent.exportAsync(exportSettings);
