@@ -931,6 +931,8 @@
             // Check if this is a multi-line text property (usually larger text blocks)
             const isMultiline = originalKey.toLowerCase().includes('description') ||
                                  originalKey.toLowerCase().includes('content') ||
+                                 originalKey.toLowerCase().includes('subtext') ||
+                                 originalKey.toLowerCase().includes('sub text') ||
                                  definition.defaultValue?.includes('\n') ||
                                  definition.defaultValue?.length > 80;
 
