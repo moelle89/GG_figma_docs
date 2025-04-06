@@ -235,21 +235,18 @@
     }
 
     .tab {
-      padding: 8px 16px;
+      padding: 8px 12px;
       cursor: pointer;
       color: var(--figma-color-text-secondary);
       border-bottom: 2px solid transparent;
-      margin-right: 4px;
+      margin-right: 0px;
       font-weight: 500;
       transition: color ease .2s;
     }
     .tab:hover {
-      padding: 8px 16px;
       cursor: pointer;
       color: var(--figma-color-text-primary);
       border-bottom: 2px solid transparent;
-      margin-right: 4px;
-      font-weight: 500;
     }
 
     .tab.active {
@@ -341,7 +338,7 @@
       align-items: center;
       text-align: center;
       cursor: pointer;
-      padding: 10px 0px 10px 0px;
+      padding: 0px 0px 10px 0px;
       margin-bottom: 8px;
       border-radius: 6px;
       transition: background-color 0.2s;
@@ -603,15 +600,79 @@
       cursor: pointer;
       padding: 8px 10px;
       margin-left: auto; /* Push to the right side */
-      color: var(--figma-color-text-secondary);
+      color: var(--figma-color-text-brand);
       font-size: 16px;
       transition: all 0.2s ease;
       border-radius: 4px;
+      font-weight: bold;
     }
 
     .docs-button:hover {
       background-color: var(--figma-color-bg-hover);
       color: var(--figma-color-text);
+    }
+
+    /* Add these styles for the size toggle button */
+    .size-toggle-expanded {
+      transform: rotate(90deg);
+    }
+
+    /* Compact mode specific styles */
+    .compact-mode .component-item {
+      margin: 2px;
+    }
+
+    .compact-mode .component-left {
+      gap: 8px;
+    }
+
+    .compact-mode .component-thumbnail {
+      width: 24px;
+      height: 24px;
+      padding: 6px;
+    }
+
+    .compact-mode .component-name {
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .compact-mode .icon-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .compact-mode .icon-name {
+      font-size: 0.55rem;
+    }
+
+    .compact-mode .component-thumbnail-icon {
+      width: 24px;
+      height: 24px;
+      padding: 6px;
+    }
+
+    /* Adjust the search container in compact mode */
+    .compact-mode .search-container {
+        padding: 6px 2px;
+        gap: 8px;
+    }
+
+    .compact-mode #components-search-input,
+    .compact-mode #icons-search-input {
+      padding: 8px;
+    }
+
+    .compact-mode .refresh-button {
+      padding: 4px 10px;
+    }
+    .compact-mode .icon-item {
+      margin-bottom: 0px;
+    }
+    .compact-mode .tab {
+      font-size: .8rem;
+    }
+    .compact-mode #docs-button {
+      display: none;
     }
   </style>
 </head>
@@ -622,6 +683,7 @@
       <div class="tab active" data-tab="components-tab">Components</div>
       <div class="tab" data-tab="icons-tab">Icons</div>
       <button id="docs-button" class="docs-button" title="Open Documentation">🌐</button>
+      <button id="size-toggle" class="docs-button" title="Toggle UI Size">⟷</button>
     </div>
 
     <div id="components-tab" class="tab-content active">
@@ -635,7 +697,7 @@
 
     <div id="icons-tab" class="tab-content">
       <p id="icons-status-message">Loading icons...</p>
-      <div class="search-container" style="margin-bottom: 14px!important;">
+      <div class="search-container">
         <input type="text" id="icons-search-input" placeholder="Search icons...">
         <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
         <button id="clear-icons-cache" class="refresh-button" title="Clear Icons Cache">🗑️</button>
@@ -1352,6 +1414,29 @@
       } finally {
         document.body.removeChild(textarea);
       }
+    });
+
+    // Add this event listener with the other event listeners
+    document.getElementById('size-toggle').addEventListener('click', () => {
+      const isExpanded = document.body.classList.toggle('expanded-ui');
+      document.getElementById('size-toggle').classList.toggle('size-toggle-expanded');
+
+      // Toggle the compact-mode class (remove when expanded, add when compact)
+      document.body.classList.toggle('compact-mode', !isExpanded);
+
+      // Send message to plugin to resize the UI
+      parent.postMessage({
+        pluginMessage: {
+          type: 'resize',
+          size: isExpanded ? 'expanded' : 'compact'
+        }
+      }, '*');
+    });
+
+    // Add code to set the initial state when the plugin loads
+    window.addEventListener('load', () => {
+      // Default to compact mode when plugin loads
+      document.body.classList.add('compact-mode');
     });
   </script>
 </body>

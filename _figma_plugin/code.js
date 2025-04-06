@@ -1,6 +1,13 @@
+// Define the UI sizes at the top of the file
+const UI_SIZES = {
+  compact: { width: 240, height: 560 },
+  expanded: { width: 280, height: 860 }
+};
+
+// Use the compact size as default in the showUI call
 figma.showUI(__html__, {
-  width: 280,
-  height: 860,
+  width: UI_SIZES.compact.width,
+  height: UI_SIZES.compact.height,
   themeColors: true
 });
 // ===================================
@@ -154,8 +161,8 @@ async function loadComponentsFromCurrentFile() {
 
 // Function to load icons from the current file
 async function loadIconComponentsFromCurrentFile() {
+  // First try to load from cache
   if (cache.icons) {
-    console.log("Using memory cache for icons", cache.icons.length);
     figma.ui.postMessage({
       iconsStatus: `Found ${cache.icons.length} icons.`,
       icons: cache.icons
@@ -163,9 +170,9 @@ async function loadIconComponentsFromCurrentFile() {
     return;
   }
 
+  // Then try to load from client storage
   const storedIcons = await loadFromClientStorage('cachedIcons');
   if (storedIcons) {
-    console.log("Using stored cache for icons", storedIcons.length);
     cache.icons = storedIcons;
     figma.ui.postMessage({
       iconsStatus: `Found ${storedIcons.length} icons.`,
@@ -174,6 +181,7 @@ async function loadIconComponentsFromCurrentFile() {
     return;
   }
 
+  // If no cache at all, load everything from scratch
   console.log("Loading icons from file...");
   try {
     figma.ui.postMessage({ iconsStatus: "Loading icons from current file..." });
@@ -232,10 +240,10 @@ async function loadIconComponentsFromCurrentFile() {
           ? component.defaultVariant
           : component;
 
-        // Export the component as a JPG with lower scale
+        // Export the component as a JPG with minimal scale to reduce storage size
         const exportSettings = {
           format: "JPG",
-          constraint: { type: "SCALE", value: 2 }
+          constraint: { type: "SCALE", value: 0.8 }
         };
 
         const bytes = await targetComponent.exportAsync(exportSettings);
@@ -273,7 +281,14 @@ async function loadIconComponentsFromCurrentFile() {
 
     // Store in both cache and client storage
     cache.icons = formattedComponents;
-    await saveToClientStorage('cachedIcons', formattedComponents);
+
+    // Save to client storage - same approach as components
+    try {
+      await saveToClientStorage('cachedIcons', formattedComponents);
+    } catch (error) {
+      console.error("Error saving icons to client storage:", error);
+      figma.notify("Icons were loaded but couldn't be cached (storage full)", { timeout: 2000 });
+    }
 
     figma.ui.postMessage({
       iconsStatus: `Found ${allIcons.length} icons.`,
@@ -312,7 +327,10 @@ async function refreshCache(type) {
     loadComponentsFromCurrentFile();
   } else if (type === 'icons') {
     cache.icons = null;
+    // Clear both full icons and metadata cache if it exists
     await figma.clientStorage.deleteAsync('cachedIcons');
+    await figma.clientStorage.deleteAsync('cachedIconsMetadata');
+    figma.notify("Icons cache cleared, reloading icons...");
     loadIconComponentsFromCurrentFile();
   } else {
     // Refresh all
@@ -320,6 +338,7 @@ async function refreshCache(type) {
     cache.icons = null;
     await figma.clientStorage.deleteAsync('cachedComponents');
     await figma.clientStorage.deleteAsync('cachedIcons');
+    await figma.clientStorage.deleteAsync('cachedIconsMetadata');
     loadComponentsFromCurrentFile();
     loadIconComponentsFromCurrentFile();
   }
@@ -574,16 +593,22 @@ figma.ui.onmessage = async msg => {
     }
   }
   else if (msg.type === "clear-icons-cache") {
-    // Clear icons cache and reload
+    // This is now redundant with the refresh button
+    figma.notify("Use the refresh button to clear cache and reload icons", { timeout: 2000 });
+    // Still clear the cache for backward compatibility
     cache.icons = null;
     try {
       await figma.clientStorage.deleteAsync('cachedIcons');
-      figma.notify("Icons cache cleared");
+      await figma.clientStorage.deleteAsync('cachedIconsMetadata');
       loadIconComponentsFromCurrentFile();
     } catch (error) {
       console.error("Error clearing icons cache:", error);
       figma.notify("Error clearing icons cache: " + error.message, { error: true });
     }
+  }
+  else if (msg.type === "resize") {
+    const size = msg.size === 'expanded' ? UI_SIZES.expanded : UI_SIZES.compact;
+    figma.ui.resize(size.width, size.height);
   }
 };
 
