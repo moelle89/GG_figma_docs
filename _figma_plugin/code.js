@@ -42,27 +42,27 @@ async function loadFromClientStorage(key) {
 
 // Function to load components from the current file
 async function loadComponentsFromCurrentFile() {
-  // First try to load from cache
-  if (cache.components) {
-    figma.ui.postMessage({
-      status: `Found ${cache.components.length} components.`,
-      components: cache.components
-    });
-    return;
-  }
-
-  // Then try to load from client storage
-  const storedComponents = await loadFromClientStorage('cachedComponents');
-  if (storedComponents) {
-    cache.components = storedComponents;
-    figma.ui.postMessage({
-      status: `Found ${storedComponents.length} components.`,
-      components: storedComponents
-    });
-    return;
-  }
-
   try {
+    // First try to load from cache
+    if (cache.components) {
+      figma.ui.postMessage({
+        status: `Found ${cache.components.length} components.`,
+        components: cache.components
+      });
+      return;
+    }
+
+    // Then try to load from client storage
+    const storedComponents = await loadFromClientStorage('cachedComponents');
+    if (storedComponents) {
+      cache.components = storedComponents;
+      figma.ui.postMessage({
+        status: `Found ${storedComponents.length} components.`,
+        components: storedComponents
+      });
+      return;
+    }
+
     figma.ui.postMessage({ status: "Loading components from current file..." });
 
     await figma.loadAllPagesAsync();
@@ -71,11 +71,7 @@ async function loadComponentsFromCurrentFile() {
     const componentsPage = figma.root.children.find(page => page.name === "COMPONENTS");
 
     if (!componentsPage) {
-      figma.ui.postMessage({
-        error: "No COMPONENTS page found in the current file.",
-        components: []
-      });
-      return;
+      throw new Error("No COMPONENTS page found. Please create a page named 'COMPONENTS' to store your components.");
     }
 
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
@@ -86,16 +82,13 @@ async function loadComponentsFromCurrentFile() {
     );
 
     if (components.length === 0) {
-      figma.ui.postMessage({
-        error: "No components with ❖ prefix found on the COMPONENTS page.",
-        components: []
-      });
-      return;
+      throw new Error("No components found with ❖ prefix. Please prefix your components with ❖ to make them discoverable.");
     }
 
     // Process components in smaller batches
     const BATCH_SIZE = 3;
     const formattedComponents = [];
+    let failedComponents = [];
 
     for (let i = 0; i < components.length; i++) {
       const component = components[i];
@@ -133,6 +126,7 @@ async function loadComponentsFromCurrentFile() {
         }
       } catch (error) {
         console.warn(`Failed to export component ${component.name}:`, error);
+        failedComponents.push(component.name);
         formattedComponents.push({
           id: component.id,
           name: component.name.replace('❖ ', ''),
@@ -146,6 +140,11 @@ async function loadComponentsFromCurrentFile() {
     cache.components = formattedComponents;
     await saveToClientStorage('cachedComponents', formattedComponents);
 
+    // Show warning if any components failed to load
+    if (failedComponents.length > 0) {
+      figma.notify(`Warning: ${failedComponents.length} components failed to load thumbnails. Using fallback display.`, { timeout: 5000 });
+    }
+
     figma.ui.postMessage({
       status: `Found ${components.length} components.`,
       components: formattedComponents
@@ -153,9 +152,10 @@ async function loadComponentsFromCurrentFile() {
   } catch (error) {
     console.error("Error loading current file components:", error);
     figma.ui.postMessage({
-      error: "Error loading components: " + error.message,
+      error: error.message || "Error loading components. Please check the console for details.",
       components: []
     });
+    figma.notify(error.message || "Error loading components", { error: true });
   }
 }
 
