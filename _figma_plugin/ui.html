@@ -129,7 +129,17 @@
         border-radius: 4px;
         width: 100%;
         transition: background-color 0.2s;
-        cursor: pointer;
+        cursor: grab;
+    }
+
+    .component-content.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
+
+    .component-content:hover {
+        border-radius: 6px;
+        background-color: var(--figma-color-bg-hover);
     }
 
     /* Add these new styles */
@@ -156,11 +166,6 @@
 		border-radius: 8px;
 		background: white;
 	}
-
-    .component-content:hover {
-	 border-radius: 6px;
-      background-color: var(--figma-color-bg-hover);
-    }
 
     .component-name {
       flex-grow: 1;
@@ -1201,6 +1206,20 @@
         // Create container for component name and actions
         const content = document.createElement('div');
         content.className = 'component-content';
+        content.draggable = true; // Make the component draggable
+
+        // Add drag event handlers
+        content.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('application/json', JSON.stringify({
+            id: component.id,
+            name: component.name
+          }));
+          content.classList.add('dragging');
+        });
+
+        content.addEventListener('dragend', () => {
+          content.classList.remove('dragging');
+        });
 
         // Add click handler to the content div
         content.onclick = (e) => {
