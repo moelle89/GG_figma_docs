@@ -175,8 +175,8 @@
 
     .component-actions {
       display: flex;
-      gap: 8px;
-      margin-right: 10px;
+      gap: 0px;
+      margin-right: 6px;
     }
 
     .action-button {
@@ -630,7 +630,7 @@
     }
 
     .compact-mode .component-left {
-      gap: 8px;
+      gap: 10px;
     }
 
     .compact-mode .component-thumbnail {
@@ -681,6 +681,93 @@
     .compact-mode #docs-button {
       display: none;
     }
+
+    /* Add styles for categories */
+    .category-header {
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--figma-color-border);
+      color: var(--figma-color-text);
+      transition: all 0.2s ease;
+      padding: 8px 6px 8px 6px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .category-header:hover {
+      color: var(--figma-color-text);
+    }
+    .category-header.collapsed {
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: var(--figma-color-text-secondary);
+    }
+    .category-header.collapsed:hover {
+      color: var(--figma-color-text);
+    }
+
+    .category-toggle {
+      margin-right: 4px;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-180deg);
+    }
+
+    .category-toggle svg {
+      color: var(--figma-color-text-secondary);
+      width: 100%;
+      height: 100%;
+    }
+
+    .category-header:hover .category-toggle svg {
+      color: var(--figma-color-text);
+    }
+
+    .category-header.collapsed .category-toggle {
+      transform: rotate(0deg);
+    }
+
+    .category-section {
+      margin-bottom: 6px;
+      overflow: hidden;
+      transition: max-height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .category-section.collapsed {
+      max-height: 0;
+      margin-bottom: 0px;
+    }
+
+    .compact-mode .category-header {
+        padding: 8px 6px 8px 6px;
+    }
+
+    #toggle-all-icon {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #toggle-all-icon svg {
+      color: currentColor;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #toggle-all-icon.collapsed svg {
+      transform: rotate(-180deg);
+    }
   </style>
 </head>
 
@@ -698,6 +785,7 @@
       <div class="search-container">
         <input type="text" id="components-search-input" placeholder="Search components...">
         <button id="refresh-components" class="refresh-button" title="Refresh components">↻</button>
+        <button id="toggle-all-categories" class="refresh-button" title="Expand/Collapse All"><span id="toggle-all-icon"></span></button>
       </div>
       <ul id="components-list"></ul>
     </div>
@@ -733,6 +821,38 @@
   </div>
 
   <script>
+    // Helper function to load SVG icons
+    function createSvgIcon(svgPath, className = '') {
+      const svgContainer = document.createElement('div');
+      svgContainer.className = className;
+
+      // Instead of fetching from files, use inline SVG content
+      let svgContent = '';
+
+      if (svgPath.includes('down')) {
+        // Chevron down SVG
+        svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><polyline points="112 184 256 328 400 184" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"/></svg>';
+      } else if (svgPath.includes('up')) {
+        // Chevron up SVG
+        svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><polyline points="112 328 256 184 400 328" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"/></svg>';
+      } else {
+        // Fallback to text
+        svgContainer.textContent = svgPath.includes('up') ? '▲' : '▼';
+        return svgContainer;
+      }
+
+      svgContainer.innerHTML = svgContent;
+
+      // Set the color to currentColor for better theming
+      const svgElement = svgContainer.querySelector('svg');
+      if (svgElement) {
+        svgElement.style.width = '100%';
+        svgElement.style.height = '100%';
+      }
+
+      return svgContainer;
+    }
+
     // Handle tab switching
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -750,9 +870,14 @@
         statusMessage.textContent = "Loading...";
         statusMessage.style.color = "var(--figma-color-text-secondary)";
       } else {
-        statusMessage.textContent = tabId === 'components-tab' ?
-          `Found ${componentsData.length} components.` :
-          `Found ${iconsData.length} icons.`;
+        if (tabId === 'components-tab') {
+          // Count total components across all categories
+          const totalComponents = componentsData.reduce((total, category) =>
+            category.isCategory ? total + category.items.length : total, 0);
+          statusMessage.textContent = `Found ${totalComponents} components.`;
+        } else {
+          statusMessage.textContent = `Found ${iconsData.length} icons.`;
+        }
         statusMessage.style.color = "var(--figma-color-text)";
       }
     }
@@ -817,6 +942,15 @@
       if (data && data.components) {
         componentsData = data.components;
         renderComponents();
+      }
+
+      // Handle collapsed state
+      if (data && data.type === 'collapsed-state') {
+        window.collapsedCategoriesState = data.collapsedCategories;
+        // If we already have components rendered, update the UI
+        if (componentsData && componentsData.length > 0) {
+          renderComponents();
+        }
       }
 
       // Handle icons data (Tab 2)
@@ -1190,96 +1324,189 @@
       const componentsSearchInput = document.getElementById('components-search-input');
       searchTerm = searchTerm || componentsSearchInput.value;
 
-      const filteredComponents = componentsData.filter(component =>
-        component.name.toLowerCase().includes(searchTerm.toLowerCase())
+      // Filter components based on search term
+      const filteredComponents = componentsData.map(category => {
+        if (!category.isCategory) return category;
+
+        const filteredItems = category.items.filter(component =>
+          component.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        return {
+          ...category,
+          items: filteredItems
+        };
+      });
+
+      // Check if any category has items
+      const hasAnyItems = filteredComponents.some(category =>
+        category.isCategory && category.items.length > 0
       );
 
-      if (filteredComponents.length === 0) {
+      if (!hasAnyItems) {
         componentsList.innerHTML = '<li style="color: #666; font-style: italic;">No components found</li>';
         return;
       }
 
-      filteredComponents.forEach(component => {
-        const item = document.createElement('li');
-        item.className = 'component-item';
+      // Get collapsed state from global variable instead of localStorage
+      const collapsedCategories = window.collapsedCategoriesState || {};
 
-        // Create container for component name and actions
-        const content = document.createElement('div');
-        content.className = 'component-content';
-        content.draggable = true; // Make the component draggable
+      filteredComponents.forEach(category => {
+        if (!category.isCategory) return;
 
-        // Add drag event handlers
-        content.addEventListener('dragstart', (e) => {
-          e.dataTransfer.setData('application/json', JSON.stringify({
-            id: component.id,
-            name: component.name
-          }));
-          content.classList.add('dragging');
-        });
+        // Skip empty categories
+        if (category.items.length === 0) return;
 
-        content.addEventListener('dragend', () => {
-          content.classList.remove('dragging');
-        });
-
-        // Add click handler to the content div
-        content.onclick = (e) => {
-          // Don't trigger if clicking the goto button
-          if (!e.target.closest('.action-button')) {
-            parent.postMessage({ pluginMessage: { type: 'create-instance', id: component.id } }, '*');
-          }
-        };
-
-        // Create left container for thumbnail/swatch and name
-        const leftContent = document.createElement('div');
-        leftContent.className = 'component-left';
-
-        if (component.thumbnail) {
-          // Use actual thumbnail
-          const thumbnail = document.createElement('img');
-          thumbnail.className = 'component-thumbnail';
-          thumbnail.src = `data:image/png;base64,${component.thumbnail}`;
-          thumbnail.alt = component.name;
-          leftContent.appendChild(thumbnail);
-        } else {
-          // Fallback to color swatch with first letter
-          const colorSwatch = document.createElement('div');
-          colorSwatch.className = 'component-thumbnail icon-swatch';
-          colorSwatch.style.backgroundColor = component.colorHash || '#cccccc';
-          if (component.firstChar) {
-            colorSwatch.textContent = component.firstChar;
-            colorSwatch.style.color = getContrastColor(component.colorHash);
-          }
-          leftContent.appendChild(colorSwatch);
+        // Create category header
+        const categoryHeader = document.createElement('div');
+        categoryHeader.className = 'category-header';
+        if (collapsedCategories[category.category]) {
+          categoryHeader.classList.add('collapsed');
         }
 
-        // Component name (no longer needs onclick)
-        const name = document.createElement('span');
-        name.textContent = component.name;
-        name.className = 'component-name';
-        name.style.cursor = 'pointer';
-        leftContent.appendChild(name);
+        // Add category title and toggle icon
+        const categoryTitle = document.createElement('span');
+        categoryTitle.textContent = category.category;
 
-        content.appendChild(leftContent);
+        // Create toggle icon using SVG
+        const toggleIcon = createSvgIcon('chevron-down.svg', 'category-toggle');
 
-        // Actions container
-        const actions = document.createElement('div');
-        actions.className = 'component-actions';
+        categoryHeader.appendChild(categoryTitle);
+        categoryHeader.appendChild(toggleIcon);
+        componentsList.appendChild(categoryHeader);
 
-        // Go to component button
-        const gotoBtn = document.createElement('button');
-        gotoBtn.innerHTML = '→';
-        gotoBtn.title = 'Go to Component';
-        gotoBtn.className = 'action-button';
-        gotoBtn.onclick = (e) => {
-          e.stopPropagation();
-          parent.postMessage({ pluginMessage: { type: 'goto-component', id: component.id } }, '*');
-        };
+        // Create category section
+        const categorySection = document.createElement('div');
+        categorySection.className = 'category-section';
+        if (collapsedCategories[category.category]) {
+          categorySection.classList.add('collapsed');
+        } else {
+          categorySection.style.maxHeight = '1000px'; // Set a large enough max-height for expanded state
+        }
 
-        actions.appendChild(gotoBtn);
-        content.appendChild(actions);
-        item.appendChild(content);
-        componentsList.appendChild(item);
+        // Add click event for accordion toggle
+        categoryHeader.addEventListener('click', () => {
+          const isCollapsed = categoryHeader.classList.toggle('collapsed');
+          categorySection.classList.toggle('collapsed');
+
+          if (!isCollapsed) {
+            // Expanded - set a height for animation immediately
+            categorySection.style.maxHeight = categorySection.scrollHeight + 'px';
+            // After animation completes, switch to auto height
+            setTimeout(() => {
+              categorySection.style.maxHeight = '1000px';
+            }, 200); // Match the transition duration
+          } else {
+            // Collapsing - set height to 0 immediately (no delay)
+            categorySection.style.maxHeight = '0px';
+          }
+
+          // Save collapsed state via message
+          if (!window.collapsedCategoriesState) window.collapsedCategoriesState = {};
+          window.collapsedCategoriesState[category.category] = isCollapsed;
+
+          // Send updated state to plugin
+          parent.postMessage({
+            pluginMessage: {
+              type: 'save-collapsed-state',
+              collapsedCategories: window.collapsedCategoriesState
+            }
+          }, '*');
+        });
+
+        // Add components to category
+        category.items.forEach(component => {
+          const item = document.createElement('li');
+          item.className = 'component-item';
+
+          // Create container for component name and actions
+          const content = document.createElement('div');
+          content.className = 'component-content';
+          content.draggable = true;
+
+          // Add drag event handlers
+          content.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('application/json', JSON.stringify({
+              id: component.id,
+              name: component.name
+            }));
+            content.classList.add('dragging');
+          });
+
+          content.addEventListener('dragend', () => {
+            content.classList.remove('dragging');
+          });
+
+          // Add click handler to the content div
+          content.onclick = (e) => {
+            if (!e.target.closest('.action-button')) {
+              parent.postMessage({ pluginMessage: { type: 'create-instance', id: component.id } }, '*');
+            }
+          };
+
+          // Create left container for thumbnail/swatch and name
+          const leftContent = document.createElement('div');
+          leftContent.className = 'component-left';
+
+          if (component.thumbnail) {
+            const thumbnail = document.createElement('img');
+            thumbnail.className = 'component-thumbnail';
+            thumbnail.src = `data:image/png;base64,${component.thumbnail}`;
+            thumbnail.alt = component.name;
+            leftContent.appendChild(thumbnail);
+          } else {
+            const colorSwatch = document.createElement('div');
+            colorSwatch.className = 'component-thumbnail icon-swatch';
+            colorSwatch.style.backgroundColor = component.colorHash || '#cccccc';
+            if (component.firstChar) {
+              colorSwatch.textContent = component.firstChar;
+              colorSwatch.style.color = getContrastColor(component.colorHash);
+            }
+            leftContent.appendChild(colorSwatch);
+          }
+
+          const name = document.createElement('span');
+          name.textContent = component.name;
+          name.className = 'component-name';
+          name.style.cursor = 'pointer';
+          leftContent.appendChild(name);
+
+          content.appendChild(leftContent);
+
+          const actions = document.createElement('div');
+          actions.className = 'component-actions';
+
+          const gotoBtn = document.createElement('button');
+          gotoBtn.innerHTML = '→';
+          gotoBtn.title = 'Go to Component';
+          gotoBtn.className = 'action-button';
+          gotoBtn.onclick = (e) => {
+            e.stopPropagation();
+            parent.postMessage({ pluginMessage: { type: 'goto-component', id: component.id } }, '*');
+          };
+
+          actions.appendChild(gotoBtn);
+          content.appendChild(actions);
+          item.appendChild(content);
+          categorySection.appendChild(item);
+        });
+
+        componentsList.appendChild(categorySection);
       });
+
+      // Update the toggle all button based on collapsed state
+      const allCategoryHeaders = document.querySelectorAll('.category-header');
+      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+        header.classList.contains('collapsed')
+      );
+
+      // Update the toggle all icon class instead of swapping SVGs
+      const toggleAllIcon = document.getElementById('toggle-all-icon');
+      if (allCollapsed) {
+        toggleAllIcon.classList.add('collapsed');
+      } else {
+        toggleAllIcon.classList.remove('collapsed');
+      }
     }
 
     // Icon rendering function
@@ -1497,6 +1724,63 @@
     window.addEventListener('load', () => {
       // Default to compact mode when plugin loads
       document.body.classList.add('compact-mode');
+    });
+
+    // Add toggle all categories functionality
+    document.getElementById('toggle-all-categories').addEventListener('click', () => {
+      const allCategoryHeaders = document.querySelectorAll('.category-header');
+      const allCategorySections = document.querySelectorAll('.category-section');
+
+      // Check if all categories are collapsed
+      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+        header.classList.contains('collapsed')
+      );
+
+      // Toggle based on current state
+      const collapsedCategories = {};
+
+      allCategoryHeaders.forEach((header, index) => {
+        const section = allCategorySections[index];
+
+        if (allCollapsed) {
+          // Expand all
+          header.classList.remove('collapsed');
+          section.classList.remove('collapsed');
+          section.style.maxHeight = '1000px';
+          collapsedCategories[header.querySelector('span').textContent] = false;
+        } else {
+          // Collapse all
+          header.classList.add('collapsed');
+          section.classList.add('collapsed');
+          section.style.maxHeight = '0px';
+          collapsedCategories[header.querySelector('span').textContent] = true;
+        }
+      });
+
+      // Update the toggle all icon class instead of swapping SVGs
+      const toggleAllIcon = document.getElementById('toggle-all-icon');
+      if (allCollapsed) {
+        toggleAllIcon.classList.add('collapsed');
+      } else {
+        toggleAllIcon.classList.remove('collapsed');
+      }
+
+      // Save state to global variable
+      window.collapsedCategoriesState = collapsedCategories;
+
+      // Send updated state to plugin
+      parent.postMessage({
+        pluginMessage: {
+          type: 'save-collapsed-state',
+          collapsedCategories: window.collapsedCategoriesState
+        }
+      }, '*');
+    });
+
+    // Initialize the toggle all icon on page load to use just chevron-down
+    window.addEventListener('DOMContentLoaded', () => {
+      const toggleAllIcon = document.getElementById('toggle-all-icon');
+      toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
     });
   </script>
 </body>

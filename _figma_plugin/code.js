@@ -4,6 +4,37 @@ const UI_SIZES = {
   expanded: { width: 280, height: 930 } // Use a taller, fixed size for expanded mode
 };
 
+// Include menuData definition directly in code.js
+const menuData = [
+  { "category": "First Steps", "items": ["UI component lib", "Documentation", "Latest Components"] },
+  { "category": "Button", "items": ["Button", "Button Group", "Button Close", "Button with Icon Only", "Social Button", "Store Badges"] },
+  { "category": "Input Fields", "items": ["Input"] },
+  { "category": "Checkboxes", "items": ["Checkbox", "Checkbox Label"] },
+  { "category": "Radio Buttons", "items": ["Radio Button", "Radio Button Group"] },
+  { "category": "Toggles", "items": ["Toggle Switch", "Toggle Label"] },
+  { "category": "Drop-Downs", "items": ["Drop-Down List", "Drop-Down Box"] },
+  { "category": "Tabs", "items": ["Horizontal Tabs", "Vertical Tabs", "Tab Button"] },
+  { "category": "Modals", "items": ["Modal Header", "Modal Actions"] },
+  { "category": "Pagination", "items": ["Pagination", "Pagination Dots"] },
+  { "category": "Progress Loaders", "items": ["Linear Loader", "Linear Loader (Looping)", "Radial Loader", "Radial Loader (Looping)", "Radial Loader (Looping) 2"] },
+  { "category": "Badges & Tags", "items": ["Badge"] },
+  { "category": "Icons", "items": ["Icons", "Other Icons", "Featured Icon"] },
+  { "category": "Content", "items": ["Content Frames", "Content Slots", "Content Header", "Content Slot"] },
+  { "category": "Lists", "items": ["Check List Item", "Class List Item", "Menu List Item"] },
+  { "category": "Tables", "items": ["Table", "Table Cell"] },
+  { "category": "Accordion", "items": ["Accordion", "Accordion Item"] },
+  { "category": "Picker Dialogs", "items": ["Date Picker", "Color Picker"] },
+  { "category": "eCommerce", "items": ["Product Card Horizontal", "Product Card Vertical"] },
+  { "category": "Headers", "items": ["Card Header", "Page Header", "Section Header"] },
+  { "category": "Dividers", "items": ["Divider"] },
+  { "category": "Info Cards", "items": ["Info Card"] },
+  { "category": "Empty States", "items": ["Empty State", "Empty State Graphic"] },
+  { "category": "Inbox", "items": ["Content / Inbox / Classic", "Content / Inbox / Compact", "Mail Navigation List Item"] },
+  { "category": "Signup & Login", "items": ["Login Sections", "Signup Sections"] },
+  { "category": "Logos", "items": ["GG Logo", "GG Logo Icon", "GG Logo Mark"] },
+  { "category": "Miscellaneous", "items": ["Avatar", "Avatar Labeled", "Avatar Stack", "AI Shortcuts", "AI Shortcuts Item", "Project Switch", "View Mode Picker"] }
+];
+
 // Use the compact size as default in the showUI call
 figma.showUI(__html__, {
   width: UI_SIZES.compact.width,
@@ -45,8 +76,12 @@ async function loadComponentsFromCurrentFile() {
   try {
     // First try to load from cache
     if (cache.components) {
+      // Count total components across all categories
+      const totalComponents = cache.components.reduce((total, category) =>
+        category.isCategory ? total + category.items.length : total, 0);
+
       figma.ui.postMessage({
-        status: `Found ${cache.components.length} components.`,
+        status: `Found ${totalComponents} components.`,
         components: cache.components
       });
       return;
@@ -56,8 +91,13 @@ async function loadComponentsFromCurrentFile() {
     const storedComponents = await loadFromClientStorage('cachedComponents');
     if (storedComponents) {
       cache.components = storedComponents;
+
+      // Count total components across all categories
+      const totalComponents = storedComponents.reduce((total, category) =>
+        category.isCategory ? total + category.items.length : total, 0);
+
       figma.ui.postMessage({
-        status: `Found ${storedComponents.length} components.`,
+        status: `Found ${totalComponents} components.`,
         components: storedComponents
       });
       return;
@@ -90,6 +130,15 @@ async function loadComponentsFromCurrentFile() {
     const formattedComponents = [];
     let failedComponents = [];
 
+    // Create a map to store components by category
+    const categorizedComponents = new Map();
+    const uncategorizedComponents = [];
+
+    // Initialize categories from menuData
+    menuData.forEach(category => {
+      categorizedComponents.set(category.category, []);
+    });
+
     for (let i = 0; i < components.length; i++) {
       const component = components[i];
       try {
@@ -107,11 +156,31 @@ async function loadComponentsFromCurrentFile() {
         const bytes = await targetComponent.exportAsync(exportSettings);
         const base64Image = figma.base64Encode(bytes);
 
-        formattedComponents.push({
+        // Remove the "❖ " prefix from the component name for matching
+        const cleanComponentName = component.name.replace('❖ ', '');
+
+        const componentData = {
           id: component.id,
-          name: component.name.replace('❖ ', ''),
+          name: cleanComponentName,
           thumbnail: base64Image
-        });
+        };
+
+        // Try to find a matching category
+        let foundCategory = false;
+        for (const category of menuData) {
+          if (category.items.includes(cleanComponentName)) {
+            categorizedComponents.get(category.category).push(componentData);
+            foundCategory = true;
+            break;
+          }
+        }
+
+        // If no category found, add to uncategorized
+        if (!foundCategory) {
+          uncategorizedComponents.push(componentData);
+        }
+
+        formattedComponents.push(componentData);
 
         // Update progress every few components
         if (i % BATCH_SIZE === 0 || i === components.length - 1) {
@@ -127,18 +196,52 @@ async function loadComponentsFromCurrentFile() {
       } catch (error) {
         console.warn(`Failed to export component ${component.name}:`, error);
         failedComponents.push(component.name);
-        formattedComponents.push({
+        const componentData = {
           id: component.id,
           name: component.name.replace('❖ ', ''),
           colorHash: stringToColor(component.name),
           firstChar: component.name.replace('❖ ', '').charAt(0).toUpperCase()
-        });
+        };
+
+        // Try to find a matching category
+        let foundCategory = false;
+        for (const category of menuData) {
+          if (category.items.includes(componentData.name)) {
+            categorizedComponents.get(category.category).push(componentData);
+            foundCategory = true;
+            break;
+          }
+        }
+
+        // If no category found, add to uncategorized
+        if (!foundCategory) {
+          uncategorizedComponents.push(componentData);
+        }
+
+        formattedComponents.push(componentData);
       }
     }
 
     // Store in both cache and client storage
-    cache.components = formattedComponents;
-    await saveToClientStorage('cachedComponents', formattedComponents);
+    const categorizedComponentsArray = Array.from(categorizedComponents.entries())
+      .map(([category, items]) => ({
+        category,
+        items,
+        isCategory: true
+      }));
+
+    // Add uncategorized section if there are any uncategorized components
+    if (uncategorizedComponents.length > 0) {
+      categorizedComponentsArray.push({
+        category: "Other Components",
+        items: uncategorizedComponents,
+        isCategory: true
+      });
+    }
+
+    // Store the categorized array instead of the flat array
+    cache.components = categorizedComponentsArray;
+    await saveToClientStorage('cachedComponents', categorizedComponentsArray);
 
     // Show warning if any components failed to load
     if (failedComponents.length > 0) {
@@ -147,7 +250,7 @@ async function loadComponentsFromCurrentFile() {
 
     figma.ui.postMessage({
       status: `Found ${components.length} components.`,
-      components: formattedComponents
+      components: categorizedComponentsArray
     });
   } catch (error) {
     console.error("Error loading current file components:", error);
@@ -377,7 +480,18 @@ figma.ui.onmessage = async msg => {
           components: cache.components
         });
       }
+
+      // Send the collapsed categories state
+      const collapsedState = await loadFromClientStorage('collapsedCategories') || {};
+      figma.ui.postMessage({
+        type: 'collapsed-state',
+        collapsedCategories: collapsedState
+      });
     }
+  }
+  else if (msg.type === "save-collapsed-state") {
+    // Save collapsed state to client storage
+    await saveToClientStorage('collapsedCategories', msg.collapsedCategories);
   }
   else if (msg.type === "refresh") {
     // Handle refresh requests
@@ -670,12 +784,12 @@ async function getComponentProperties(componentId, instanceId = null) {
 // Add drop event handler
 figma.on('drop', async (event) => {
   const { items } = event;
-  
+
   if (items.length > 0 && items[0].type === 'application/json') {
     try {
       const componentData = JSON.parse(items[0].data);
       const node = await figma.getNodeByIdAsync(componentData.id);
-      
+
       if (node) {
         let instance;
         if (node.type === "COMPONENT_SET") {
@@ -695,6 +809,6 @@ figma.on('drop', async (event) => {
       console.error('Error creating instance from drop:', error);
     }
   }
-  
+
   return false;
 });
