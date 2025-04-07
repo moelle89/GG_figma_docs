@@ -353,7 +353,7 @@
       align-items: center;
       text-align: center;
       cursor: pointer;
-      padding: 0px 0px 10px 0px;
+      padding: 8px 0px 8px 0px;
       margin-bottom: 8px;
       border-radius: 6px;
       transition: background-color 0.2s;
@@ -702,12 +702,17 @@
       color: var(--figma-color-text);
     }
     .category-header.collapsed {
-      font-weight: 400;
+      font-weight: 500;
       font-size: 0.8rem;
       color: var(--figma-color-text-secondary);
     }
     .category-header.collapsed:hover {
       color: var(--figma-color-text);
+    }
+
+    /* Special styling for the last category */
+    .category-header.last-category.collapsed {
+      border-bottom: none;
     }
 
     .category-toggle {
@@ -737,6 +742,7 @@
 
     .category-section {
       margin-bottom: 6px;
+      padding: 0 2px;
       overflow: hidden;
       transition: max-height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -1351,7 +1357,7 @@
       // Get collapsed state from global variable instead of localStorage
       const collapsedCategories = window.collapsedCategoriesState || {};
 
-      filteredComponents.forEach(category => {
+      filteredComponents.forEach((category, index) => {
         if (!category.isCategory) return;
 
         // Skip empty categories
@@ -1360,6 +1366,12 @@
         // Create category header
         const categoryHeader = document.createElement('div');
         categoryHeader.className = 'category-header';
+
+        // Add last-category class if this is "Other Components"
+        if (category.category === "Other Components") {
+          categoryHeader.classList.add('last-category');
+        }
+
         if (collapsedCategories[category.category]) {
           categoryHeader.classList.add('collapsed');
         }

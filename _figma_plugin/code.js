@@ -475,8 +475,12 @@ figma.ui.onmessage = async msg => {
         loadComponentsFromCurrentFile();
       } else {
         // Just re-send the cached data
+        // Count total components across all categories
+        const totalComponents = cache.components.reduce((total, category) =>
+          category.isCategory ? total + category.items.length : total, 0);
+        
         figma.ui.postMessage({
-          status: `Found ${cache.components.length} components.`,
+          status: `Found ${totalComponents} components.`,
           components: cache.components
         });
       }
