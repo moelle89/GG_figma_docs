@@ -1,0 +1,250 @@
+[
+  {
+    "id": "3025:10795",
+    "name": "Button Group"
+  },
+  {
+    "id": "3246:21130",
+    "name": "GG Logo"
+  },
+  {
+    "id": "3108:13610",
+    "name": "Checkbox"
+  },
+  {
+    "id": "3108:13176",
+    "name": "Checkbox Label"
+  },
+  {
+    "id": "2771:15272",
+    "name": "Modal Header"
+  },
+  {
+    "id": "2771:15354",
+    "name": "Modal Actions"
+  },
+  {
+    "id": "2795:109393",
+    "name": "Radio Button"
+  },
+  {
+    "id": "2795:109462",
+    "name": "Radio Button Group"
+  },
+  {
+    "id": "5297:143206",
+    "name": "Pagination"
+  },
+  {
+    "id": "2765:110089",
+    "name": "Pagination Dots"
+  },
+  {
+    "id": "2766:105949",
+    "name": "Accordion Item "
+  },
+  {
+    "id": "2766:106097",
+    "name": "Accordion"
+  },
+  {
+    "id": "6439:51942",
+    "name": "Dropdown List"
+  },
+  {
+    "id": "3050:15138",
+    "name": "Dropdown Box"
+  },
+  {
+    "id": "2894:10031",
+    "name": "Checklist Item"
+  },
+  {
+    "id": "2894:112652",
+    "name": "Class List Item"
+  },
+  {
+    "id": "6581:174930",
+    "name": "Menu List Item"
+  },
+  {
+    "id": "6798:49937",
+    "name": "Menu List"
+  },
+  {
+    "id": "2765:119612",
+    "name": "Input"
+  },
+  {
+    "id": "5424:44421",
+    "name": "Table Cell"
+  },
+  {
+    "id": "6010:63348",
+    "name": "Table"
+  },
+  {
+    "id": "6010:165746",
+    "name": "Table header"
+  },
+  {
+    "id": "2715:231116",
+    "name": "Button with Icon Only"
+  },
+  {
+    "id": "2715:231067",
+    "name": "Button Close"
+  },
+  {
+    "id": "2715:231598",
+    "name": "Store Badges"
+  },
+  {
+    "id": "2715:231417",
+    "name": "Social Button"
+  },
+  {
+    "id": "3010:9168",
+    "name": "Button"
+  },
+  {
+    "id": "2931:9349",
+    "name": "Toggle Switch"
+  },
+  {
+    "id": "2931:9202",
+    "name": "Toggle Label"
+  },
+  {
+    "id": "3029:11184",
+    "name": "Empty State Graphic"
+  },
+  {
+    "id": "3037:10024",
+    "name": "Empty State"
+  },
+  {
+    "id": "2718:13894",
+    "name": "Login Sections"
+  },
+  {
+    "id": "3065:10980",
+    "name": "Avatar"
+  },
+  {
+    "id": "3065:11755",
+    "name": "Avatar Stack"
+  },
+  {
+    "id": "3065:11678",
+    "name": "Avatar Labeled"
+  },
+  {
+    "id": "6051:45012",
+    "name": "Project Switch"
+  },
+  {
+    "id": "6130:49200",
+    "name": "View Mode Picker"
+  },
+  {
+    "id": "6599:177262",
+    "name": "AI Shortcuts Item"
+  },
+  {
+    "id": "6599:176888",
+    "name": "AI Shortcuts"
+  },
+  {
+    "id": "3099:110181",
+    "name": "Info Card"
+  },
+  {
+    "id": "3134:20925",
+    "name": "Badge"
+  },
+  {
+    "id": "3141:16557",
+    "name": "Linear Loader"
+  },
+  {
+    "id": "3146:115297",
+    "name": "Radial Loader"
+  },
+  {
+    "id": "3160:17214",
+    "name": "Linear Loader (Looping)"
+  },
+  {
+    "id": "3160:17244",
+    "name": "Radial Loader (Looping)"
+  },
+  {
+    "id": "3160:17257",
+    "name": "Radial Loader (Looping) 2"
+  },
+  {
+    "id": "3163:16934",
+    "name": "Content Frame"
+  },
+  {
+    "id": "3169:128040",
+    "name": "Content Header"
+  },
+  {
+    "id": "3153:16419",
+    "name": "Content Slot"
+  },
+  {
+    "id": "3223:19399",
+    "name": "Page Header"
+  },
+  {
+    "id": "3223:19420",
+    "name": "Section Header"
+  },
+  {
+    "id": "3223:19448",
+    "name": "Card Header"
+  },
+  {
+    "id": "3223:20111",
+    "name": "Tab Button"
+  },
+  {
+    "id": "3223:20328",
+    "name": "Horizontal Tabs"
+  },
+  {
+    "id": "3223:20473",
+    "name": "Vertical Tabs"
+  },
+  {
+    "id": "3224:121169",
+    "name": "Divider"
+  },
+  {
+    "id": "2765:103297",
+    "name": "Signup Section"
+  },
+  {
+    "id": "3237:22256",
+    "name": "Featured icon"
+  },
+  {
+    "id": "6865:53548",
+    "name": "rating"
+  },
+  {
+    "id": "6547:45802",
+    "name": "Date picker"
+  },
+  {
+    "id": "6865:51677",
+    "name": "Product Card Horizontal"
+  },
+  {
+    "id": "6865:51734",
+    "name": "Product Card Vertical"
+  }
+]
