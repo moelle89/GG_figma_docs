@@ -679,10 +679,30 @@
     },
     "drop-down-button": {
         "name": "Drop-Down Button",
-        "description": "",
+        "description": "The Drop-Down Button is an interactive element that reveals a list of options when clicked. It allows users to select from multiple choices in a compact format, enhancing the user experience by providing a clean and organized way to navigate through various actions or settings within the application.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7043-41671&t=a6MIzRg3sW0kmSzP-4",
         "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7047-52180&t=a6MIzRg3sW0kmSzP-4",
         "figmaButtonText": "Drop-Down Button",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
+    },
+    "image-editor": {
+        "name": "Image Editor",
+        "description": "The Image Editor is a powerful tool that allows users to manipulate and enhance images directly within the application. It provides a range of features such as cropping, resizing, filtering, and adjusting colors, enabling users to create visually appealing graphics tailored to their needs.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7144-62819&t=9V7rlBqd5K2A5kyu-4",
+        "figmaProto": "",
+        "figmaButtonText": "Image Editor",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
+    },
+    "image-editor-/-toolbar": {
+        "name": "Image Editor / Toolbar",
+        "description": "The Image Editor Toolbar is a user-friendly interface that houses essential tools and options for editing images. It includes icons for common actions like undo, redo, crop, and apply filters, allowing users to access editing functionalities quickly and efficiently while working on their images.",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7144-65193&t=9V7rlBqd5K2A5kyu-4",
+        "figmaProto": "",
+        "figmaButtonText": "Image Editor / Toolbar",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
         "nestedComponents": []

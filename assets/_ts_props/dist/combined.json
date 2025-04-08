@@ -271,6 +271,16 @@ export interface HorizontalTabs {
 	size: 'md' | 'sm'; 
 }
 
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Image Editor toolbar.ts
+export interface Image Editor / Toolbar {
+	sizes: 'Small' | 'Large'; 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Image Editor.ts
+export interface ❖ Image Editor {
+	sizes: 'Small' | 'Large'; 
+}
+
 // File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\InfoCard.ts
 export interface InfoCard {
 	subtext: string; 

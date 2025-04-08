@@ -237,6 +237,14 @@ HorizontalTabs {
 	size: 'md' | 'sm'; 
 },
 
+Image Editor / Toolbar {
+	sizes: 'Small' | 'Large'; 
+},
+
+Image Editor {
+	sizes: 'Small' | 'Large'; 
+},
+
 InfoCard {
 	subtext: string; 
 	title: string; 

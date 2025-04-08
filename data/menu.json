@@ -17,6 +17,7 @@
     { "category": "Tables", "items": ["Table", "Table Cell"] },
     { "category": "Accordion", "items": ["Accordion", "Accordion Item"] },
     { "category": "Picker Dialogs", "items": ["Date Picker", "Color Picker"] },
+    { "category": "File Viewers and Editors", "items": ["Image Editor", "Image Editor / Toolbar"] },
     { "category": "eCommerce", "items": ["Product Card Horizontal", "Product Card Vertical"] },
     { "category": "Headers", "items": ["Card Header", "Page Header", "Section Header"] },
     { "category": "Dividers", "items": ["Divider"] },

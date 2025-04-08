@@ -5,18 +5,16 @@ const path = require('path');
 const componentsFilePath = path.join(__dirname, '../data/components.json');
 const componentsData = JSON.parse(fs.readFileSync(componentsFilePath, 'utf8'));
 
-// Load menuData from index.html
-const indexFilePath = path.join(__dirname, '../index.html');
-const indexFileContent = fs.readFileSync(indexFilePath, 'utf8');
-
-// Extract menuData using a regular expression
-const menuDataMatch = indexFileContent.match(/const menuData = (\[.*?\]);/s);
+// Load menuData from data/menu.json
+const menuFilePath = path.join(__dirname, '../data/menu.json');
 let menuData = [];
 
-if (menuDataMatch && menuDataMatch[1]) {
-   menuData = JSON.parse(menuDataMatch[1]);
-} else {
-   console.error('menuData not found in index.html');
+// Read and parse menuData from menu.json
+try {
+   const menuFileContent = fs.readFileSync(menuFilePath, 'utf8');
+   menuData = JSON.parse(menuFileContent);
+} catch (error) {
+   console.error('Error reading menu.json:', error);
    process.exit(1);
 }
 
