@@ -177,6 +177,27 @@ Dropdown List {
 	state: 'Closed' | 'Closed - Op 1' | 'Closed - Op 2' | 'Closed - Op 3' | 'Closed - Op 4' | 'Closed - Op 5' | 'Closed - Op 6' | 'Open'; 
 },
 
+Dropdown Button # Button {
+	showArrow: boolean; 
+	icon: ReactNode; 
+	showIcon: boolean; 
+	buttonText: string; 
+	variant: 'Primary' | 'Secondary' | 'Tertiary'; 
+	state: 'Default' | 'Hover' | 'Selected'; 
+},
+
+Dropdown Button # Item {
+	icon: ReactNode; 
+	itemName: string; 
+	viewIcon: boolean; 
+	tag: boolean; 
+	state: 'Default' | 'Selected' | 'Hover'; 
+},
+
+Dropdown Button {
+	state: 'Closed' | 'Opened'; 
+},
+
 EmptyState {
 	secondaryButton: boolean; 
 	primaryButton: boolean; 

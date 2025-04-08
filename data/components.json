@@ -659,7 +659,10 @@
         "figmaButtonText": "Product Card Horizontal",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["button", "badge"]
+        "nestedComponents": [
+            "button",
+            "badge"
+        ]
     },
     "product-card-vertical": {
         "name": "Product Card Vertical",
@@ -669,6 +672,19 @@
         "figmaButtonText": "Product Card Vertical",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
-        "nestedComponents": ["button", "badge"]
+        "nestedComponents": [
+            "button",
+            "badge"
+        ]
+    },
+    "drop-down-button": {
+        "name": "Drop-Down Button",
+        "description": "",
+        "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7043-41671&t=a6MIzRg3sW0kmSzP-4",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7047-52180&t=a6MIzRg3sW0kmSzP-4",
+        "figmaButtonText": "Drop-Down Button",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
     }
 }

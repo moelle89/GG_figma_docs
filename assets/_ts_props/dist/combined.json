@@ -201,6 +201,30 @@ export interface ❖ Dropdown List {
 	state: 'Closed' | 'Closed - Op 1' | 'Closed - Op 2' | 'Closed - Op 3' | 'Closed - Op 4' | 'Closed - Op 5' | 'Closed - Op 6' | 'Open'; 
 }
 
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Dropdown-Button-Buttons.ts
+export interface Dropdown Button # Button {
+	showArrow: boolean; 
+	icon: ReactNode; 
+	showIcon: boolean; 
+	buttonText: string; 
+	variant: 'Primary' | 'Secondary' | 'Tertiary'; 
+	state: 'Default' | 'Hover' | 'Selected'; 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Dropdown-Button-Item.ts
+export interface ❖ Dropdown Button # Item {
+	icon: ReactNode; 
+	itemName: string; 
+	viewIcon: boolean; 
+	tag: boolean; 
+	state: 'Default' | 'Selected' | 'Hover'; 
+}
+
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Dropdown-Button.ts
+export interface ❖ Dropdown Button {
+	state: 'Closed' | 'Opened'; 
+}
+
 // File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\EmptyState.ts
 export interface EmptyState {
 	secondaryButton: boolean; 
