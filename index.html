@@ -368,35 +368,7 @@
     <script src="js/app.js"></script>
     <script>
         let toggle = true;
-        const menuData = [
-            { "category": "First Steps", "items": ["UI component lib", "Documentation", "Latest Components"] },
-            { "category": "Button", "items": ["Button", "Button Group", "Button Close", "Button with Icon Only", "Social Button", "Store Badges"] },
-            { "category": "Input Fields", "items": ["Input"] },
-            { "category": "Checkboxes", "items": ["Checkbox", "Checkbox Label"] },
-            { "category": "Radio Buttons", "items": ["Radio Button", "Radio Button Group"] },
-            { "category": "Toggles", "items": ["Toggle Switch", "Toggle Label"] },
-            { "category": "Drop-Downs", "items": ["Drop-Down List", "Drop-Down Box", "Drop-Down Button"] },
-            { "category": "Tabs", "items": ["Horizontal Tabs", "Vertical Tabs", "Tab Button"] },
-            { "category": "Modals", "items": ["Modal Header", "Modal Actions"] },
-            { "category": "Pagination", "items": ["Pagination", "Pagination Dots"] },
-            { "category": "Progress Loaders", "items": ["Linear Loader", "Linear Loader (Looping)", "Radial Loader", "Radial Loader (Looping)", "Radial Loader (Looping) 2"] },
-            { "category": "Badges & Tags", "items": ["Badge"] },
-            { "category": "Icons", "items": ["Icons", "Other Icons", "Featured Icon"] },
-            { "category": "Content", "items": ["Content Frames", "Content Slots", "Content Header", "Content Slot"] },
-            { "category": "Lists", "items": ["Check List Item", "Class List Item", "Menu List Item"] },
-            { "category": "Tables", "items": ["Table", "Table Cell"] },
-            { "category": "Accordion", "items": ["Accordion", "Accordion Item"] },
-            { "category": "Picker Dialogs", "items": ["Date Picker", "Color Picker"] },
-            { "category": "eCommerce", "items": ["Product Card Horizontal", "Product Card Vertical"] },
-            { "category": "Headers", "items": ["Card Header", "Page Header", "Section Header"] },
-            { "category": "Dividers", "items": ["Divider"] },
-            { "category": "Info Cards", "items": ["Info Card"] },
-            { "category": "Empty States", "items": ["Empty State", "Empty State Graphic"] },
-            { "category": "Inbox", "items": ["Content / Inbox / Classic", "Content / Inbox / Compact", "Mail Navigation List Item"] },
-            { "category": "Signup & Login", "items": ["Login Sections", "Signup Sections"] },
-            { "category": "Logos", "items": ["GG Logo", "GG Logo Icon", "GG Logo Mark"] },
-            { "category": "Miscellaneous", "items": ["Avatar", "Avatar Labeled", "Avatar Stack", "AI Shortcuts", "AI Shortcuts Item", "Project Switch", "View Mode Picker"] }
-        ];
+        let menuData = []; // Declare global menuData
         let isAlphabeticalSort = false;
 
         // Function to initialize scroll animations for dynamically loaded content
@@ -1882,11 +1854,20 @@
                 });
 
             // Get the last 10 components from the filtered list
-            const lastTenComponents = components.slice(-10);
+            const lastTenComponents = components.slice(-10).reverse();
 
             // Create a container for the latest components
             const container = document.createElement('div');
             container.className = 'latest-components-container';
+
+            // Add informational text about the display order
+            const infoText = document.createElement('p');
+            infoText.className = 'component-order-info';
+            infoText.innerHTML = '<i>Note: Components are displayed in reverse chronological order. The most recently added component appears first in the grid.</i>';
+            infoText.style.fontSize = '0.85rem';
+            infoText.style.marginBottom = '20px';
+            infoText.style.color = 'var(--description-color)';
+            container.appendChild(infoText);
 
             // Create a grid for the components
             const grid = document.createElement('div');
@@ -1983,28 +1964,49 @@
             sidebarMenu.insertBefore(sortToggleContainer, sidebarMenu.firstChild);
             const sortToggleIcon = document.getElementById('sort-toggle-icon');
             sortToggleIcon.addEventListener('click', toggleSidebarSorting);
-            await loadComponentRepository();
-            addCategoryItemListeners();
+
+            try {
+                const response = await fetch('data/menu.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                menuData = await response.json(); // Assign fetched data
+                console.log('Menu data loaded successfully.');
+
+                // --- Now run code dependent on menuData ---
+
+                // Generate initial sidebar menu using fetched data
+                generateInitialSidebarMenu();
+
+                await loadComponentRepository(); // Depends on menuData
+                addCategoryItemListeners(); // Needs the items generated above
 
             // Get the initial page from URL parameters or default to ui-component-lib
             const page = getPageFromUrl();
-            loadContent(page);
+                loadContent(page); // Depends on componentRepository which depends on menuData
 
             initializeVideos();
             initializeScrollAnimations();
             initializeElementScrollAnimations();
+
+                // Simulate initial sort clicks (if needed, ensure menuData is available)
             setTimeout(() => {
                 sortFabBtn.click();
                 setTimeout(() => {
                     sortFabBtn.click();
                 }, 100);
             }, 300);
+
+                // Add Component Manager item (ensure menuData is available)
             setTimeout(() => {
-                document.querySelectorAll('.category-header').forEach(header => {
-                    if (header.textContent.trim().includes('First Steps')) {
-                        firstStepsCategory = header.parentElement;
-                    }
-                });
+                    let firstStepsCategory = null; // Find category element after generation
+                    document.querySelectorAll('.category').forEach(categoryElement => {
+                        const header = categoryElement.querySelector('.category-header');
+                        if (header && header.textContent.trim().includes('First Steps')) {
+                            firstStepsCategory = categoryElement;
+                        }
+                    });
+
                 if (firstStepsCategory) {
                     const itemsContainer = firstStepsCategory.querySelector('.category-items');
                     if (itemsContainer) {
@@ -2023,7 +2025,7 @@
                                 i.classList.remove('active');
                             });
                             managerItem.classList.add('active');
-                            createComponentManager();
+                                createComponentManager(); // Ensure this function exists
                             scrollToTop();
                             closeSidebarOnMobile();
                         });
@@ -2031,7 +2033,106 @@
                     }
                 }
             }, 300);
+                 // --- End of code dependent on menuData ---
+
+            } catch (error) {
+                console.error('Error loading menu data:', error);
+                // Display error message in content area
+                const contentContainer = document.getElementById('content');
+                contentContainer.innerHTML = '<p class="has-opacity">Error: Could not load sidebar menu data. Please ensure data/menu.json exists and is valid.</p>';
+                // Optionally hide loading indicator
+                const loadingIndicator = document.getElementById('loading');
+                if(loadingIndicator) loadingIndicator.classList.remove('active');
+            }
         };
+
+        // New function to generate the initial sidebar based on menuData
+        function generateInitialSidebarMenu() {
+            const sidebarMenu = document.getElementById('sidebar-menu');
+            // Clear existing items except the sort toggle
+            const sortToggleContainer = sidebarMenu.querySelector('.sidebar-sort-toggle');
+            const existingItems = sidebarMenu.querySelectorAll('.category');
+            existingItems.forEach(item => item.remove()); // Remove only category divs
+
+            menuData.forEach((menuItem, index) => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'category';
+                // Set initial active state for "First Steps"
+                if (menuItem.category === "First Steps") {
+                    categoryElement.classList.add('active');
+                }
+                categoryElement.innerHTML = `
+                    <div class="category-header">
+                        ${menuItem.category}
+                        <span class="toggle-icon">${menuItem.category === "First Steps" ? '⬤' : '○'}</span>
+                    </div>
+                    <div class="category-items">
+                        ${menuItem.items.map(item => {
+                        // Set initial active state for "UI component lib"
+                        const isActive = item === "UI component lib" && menuItem.category === "First Steps" ? "active" : "";
+                        const itemId = item.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
+                        return `
+                                <a href="#" class="category-item ${isActive}" data-item="${item}" data-page="${itemId}">
+                                    ${item}
+                                    <span class="category-item-indicator"></span>
+                                </a>
+                            `;
+                    }).join('')}
+                    </div>
+                `;
+                sidebarMenu.appendChild(categoryElement);
+            });
+
+            // Add category header click listeners after generation
+            document.querySelectorAll('.category-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const parent = header.parentElement;
+                    const toggleIcon = header.querySelector('.toggle-icon');
+                    const isActive = parent.classList.contains('active');
+
+                    // Deactivate all categories and items first
+                    document.querySelectorAll('.category').forEach(cat => {
+                        if (cat !== parent) { // Don't deactivate self yet
+                           cat.classList.remove('active');
+                           cat.querySelector('.toggle-icon').textContent = '○';
+                        }
+                    });
+                    // Deactivate all items (safer approach)
+                     document.querySelectorAll('.category-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+
+                    // Activate the clicked category and its first item if it wasn't already active
+                    if (!isActive) {
+                        parent.classList.add('active');
+                        toggleIcon.textContent = '⬤';
+                        const firstItem = parent.querySelector('.category-item');
+                        if (firstItem) {
+                            firstItem.classList.add('active'); // Activate first item
+                            const pageName = firstItem.getAttribute('data-page');
+                            loadContent(pageName);
+                            // updateNavigationTooltips(); // Check if this function exists and is needed
+                            scrollToTop();
+                            closeSidebarOnMobile();
+                            scrollToCategoryItems(parent);
+                        }
+                    } else {
+                         // If already active, deactivate it (toggle behavior)
+                         parent.classList.remove('active');
+                         toggleIcon.textContent = '○';
+                         // Optionally load default page or do nothing
+                         // loadContent('ui-component-lib');
+                    }
+                });
+            });
+        }
+
+        // Remove the original hardcoded sidebar generation loop
+        // ... (The loop from approx line 548 to 569 should be removed)
+        // Ensure it's fully removed
+
+        // ... rest of the existing script ...
+
         const themeToggle = document.getElementById('theme-toggle');
         const savedTheme = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
