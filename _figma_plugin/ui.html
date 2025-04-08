@@ -1192,7 +1192,7 @@
             checkbox.type = 'checkbox';
             checkbox.dataset.property = originalKey;
             checkbox.dataset.type = 'BOOLEAN';
-            checkbox.checked = definition.defaultValue === 'true';
+            checkbox.checked = definition.defaultValue === 'true' || definition.defaultValue === true;
 
             const slider = document.createElement('span');
             slider.className = 'toggle-slider';
