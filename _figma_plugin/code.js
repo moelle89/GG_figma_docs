@@ -448,7 +448,9 @@ async function refreshCache(type) {
 }
 
 // Start by loading components from the current file
-loadComponentsFromCurrentFile();
+setTimeout(() => {
+  loadComponentsFromCurrentFile();
+}, 100); // Add a 100ms delay
 
 // Handle UI messages
 figma.ui.onmessage = async msg => {

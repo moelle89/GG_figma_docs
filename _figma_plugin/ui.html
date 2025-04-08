@@ -129,12 +129,7 @@
         border-radius: 4px;
         width: 100%;
         transition: background-color 0.2s;
-        cursor: grab;
-    }
-
-    .component-content.dragging {
-        opacity: 0.5;
-        cursor: grabbing;
+        cursor: pointer;
     }
 
     .component-content:hover {
@@ -442,7 +437,7 @@
     }
 
     .property-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .property-label {
@@ -1439,20 +1434,6 @@
           // Create container for component name and actions
           const content = document.createElement('div');
           content.className = 'component-content';
-          content.draggable = true;
-
-          // Add drag event handlers
-          content.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('application/json', JSON.stringify({
-              id: component.id,
-              name: component.name
-            }));
-            content.classList.add('dragging');
-          });
-
-          content.addEventListener('dragend', () => {
-            content.classList.remove('dragging');
-          });
 
           // Add click handler to the content div
           content.onclick = (e) => {
