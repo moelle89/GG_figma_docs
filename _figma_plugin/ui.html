@@ -432,11 +432,13 @@
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 16px;
     }
 
     .properties-container {
-      margin-bottom: 24px;
+        margin-bottom: 8px;
+        max-height: 75vh;
+        overflow-y: auto;
+        padding-right: 8px;
     }
 
     .property-group {
@@ -461,7 +463,7 @@
         font-size: 16px;
         align-items: center;
         justify-content: center;
-        margin-top: 18px;
+        margin-top: 10px;
         transition: all ease .2s;
     }
 
@@ -596,8 +598,13 @@
 
     .boolean-property .property-label {
       margin-bottom: 0;
-      opacity: 0;
+      opacity: 1;
       flex: 1;
+    }
+    
+    /* Hide the root property label when the property group contains a boolean property */
+    .property-group:has(.boolean-property) > .property-label {
+      display: none;
     }
 
     /* Documentation button styles */
@@ -1071,7 +1078,9 @@
                 const optionEl = document.createElement('option');
                 optionEl.value = option;
                 optionEl.textContent = option;
-                if (option === (definition.currentValue || definition.defaultValue)) {
+                if (option === (definition.currentValue || definition.defaultValue) || 
+                    (option === 'True' && (definition.currentValue === true || definition.defaultValue === true)) ||
+                    (option === 'False' && (definition.currentValue === false || definition.defaultValue === false))) {
                   optionEl.selected = true;
                 }
                 select.appendChild(optionEl);
@@ -1247,12 +1256,8 @@
             propertyGroup.appendChild(input);
           }
           else if (definition.type === 'INSTANCE_SWAP') {
-            // For advanced users we could provide component selection
-            const label = document.createElement('div');
-            label.textContent = '(Instance swap not supported in dialog)';
-            label.style.fontSize = '10px';
-            label.style.fontStyle = 'italic';
-            propertyGroup.appendChild(label);
+            // Skip instance swap properties as they're not supported in the dialog
+            return; // Skip this property group entirely
           }
 
           variantPropertiesContainer.appendChild(propertyGroup);
