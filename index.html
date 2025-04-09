@@ -886,9 +886,31 @@
                         if (category.category !== "First Steps") {
                             const categoryId = category.category.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
                             const lottiePath = `assets/lottie/${categoryId}.json`;
-                            const imagePath = `assets/cards/${categoryId}.webp`;
-                            const response = await fetch(lottiePath);
-                            const iconContent = response.ok ? `<div class="animation-container" data-lottie-path="${lottiePath}" data-rederer="svg"></div>` : `<img src="${imagePath}" alt="${category.category} icon">`;
+                            const specificImagePath = `assets/cards/${categoryId}.webp`;
+                            const fallbackImagePath = 'assets/img/component.png';
+                            let iconContent = '';
+
+                            try {
+                                // Check for Lottie file
+                                const lottieResponse = await fetch(lottiePath);
+                                if (lottieResponse.ok) {
+                                    iconContent = `<div class="animation-container" data-lottie-path="${lottiePath}" data-rederer="svg"></div>`;
+                                } else {
+                                    // Check for specific image if Lottie not found
+                                    const imageResponse = await fetch(specificImagePath);
+                                    if (imageResponse.ok) {
+                                        iconContent = `<img src="${specificImagePath}" alt="${category.category} icon">`;
+                                    } else {
+                                        // Use fallback image if neither Lottie nor specific image found
+                                        iconContent = `<img src="${fallbackImagePath}" alt="${category.category} icon">`;
+                                    }
+                                }
+                            } catch (error) {
+                                console.error(`Error checking icon for category ${categoryId}:`, error);
+                                // Use fallback image on any fetch error
+                                iconContent = `<img src="${fallbackImagePath}" alt="${category.category} icon">`;
+                            }
+
                             categoriesHTML += `
                             <div class="component-item" data-category="${categoryId}">
                                 <div class="component-icon">
