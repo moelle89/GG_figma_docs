@@ -691,7 +691,7 @@
         "name": "Image Editor",
         "description": "The Image Editor is a powerful tool that allows users to manipulate and enhance images directly within the application. It provides a range of features such as cropping, resizing, filtering, and adjusting colors, enabling users to create visually appealing graphics tailored to their needs.",
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7144-62819&t=9V7rlBqd5K2A5kyu-4",
-        "figmaProto": "",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7163-83520&t=VCLELDesGzC3z8nG-4",
         "figmaButtonText": "Image Editor",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
@@ -703,6 +703,16 @@
         "figmaLink": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7144-65193&t=9V7rlBqd5K2A5kyu-4",
         "figmaProto": "",
         "figmaButtonText": "Image Editor / Toolbar",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
+    },
+    "markdown-editor": {
+        "name": "Markdown Editor",
+        "description": "The Markdown Editor is a user-friendly tool for creating and formatting text using Markdown syntax. It features live preview and syntax highlighting, making it easy for writers and developers to produce well-structured content efficiently. Ideal for documentation, blogging, and note-taking, it streamlines the writing process.",
+        "figmaLink": "https://www.figma.com/file/0/Allgemein?node-id=7163-63029&t=6531419237018-0",
+        "figmaProto": "https://www.figma.com/design/t23EtqNAyknCBnrnaEOYwq/Allgemein?node-id=7163-83688&t=VCLELDesGzC3z8nG-4",
+        "figmaButtonText": "Markdown Editor",
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
         "nestedComponents": []

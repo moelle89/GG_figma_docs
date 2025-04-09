@@ -311,6 +311,11 @@ export interface LoginSections {
 	mobileLayout: 'True' | 'False'; 
 }
 
+// File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Markdown Editor.ts
+export interface ❖ Markdown Editor {
+	sizes: 'Small' | 'Large'; 
+}
+
 // File: F:\_GIT\GG_figma_docs\assets\_ts_props\src\Menu List Item.ts
 export interface ❖ Menu List Item {
 	icon: ReactNode; 

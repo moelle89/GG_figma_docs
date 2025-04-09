@@ -272,6 +272,10 @@ LoginSections {
 	mobileLayout: 'True' | 'False'; 
 },
 
+Markdown Editor {
+	sizes: 'Small' | 'Large'; 
+},
+
 Menu List Item {
 	icon: ReactNode; 
 	viewIcon: boolean; 
