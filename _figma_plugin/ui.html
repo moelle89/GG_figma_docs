@@ -62,6 +62,43 @@
       color: var(--figma-color-text-tertiary);
     }
 
+    /* Styles for search input container and clear button */
+    .search-input-container {
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .search-clear-button {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--figma-color-text-tertiary);
+      font-size: 14px;
+      padding: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease, background-color 0.2s ease;
+    }
+
+    .search-clear-button:hover {
+      background-color: var(--figma-color-bg-hover);
+      color: var(--figma-color-text);
+    }
+
+    .search-input-container:hover .search-clear-button,
+    .search-clear-button.visible {
+      opacity: 1;
+    }
+
     .refresh-button {
       background: var(--figma-color-bg-secondary);
       border: 1px solid var(--figma-color-border);
@@ -668,12 +705,21 @@
       padding: 8px;
     }
 
+    .compact-mode .search-clear-button {
+      right: 8px;
+      width: 14px;
+      height: 14px;
+      font-size: 12px;
+    }
+
     .compact-mode .refresh-button {
       padding: 4px 10px;
     }
+
     .compact-mode .icon-item {
       margin-bottom: 0px;
     }
+
     .compact-mode .tab {
       font-size: .8rem;
     }
@@ -939,7 +985,10 @@
           <button id="get-links-button-components" class="get-links-button" title="Get Links for Selection">☍</button>
       </div>
       <div class="search-container">
-        <input type="text" id="components-search-input" placeholder="Search components...">
+        <div class="search-input-container">
+          <input type="text" id="components-search-input" placeholder="Search components...">
+          <button id="components-search-clear" class="search-clear-button">×</button>
+        </div>
         <button id="refresh-components" class="refresh-button" title="Refresh components">↻</button>
         <button id="toggle-all-categories" class="refresh-button" title="Expand/Collapse All"><span id="toggle-all-icon"></span></button>
       </div>
@@ -952,7 +1001,10 @@
           <button id="get-links-button-icons" class="get-links-button" title="Get Links for Selection">☍</button>
       </div>
       <div class="search-container">
-        <input type="text" id="icons-search-input" placeholder="Search icons...">
+        <div class="search-input-container">
+          <input type="text" id="icons-search-input" placeholder="Search icons...">
+          <button id="icons-search-clear" class="search-clear-button">×</button>
+        </div>
         <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
         <button id="clear-icons-cache" class="refresh-button" title="Clear Icons Cache">🗑️</button>
       </div>
@@ -1944,12 +1996,51 @@
     // Add search functionality for components with debounce
     document.getElementById('components-search-input').addEventListener('input', debounce((e) => {
       renderComponents(e.target.value);
+      // Show/hide clear button based on input value
+      document.getElementById('components-search-clear').classList.toggle('visible', e.target.value.length > 0);
     }, 300));
 
     // Add search functionality for icons with debounce
     document.getElementById('icons-search-input').addEventListener('input', debounce((e) => {
       renderIcons(e.target.value);
+      // Show/hide clear button based on input value
+      document.getElementById('icons-search-clear').classList.toggle('visible', e.target.value.length > 0);
     }, 300));
+
+    // Add functionality to clear buttons
+    document.getElementById('components-search-clear').addEventListener('click', () => {
+      const searchInput = document.getElementById('components-search-input');
+      searchInput.value = '';
+      searchInput.focus();
+      renderComponents('');
+      document.getElementById('components-search-clear').classList.remove('visible');
+    });
+
+    document.getElementById('icons-search-clear').addEventListener('click', () => {
+      const searchInput = document.getElementById('icons-search-input');
+      searchInput.value = '';
+      searchInput.focus();
+      renderIcons('');
+      document.getElementById('icons-search-clear').classList.remove('visible');
+    });
+
+    // Initialize clear buttons visibility on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const toggleAllIcon = document.getElementById('toggle-all-icon');
+      toggleAllIcon.innerHTML = ''; // Clear any existing content first
+      toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
+      
+      // Check if search inputs have values and show clear buttons accordingly
+      document.getElementById('components-search-clear').classList.toggle(
+        'visible', 
+        document.getElementById('components-search-input').value.length > 0
+      );
+      
+      document.getElementById('icons-search-clear').classList.toggle(
+        'visible', 
+        document.getElementById('icons-search-input').value.length > 0
+      );
+    });
 
     // Add event listener for documentation button
     document.getElementById('docs-button').addEventListener('click', () => {
@@ -2134,6 +2225,21 @@
     // Setup close button for links dialog
     document.getElementById('close-links-dialog').addEventListener('click', () => {
       hideDialog('links-dialog');
+    });
+
+    // Add keyboard support for Escape key to clear search
+    document.getElementById('components-search-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        document.getElementById('components-search-clear').click();
+      }
+    });
+    
+    document.getElementById('icons-search-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        document.getElementById('icons-search-clear').click();
+      }
     });
   </script>
 </body>
