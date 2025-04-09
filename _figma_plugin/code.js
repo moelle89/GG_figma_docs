@@ -5,7 +5,7 @@ const UI_SIZES = {
 };
 
 // Include menuData definition directly in code.js
-const menuData = [
+const defaultMenuData = [
   { "category": "First Steps", "items": ["UI component lib", "Documentation", "Latest Components"] },
   { "category": "Button", "items": ["Button", "Button Group", "Button Close", "Button with Icon Only", "Social Button", "Store Badges"] },
   { "category": "Input Fields", "items": ["Input"] },
@@ -36,6 +36,9 @@ const menuData = [
   { "category": "Miscellaneous", "items": ["Avatar", "Avatar Labeled", "Avatar Stack", "AI Shortcuts", "AI Shortcuts Item", "Project Switch", "View Mode Picker"] }
 ];
 
+// Use defaultMenuData directly for menu structure
+const menuData = defaultMenuData;
+
 // Use the compact size as default in the showUI call
 figma.showUI(__html__, {
   width: UI_SIZES.compact.width,
@@ -50,6 +53,11 @@ const cache = {
   components: null,
   icons: null
 };
+
+// Start by loading components from the current file
+setTimeout(() => {
+  loadComponentsFromCurrentFile();
+}, 100); // Add a 100ms delay
 
 // Check if the user has the Figma API available (Plugin API 37 or later)
 const hasImportSupport = typeof figma.importComponentByKeyAsync === 'function';
@@ -447,11 +455,6 @@ async function refreshCache(type) {
     loadIconComponentsFromCurrentFile();
   }
 }
-
-// Start by loading components from the current file
-setTimeout(() => {
-  loadComponentsFromCurrentFile();
-}, 100); // Add a 100ms delay
 
 // Handle UI messages
 figma.ui.onmessage = async msg => {
