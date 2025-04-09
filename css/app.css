@@ -2095,6 +2095,11 @@
     background-color: var(--form-input-bg);
 }
 
+.search-input::placeholder {
+    color: var(--text-color); /* Replace with your desired color */
+    opacity: 0.6; /* Optional: Adjust opacity for better visibility */
+}
+
 .search-input:hover {
     outline: none;
             border-color: var(--border-color);
