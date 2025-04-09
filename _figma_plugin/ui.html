@@ -32,7 +32,6 @@
       z-index: 1;
       background: var(--figma-color-bg);
       padding: 8px 4px;
-      margin-bottom: 8px;
       display: flex;
       gap: 8px;
     }
@@ -211,11 +210,9 @@
     }
     .compact-mode #status-message,
     .compact-mode #icons-status-message {
-      margin-top: 12px;
       font-size: 0.6rem;
       font-weight: 500;
       color: var(--figma-color-text-secondary);
-      padding: 0px 0px 0px 8px;
       cursor: pointer;
       transition: all ease 0.2s;
     }
@@ -398,7 +395,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -607,7 +604,7 @@
       background: none;
       border: none;
       cursor: pointer;
-      padding: 8px 10px;
+      padding: 8px 6px;
       margin-left: auto; /* Push to the right side */
       color: var(--figma-color-text-brand);
       font-size: 16px;
@@ -679,9 +676,6 @@
     }
     .compact-mode .tab {
       font-size: .8rem;
-    }
-    .compact-mode #docs-button {
-      display: none;
     }
 
     /* Add styles for categories */
@@ -771,10 +765,161 @@
       width: 100%;
       height: 100%;
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: rotate(180deg);
     }
 
     #toggle-all-icon.collapsed svg {
-      transform: rotate(-180deg);
+      transform: rotate(0deg);
+    }
+
+    /* Container for status message and link button */
+    .status-container {
+        display: flex;
+        align-items: center;
+        margin-top: 4px;
+        margin-bottom: 0px;
+        margin-left: 8px;
+        margin-right: 8px;
+        gap: 8px;
+    }
+    /* Keep original status message styles */
+    #status-message, #icons-status-message {
+        margin: 0; /* Remove default margins */
+        padding: 0; /* Remove default padding */
+        flex-grow: 1; /* Allow status message to take up space */
+    }
+
+    /* Style for the new link button */
+    #get-links-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        color: var(--figma-color-text-secondary);
+        font-size: 16px; /* Adjust icon size */
+        line-height: 1; /* Prevent extra vertical space */
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+    #get-links-button:hover {
+        background-color: var(--figma-color-bg-hover);
+        color: var(--figma-color-text);
+    }
+
+    /* Styles for the links dialog */
+    #links-dialog .dialog-content {
+        height: auto; /* Adjust height based on content */
+        max-height: 80vh; /* Limit max height */
+    }
+
+    #links-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 60vh; /* Max height for the list itself */
+        overflow-y: auto;
+        margin-bottom: 16px; /* Space before close button */
+    }
+
+    #links-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid var(--figma-color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+     #links-list li:last-child {
+        border-bottom: none;
+     }
+
+    #links-list .link-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex-grow: 1;
+        overflow: hidden; /* Prevent long names/URLs from breaking layout */
+    }
+
+    #links-list .link-name {
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #links-list .link-url {
+        font-size: 11px;
+        color: var(--figma-color-text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+     #links-list .link-url:hover {
+        color: var(--figma-color-text-brand);
+        text-decoration: underline;
+     }
+
+    #links-list .copy-link-button {
+        background: var(--figma-color-bg-secondary);
+        border: 1px solid var(--figma-color-border);
+        color: var(--figma-color-text-secondary);
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 4px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+
+    #links-list .copy-link-button:hover {
+        background: var(--figma-color-bg-brand-tertiary);
+        color: var(--figma-color-text-brand);
+        border-color: var(--figma-color-border-brand);
+    }
+
+     /* Simple close button for the links dialog */
+     #close-links-dialog {
+       display: block; /* Make it a block element */
+       width: 100%; /* Full width */
+       background: var(--figma-color-bg-secondary);
+       border: 1px solid var(--figma-color-border);
+       border-radius: 6px;
+       padding: 8px 16px;
+       cursor: pointer;
+       color: var(--figma-color-text);
+       font-weight: 500;
+       font-size: 12px;
+       text-align: center;
+       margin-top: 10px; /* Add some space above */
+       transition: all ease .2s;
+     }
+
+     #close-links-dialog:hover {
+       border: 1px solid var(--figma-color-border-strong);
+       background: var(--figma-color-bg-hover);
+     }
+     .get-links-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px 10px;
+        margin-left: auto;
+        font-size: 18px;
+        color: var(--figma-color-text-brand);
+        transition: all 0.2s ease;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+     .get-links-button:hover {
+      background-color: var(--figma-color-bg-hover);
+      color: var(--figma-color-text);
     }
   </style>
 </head>
@@ -789,7 +934,10 @@
     </div>
 
     <div id="components-tab" class="tab-content active">
-      <p id="status-message">Loading components...</p>
+      <div class="status-container">
+          <p id="status-message">Loading components...</p>
+          <button id="get-links-button-components" class="get-links-button" title="Get Links for Selection">☍</button>
+      </div>
       <div class="search-container">
         <input type="text" id="components-search-input" placeholder="Search components...">
         <button id="refresh-components" class="refresh-button" title="Refresh components">↻</button>
@@ -799,7 +947,10 @@
     </div>
 
     <div id="icons-tab" class="tab-content">
-      <p id="icons-status-message">Loading icons...</p>
+      <div class="status-container">
+          <p id="icons-status-message">Loading icons...</p>
+          <button id="get-links-button-icons" class="get-links-button" title="Get Links for Selection">☍</button>
+      </div>
       <div class="search-container">
         <input type="text" id="icons-search-input" placeholder="Search icons...">
         <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
@@ -825,6 +976,25 @@
         <div id="instance-properties"></div>
       </div>
       <button id="create-variant" class="refresh-button">Create Instance</button>
+    </div>
+  </div>
+
+  <!-- Add the new dialog for links -->
+  <div id="links-dialog"
+       class="dialog"
+       role="dialog"
+       aria-labelledby="links-dialog-title"
+       aria-modal="true">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h4 id="links-dialog-title">Links for Selected Elements</h4>
+        <!-- Using a simple text button for close here -->
+      </div>
+      <ul id="links-list">
+        <!-- Links will be populated here -->
+        <li>Loading links...</li>
+      </ul>
+      <button id="close-links-dialog">Close</button>
     </div>
   </div>
 
@@ -867,6 +1037,7 @@
     let componentsData = [];
     let iconsData = [];
     let currentComponentData = null;
+    let currentLinksData = null; // Store links data
 
     // Add loading state management
     function setLoadingState(tabId, isLoading) {
@@ -932,6 +1103,14 @@
         // Set loading state
         setLoadingState(tabId, true);
 
+        // When switching to components tab, make sure to update the toggle icon state
+        if (tabId === 'components-tab' && componentsData && componentsData.length > 0) {
+          // Schedule this after render to ensure the DOM has category elements
+          setTimeout(() => {
+            updateToggleAllIcon();
+          }, 0);
+        }
+
         // Notify the plugin about tab change
         parent.postMessage({
           pluginMessage: {
@@ -942,6 +1121,25 @@
       });
     });
 
+    // Function to update the toggle-all icon based on collapsed state
+    function updateToggleAllIcon() {
+      // Check if all categories are collapsed
+      const allCategoryHeaders = document.querySelectorAll('.category-header');
+      if (allCategoryHeaders.length === 0) return; // No categories to check
+
+      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+        header.classList.contains('collapsed')
+      );
+
+      // Update the toggle all icon class
+      const toggleAllIcon = document.getElementById('toggle-all-icon');
+      if (allCollapsed) {
+        toggleAllIcon.classList.add('collapsed');
+      } else {
+        toggleAllIcon.classList.remove('collapsed');
+      }
+    }
+
     // Handle messages from the plugin
     window.onmessage = (event) => {
       const data = event.data.pluginMessage;
@@ -950,6 +1148,8 @@
       if (data && data.components) {
         componentsData = data.components;
         renderComponents();
+        // Update the toggle icon after rendering components
+        updateToggleAllIcon();
       }
 
       // Handle collapsed state
@@ -958,6 +1158,8 @@
         // If we already have components rendered, update the UI
         if (componentsData && componentsData.length > 0) {
           renderComponents();
+          // Update the toggle icon after rendering components with collapsed state
+          updateToggleAllIcon();
         }
       }
 
@@ -1264,6 +1466,129 @@
         dialog.style.display = 'flex';
         void dialog.offsetWidth;
         dialog.classList.add('visible');
+        showDialog('component-properties');
+      }
+
+      // Handle showing the links dialog
+      if (data && data.type === "show-links-dialog") {
+        currentLinksData = data.links;
+        const linksList = document.getElementById('links-list');
+        linksList.innerHTML = ''; // Clear previous content
+
+        // Check if there's an error message
+        if (data.error) {
+          // Add an error message at the top of the dialog
+          const errorItem = document.createElement('li');
+          errorItem.className = 'error-message';
+          errorItem.style.color = 'var(--figma-color-text-danger)';
+          errorItem.style.fontStyle = 'italic';
+          errorItem.style.marginBottom = '12px';
+          errorItem.style.padding = '8px';
+          errorItem.style.backgroundColor = 'var(--figma-color-bg-danger-secondary)';
+          errorItem.style.borderRadius = '6px';
+          errorItem.textContent = data.error;
+          linksList.appendChild(errorItem);
+        }
+
+        if (!currentLinksData || currentLinksData.length === 0) {
+          linksList.innerHTML += '<li>No elements selected.</li>';
+        } else {
+          currentLinksData.forEach(linkInfo => {
+            const listItem = document.createElement('li');
+
+            const linkInfoDiv = document.createElement('div');
+            linkInfoDiv.className = 'link-info';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'link-name';
+            nameSpan.textContent = linkInfo.name;
+            linkInfoDiv.appendChild(nameSpan);
+
+            // If it's a placeholder, show node ID instead of URL
+            if (linkInfo.isPlaceholder) {
+              const urlInfo = document.createElement('span');
+              urlInfo.className = 'link-url';
+              urlInfo.textContent = `Node ID: ${linkInfo.id}`;
+              urlInfo.style.fontFamily = 'monospace';
+              linkInfoDiv.appendChild(urlInfo);
+            } else {
+              const urlLink = document.createElement('a');
+              urlLink.className = 'link-url';
+              urlLink.href = linkInfo.url;
+              urlLink.textContent = linkInfo.url;
+              urlLink.target = '_blank'; // Open in new tab
+              urlLink.title = 'Click to open link in new tab';
+              linkInfoDiv.appendChild(urlLink);
+            }
+
+            listItem.appendChild(linkInfoDiv);
+
+            // Only show copy button for real URLs, not placeholders
+            if (!linkInfo.isPlaceholder) {
+              const copyButton = document.createElement('button');
+              copyButton.className = 'copy-link-button';
+              copyButton.textContent = 'Copy';
+              copyButton.onclick = () => {
+                // Use the fallback clipboard method instead of navigator.clipboard
+                const textarea = document.createElement('textarea');
+                textarea.value = linkInfo.url;
+                textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+                document.body.appendChild(textarea);
+                textarea.select();
+
+                try {
+                  const successful = document.execCommand('copy');
+                  if (successful) {
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => {
+                      copyButton.textContent = 'Copy';
+                    }, 1500);
+                  } else {
+                    console.error('Copy command was unsuccessful');
+                  }
+                } catch (err) {
+                  console.error('Failed to copy link:', err);
+                } finally {
+                  document.body.removeChild(textarea);
+                }
+              };
+              listItem.appendChild(copyButton);
+            } else {
+              // For placeholder links, add a button to copy the node ID
+              const copyButton = document.createElement('button');
+              copyButton.className = 'copy-link-button';
+              copyButton.textContent = 'Copy ID';
+              copyButton.onclick = () => {
+                // Use the fallback clipboard method instead of navigator.clipboard
+                const textarea = document.createElement('textarea');
+                textarea.value = linkInfo.id;
+                textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+                document.body.appendChild(textarea);
+                textarea.select();
+
+                try {
+                  const successful = document.execCommand('copy');
+                  if (successful) {
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => {
+                      copyButton.textContent = 'Copy ID';
+                    }, 1500);
+                  } else {
+                    console.error('Copy command was unsuccessful');
+                  }
+                } catch (err) {
+                  console.error('Failed to copy node ID:', err);
+                } finally {
+                  document.body.removeChild(textarea);
+                }
+              };
+              listItem.appendChild(copyButton);
+            }
+
+            linksList.appendChild(listItem);
+          });
+        }
+        showDialog('links-dialog');
       }
 
       // Handle create variant button click
@@ -1308,6 +1633,7 @@
 
         // Close the dialog - this happens for both create and edit
         document.getElementById('close-dialog').click();
+        hideDialog('component-properties');
       };
 
       // Handle close dialog button click
@@ -1320,6 +1646,7 @@
             dialog.style.display = 'none';
             document.querySelector('.tab-container').style.display = 'flex';
         }, 300); // Match the transition duration
+        hideDialog('component-properties');
       };
     };
 
@@ -1755,13 +2082,8 @@
         }
       });
 
-      // Update the toggle all icon class instead of swapping SVGs
-      const toggleAllIcon = document.getElementById('toggle-all-icon');
-      if (allCollapsed) {
-        toggleAllIcon.classList.add('collapsed');
-      } else {
-        toggleAllIcon.classList.remove('collapsed');
-      }
+      // Update the toggle all icon class after modifying all categories
+      updateToggleAllIcon();
 
       // Save state to global variable
       window.collapsedCategoriesState = collapsedCategories;
@@ -1778,7 +2100,40 @@
     // Initialize the toggle all icon on page load to use just chevron-down
     window.addEventListener('DOMContentLoaded', () => {
       const toggleAllIcon = document.getElementById('toggle-all-icon');
+      toggleAllIcon.innerHTML = ''; // Clear any existing content first
       toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
+    });
+
+    // Helper function to show/hide dialogs
+    function showDialog(dialogId) {
+        document.querySelector('.tab-container').style.display = 'none';
+        const dialog = document.getElementById(dialogId);
+        dialog.style.display = 'flex';
+        // Delay adding the visible class slightly to ensure the transition works
+        setTimeout(() => dialog.classList.add('visible'), 10);
+    }
+
+    function hideDialog(dialogId) {
+        const dialog = document.getElementById(dialogId);
+        dialog.classList.remove('visible');
+        // Wait for transition before hiding and showing tabs
+        setTimeout(() => {
+            dialog.style.display = 'none';
+            document.querySelector('.tab-container').style.display = 'flex';
+        }, 200); // Match CSS transition duration
+    }
+
+    // Setup "Get Links" buttons
+    document.getElementById('get-links-button-components').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'get-selected-links' } }, '*');
+    });
+    document.getElementById('get-links-button-icons').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'get-selected-links' } }, '*');
+    });
+
+    // Setup close button for links dialog
+    document.getElementById('close-links-dialog').addEventListener('click', () => {
+      hideDialog('links-dialog');
     });
   </script>
 </body>

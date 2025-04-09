@@ -480,7 +480,7 @@ figma.ui.onmessage = async msg => {
         // Count total components across all categories
         const totalComponents = cache.components.reduce((total, category) =>
           category.isCategory ? total + category.items.length : total, 0);
-        
+
         figma.ui.postMessage({
           status: `Found ${totalComponents} components.`,
           components: cache.components
@@ -731,7 +731,105 @@ figma.ui.onmessage = async msg => {
     figma.ui.resize(size.width, size.height);
     console.log(`Resizing UI to ${size.width}x${size.height}`);
   }
+  else if (msg.type === "get-selected-links") {
+    getSelectedElementLinks();
+  }
 };
+
+// Add this handler for the new feature
+async function getSelectedElementLinks() {
+  const selectedNodes = figma.currentPage.selection;
+  const links = [];
+
+  if (selectedNodes.length === 0) {
+    figma.ui.postMessage({ type: 'show-links-dialog', links: [] });
+    figma.notify("Please select one or more elements.");
+    return;
+  }
+
+  // Get document ID from documentAsString
+  // This is a more reliable method than figma.fileKey in some contexts
+  let fileKey = null;
+
+  try {
+    // Try both methods to get the file key/ID
+    if (figma.fileKey) {
+      fileKey = figma.fileKey;
+    } else if (figma.root && figma.root.id) {
+      // Fallback to node ID of root
+      fileKey = figma.root.id.split(':')[0];
+    }
+
+    // Check if we successfully got a file key
+    if (fileKey) {
+      // Generate links with file key
+      for (const node of selectedNodes) {
+        try {
+          // Format the node ID like Figma does
+          const cleanNodeId = node.id.replace(':', '-');
+
+          // Get a random token for the 't' parameter in the URL (this may change but isn't critical)
+          const randomToken = Math.random().toString(36).substring(2, 15);
+
+          // Construct the URL to match Figma's "Copy Link to Selection" format
+          const nodeUrl = `https://www.figma.com/file/${fileKey}/${encodeURIComponent(figma.root.name)}?node-id=${cleanNodeId}&t=${randomToken}-0`;
+
+          links.push({
+            id: node.id,
+            name: node.name,
+            url: nodeUrl
+          });
+        } catch (error) {
+          console.error(`Error generating link for node ${node.name}:`, error);
+        }
+      }
+    } else {
+      // No file key means the file might not be saved/published yet
+      // Create informational placeholder links
+      for (const node of selectedNodes) {
+        links.push({
+          id: node.id,
+          name: node.name,
+          url: `#${node.id}`,
+          isPlaceholder: true
+        });
+      }
+
+      // Throw an error to show the message about how to get real links
+      throw new Error("File key not available");
+    }
+  } catch (error) {
+    console.warn("Could not generate proper Figma links:", error);
+
+    if (links.length === 0) {
+      // Create at least placeholder links with node IDs if we have no links at all
+      for (const node of selectedNodes) {
+        links.push({
+          id: node.id,
+          name: node.name,
+          url: `#${node.id}`,
+          isPlaceholder: true
+        });
+      }
+    }
+
+    // Send a message along with the links indicating they're placeholders
+    figma.ui.postMessage({
+      type: 'show-links-dialog',
+      links: links,
+      error: "Could not generate full Figma links. Try using Figma's built-in 'Copy Link to Selection' (Ctrl+L) instead."
+    });
+
+    figma.notify("Unable to generate proper Figma links. Try using Figma's 'Copy Link to Selection' (Ctrl+L) instead.", { timeout: 5000 });
+    return;
+  }
+
+  figma.ui.postMessage({ type: 'show-links-dialog', links: links });
+
+  if (links.length > 0) {
+    figma.notify(`Generated ${links.length} link${links.length > 1 ? 's' : ''}.`, { timeout: 2000 });
+  }
+}
 
 async function getComponentProperties(componentId, instanceId = null) {
   const node = await figma.getNodeByIdAsync(componentId);
