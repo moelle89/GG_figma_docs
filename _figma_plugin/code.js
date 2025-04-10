@@ -909,7 +909,7 @@ figma.ui.onmessage = async msg => {
           // Wait a tiny bit for the component to update
           setTimeout(async () => {
             // Re-fetch the master component
-            const masterComponent = instance.mainComponent;
+            const masterComponent = await instance.getMainComponentAsync();
             if (masterComponent) {
               const componentProperties = await getComponentProperties(
                 masterComponent.parent ? masterComponent.parent.id : masterComponent.id,
@@ -1093,7 +1093,8 @@ async function createPlaygroundFrame() {
     // --- Determine node to instance ---
     if (selectedNode.type === "INSTANCE") {
       nodeToInstance = selectedNode.clone();
-      componentName = selectedNode.mainComponent ? selectedNode.mainComponent.name : 'Instance';
+      const mainComponent = await selectedNode.getMainComponentAsync();
+      componentName = mainComponent ? mainComponent.name : 'Instance';
     } else if (selectedNode.type === "COMPONENT") {
       nodeToInstance = selectedNode.createInstance();
       componentName = selectedNode.name;
