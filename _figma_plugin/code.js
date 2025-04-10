@@ -649,7 +649,6 @@ const PLAYGROUND_FRAME_ID_KEY = 'playgroundFrameId'; // Key for client storage
 const LAST_VIEWPORT_X_KEY = 'lastViewportX';
 const LAST_VIEWPORT_Y_KEY = 'lastViewportY';
 const LAST_VIEWPORT_ZOOM_KEY = 'lastViewportZoom';
-const PLAYGROUND_FLOW_ID_KEY = 'playgroundFlowId'; // New key for flow start point ID
 
 // Helper function to check and send playground state
 async function checkAndSendPlaygroundState() {
@@ -664,7 +663,6 @@ async function checkAndSendPlaygroundState() {
       } else if (!existingFrame) {
         // Clean up stale ID if node is gone
          await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY);
-         await figma.clientStorage.deleteAsync(PLAYGROUND_FLOW_ID_KEY).catch(()=>{}); // Also clear flow ID
       }
     }
     figma.ui.postMessage({ type: 'playground-state', exists: exists });
@@ -1243,7 +1241,6 @@ async function createPlaygroundFrame() {
         await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
         await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
         await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
-        await figma.clientStorage.deleteAsync(PLAYGROUND_FLOW_ID_KEY).catch(()=>{}); // Clear flow ID too
       }
     }
   } catch (error) {
@@ -1253,7 +1250,6 @@ async function createPlaygroundFrame() {
     await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
     await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
     await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
-    await figma.clientStorage.deleteAsync(PLAYGROUND_FLOW_ID_KEY).catch(()=>{}); // Clear flow ID on error
   }
 
   // --- If no existing frame was found, proceed to create a new one ---
@@ -1354,21 +1350,8 @@ async function createPlaygroundFrame() {
     // --- Final Steps ---
     figma.currentPage.appendChild(frame); // Add to page (might already be added implicitly by createFrame, but explicit is safe)
 
-    // --- Create and Position Flow Starting Point ---
-    console.log("Attempting to create flow starting point..."); // Add log
-    const flowStart = figma.createFlowStartingPoint();
-    console.log("Flow starting point created:", flowStart.id); // Add log
-    flowStart.name = `Start - ${frame.name}`; // Give it a related name
-    // Position it slightly to the left of the frame
-    flowStart.x = frame.x - 60; // Adjust offset as needed
-    flowStart.y = frame.y;
-    // --- End Flow Starting Point ---
-
-
     // Store the new frame's ID
     await figma.clientStorage.setAsync(PLAYGROUND_FRAME_ID_KEY, frame.id);
-    // Store the flow start point ID
-    await figma.clientStorage.setAsync(PLAYGROUND_FLOW_ID_KEY, flowStart.id);
 
     await checkAndSendPlaygroundState(); // Send updated state (true)
 
@@ -1389,14 +1372,12 @@ async function createPlaygroundFrame() {
     await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
     await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
     await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
-    await figma.clientStorage.deleteAsync(PLAYGROUND_FLOW_ID_KEY).catch(()=>{}); // Also clear flow ID
   }
 }
 
 // New function to handle the user's choice from the dialog
 async function handleReturnDecision(choice) {
   const frameId = await figma.clientStorage.getAsync(PLAYGROUND_FRAME_ID_KEY);
-  const flowId = await figma.clientStorage.getAsync(PLAYGROUND_FLOW_ID_KEY); // Get flow ID
   let lastX = null, lastY = null, lastZoom = null;
 
   // Retrieve viewport data regardless of choice, as we need to clear it
@@ -1410,20 +1391,6 @@ async function handleReturnDecision(choice) {
 
   // Delete the frame if it exists
   if (frameId) {
-    // --- Delete Flow Starting Point First ---
-    if (flowId) {
-        try {
-            const flowNode = await figma.getNodeByIdAsync(flowId);
-            if (flowNode && !flowNode.removed) {
-                flowNode.remove();
-                console.log("Removed associated flow starting point.");
-            }
-        } catch (e) {
-            console.error("Error removing flow start point:", e);
-        }
-    }
-    // --- End Delete Flow Starting Point ---
-
     const frame = await figma.getNodeByIdAsync(frameId);
     if (frame && !frame.removed) {
       frame.remove();
@@ -1435,7 +1402,6 @@ async function handleReturnDecision(choice) {
   await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(e => console.error("Failed to delete viewport X:", e));
   await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(e => console.error("Failed to delete viewport Y:", e));
   await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(e => console.error("Failed to delete viewport Zoom:", e));
-  await figma.clientStorage.deleteAsync(PLAYGROUND_FLOW_ID_KEY).catch(e => console.error("Failed to delete flow ID:", e)); // Delete flow ID key
 
   // Update UI button state
   await checkAndSendPlaygroundState(); // Will now be false
