@@ -969,24 +969,74 @@ function generateTypeScriptInterface(componentNode) {
         return null;
     }
 
-    // Sanitize component name for interface and filename
-    const baseName = componentNode.name.replace(/❖\s*/, '').replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z_]+/, '_');
-    const interfaceName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
-    const filename = `${interfaceName}.ts`;
+    // Original name, prefix removed
+    const cleanName = componentNode.name.replace(/❖\s*/, '');
 
+    // --- Generate Filename ---
+    // Replace spaces with hyphens, convert to lowercase, remove invalid chars
+    const filenameBase = cleanName
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric/non-hyphen
+        .replace(/^-+|-+$/g, ''); // Trim leading/trailing hyphens
+    const filename = `${filenameBase || 'component'}.ts`; // Use 'component' as fallback
+
+    // --- Generate Interface Name ---
+    // Remove spaces/hyphens/invalid chars, convert to PascalCase
+    const interfaceNameBase = cleanName
+        .replace(/[^a-zA-Z0-9]/g, ''); // Remove non-alphanumeric
+    let interfaceName = interfaceNameBase.charAt(0).toUpperCase() + interfaceNameBase.slice(1);
+    if (!/^[a-zA-Z]/.test(interfaceName)) { // Ensure it starts with a letter
+      interfaceName = `Component${interfaceName}`;
+    }
+    // If after sanitization the name is empty, use a default
+    if (!interfaceName) {
+        interfaceName = 'ComponentInterface';
+    }
+
+
+    // --- Generate Interface Content ---
     let interfaceContent = '';
     let propertiesAdded = false;
     let needsReactNodeImport = false;
-
     const definitions = componentNode.componentPropertyDefinitions;
 
     if (definitions) {
-        Object.entries(definitions).forEach(([key, def]) => {
-            // Sanitize property name for valid TS identifier
+        // --- Custom Sorting Logic ---
+        let priorityKey = null;
+        const otherKeys = [];
+        const priorityNames = ['variant', 'type', 'state'];
+
+        Object.keys(definitions).forEach(key => {
+            const def = definitions[key];
+            const propBaseName = key.split('#')[0].toLowerCase();
+            // Check if it's a priority VARIANT and we haven't found one yet
+            if (priorityKey === null && def.type === 'VARIANT' && priorityNames.includes(propBaseName)) {
+                priorityKey = key;
+            } else {
+                otherKeys.push(key);
+            }
+        });
+
+        // Sort the remaining keys alphanumerically
+        otherKeys.sort();
+
+        // Combine priority key (if found) with sorted other keys
+        const finalSortedKeys = priorityKey ? [priorityKey, ...otherKeys] : otherKeys;
+        // --- End Custom Sorting ---
+
+        // Iterate using the final sorted order
+        finalSortedKeys.forEach(key => {
+            const def = definitions[key];
+            // Property name sanitization remains the same (camelCase)
             let propName = key.split('#')[0];
             propName = propName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z_]+/, '_');
             propName = propName.replace(/_([a-zA-Z])/g, (g) => g[1].toUpperCase());
             propName = propName.charAt(0).toLowerCase() + propName.slice(1);
+            if (!/^[a-zA-Z]/.test(propName)) { // Ensure prop starts with letter
+                propName = `prop${propName.charAt(0).toUpperCase() + propName.slice(1)}`;
+            }
+
 
             let propType = 'any'; // Default type
 
@@ -994,7 +1044,7 @@ function generateTypeScriptInterface(componentNode) {
                 case 'VARIANT':
                     propType = (def.variantOptions && Array.isArray(def.variantOptions))
                                ? def.variantOptions.map(opt => `'${opt.replace(/'/g, "\\'")}'`).join(' | ')
-                               : 'string'; // Fallback to string if options don't exist or aren't an array
+                               : 'string';
                     break;
                 case 'BOOLEAN':
                     propType = 'boolean';
@@ -1007,20 +1057,21 @@ function generateTypeScriptInterface(componentNode) {
                     needsReactNodeImport = true;
                     break;
             }
-            // Simplified check for standard types
+            // Revert: Make standard properties required again
             const isRequired = ['VARIANT', 'BOOLEAN', 'TEXT', 'INSTANCE_SWAP'].includes(def.type);
-            interfaceContent += `\t${propName}${isRequired ? '' : '?'}: ${propType};\n`; // Add optional '?' if not explicitly handled
+            interfaceContent += `\t${propName}${isRequired ? '' : '?'}: ${propType};\n`; // Note: isRequired will likely always be true now based on the types included
             propertiesAdded = true;
         });
     }
 
     if (!propertiesAdded) {
+       // Return null if no properties processed
         return null;
     }
 
     let finalContent = '';
     if (needsReactNodeImport) {
-        finalContent += `import type { ReactNode } from 'react';\n\n`; // Keep 'import type' for potential TS processing
+        finalContent += `import type { ReactNode } from 'react';\n\n`;
     }
     finalContent += `export interface ${interfaceName} {\n${interfaceContent}}`;
 

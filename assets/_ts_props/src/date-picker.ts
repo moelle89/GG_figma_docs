@@ -1,6 +1,6 @@
-export interface ❖ Date picker {
-	month: string; 
-	actions: boolean; 
-	type: 'Single' | 'Single with help buttons' | 'Dual' | 'Dual with help buttons'; 
-	showRange: 'False' | 'True'; 
+export interface Datepicker {
+	type: 'Single' | 'Single with help buttons' | 'Dual' | 'Dual with help buttons';
+	actions: boolean;
+	month: string;
+	showRange: 'False' | 'True';
 }
