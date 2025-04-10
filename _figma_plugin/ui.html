@@ -873,10 +873,10 @@
     #links-list li {
         padding: 8px 0;
         border-bottom: 1px solid var(--figma-color-border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
+        /* display: flex; */ /* REMOVED: remove flex display */
+        /* align-items: center; */ /* REMOVED: remove flex alignment */
+        /* justify-content: space-between; */ /* REMOVED: remove flex justification */
+        /* gap: 8px; */ /* REMOVED: remove flex gap */
     }
 
      #links-list li:last-child {
@@ -913,6 +913,13 @@
         color: var(--figma-color-text-brand);
         text-decoration: underline;
      }
+
+    #links-list .button-group { /* Container for copy/export buttons */
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        margin-top: 6px; /* ADDED: Add space above the button group */
+    }
 
     #links-list .copy-link-button {
         background: var(--figma-color-bg-secondary);
@@ -1741,6 +1748,8 @@
                     urlLink.title = 'Click to open link in new tab';
                     linkInfoDiv.appendChild(urlLink);
                 }
+
+                listItem.appendChild(linkInfoDiv); // Ensure link info div is added FIRST
 
                 const buttonGroup = document.createElement('div');
                 buttonGroup.className = 'button-group';
