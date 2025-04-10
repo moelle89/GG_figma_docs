@@ -957,7 +957,7 @@
         cursor: pointer;
         padding: 5px 10px;
         margin-left: auto;
-        font-size: 18px;
+        font-size: 16px!important;
         color: var(--figma-color-text-brand);
         transition: all 0.2s ease;
         border-radius: 8px;
@@ -983,6 +983,7 @@
       <div class="status-container">
           <p id="status-message">Loading components...</p>
           <button id="get-links-button-components" class="get-links-button" title="Get Links for Selection">☍</button>
+          <button id="create-playground-button-components" class="get-links-button" title="Create Playground Frame">▶</button>
       </div>
       <div class="search-container">
         <div class="search-input-container">
@@ -999,6 +1000,7 @@
       <div class="status-container">
           <p id="icons-status-message">Loading icons...</p>
           <button id="get-links-button-icons" class="get-links-button" title="Get Links for Selection">☍</button>
+          <button id="create-playground-button-icons" class="get-links-button" title="Create Playground Frame">▶</button>
       </div>
       <div class="search-container">
         <div class="search-input-container">
@@ -1643,6 +1645,17 @@
         showDialog('links-dialog');
       }
 
+      // Handle playground state update
+      if (data && data.type === 'playground-state') {
+        const exists = data.exists;
+        const icon = exists ? '✖' : '▶';
+        const title = exists ? 'Remove Playground Frame' : 'Create Playground Frame';
+        document.getElementById('create-playground-button-components').textContent = icon;
+        document.getElementById('create-playground-button-components').title = title;
+        document.getElementById('create-playground-button-icons').textContent = icon;
+        document.getElementById('create-playground-button-icons').title = title;
+      }
+
       // Handle create variant button click
       document.getElementById('create-variant').onclick = () => {
         if (!currentComponentData) return;
@@ -2029,15 +2042,15 @@
       const toggleAllIcon = document.getElementById('toggle-all-icon');
       toggleAllIcon.innerHTML = ''; // Clear any existing content first
       toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
-      
+
       // Check if search inputs have values and show clear buttons accordingly
       document.getElementById('components-search-clear').classList.toggle(
-        'visible', 
+        'visible',
         document.getElementById('components-search-input').value.length > 0
       );
-      
+
       document.getElementById('icons-search-clear').classList.toggle(
-        'visible', 
+        'visible',
         document.getElementById('icons-search-input').value.length > 0
       );
     });
@@ -2222,6 +2235,14 @@
       parent.postMessage({ pluginMessage: { type: 'get-selected-links' } }, '*');
     });
 
+    // Setup "Create Playground" buttons
+    document.getElementById('create-playground-button-components').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'create-playground' } }, '*');
+    });
+    document.getElementById('create-playground-button-icons').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'create-playground' } }, '*');
+    });
+
     // Setup close button for links dialog
     document.getElementById('close-links-dialog').addEventListener('click', () => {
       hideDialog('links-dialog');
@@ -2234,7 +2255,7 @@
         document.getElementById('components-search-clear').click();
       }
     });
-    
+
     document.getElementById('icons-search-input').addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();

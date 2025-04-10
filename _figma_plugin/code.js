@@ -244,7 +244,8 @@ const cache = {
 // Start by loading components from the current file
 setTimeout(() => {
   loadComponentsFromCurrentFile();
-}, 100); // Add a 100ms delay
+  checkAndSendPlaygroundState(); // Check initial state
+}, 100);
 
 // Check if the user has the Figma API available (Plugin API 37 or later)
 const hasImportSupport = typeof figma.importComponentByKeyAsync === 'function';
@@ -643,6 +644,31 @@ async function refreshCache(type) {
   }
 }
 
+const PLAYGROUND_FRAME_ID_KEY = 'playgroundFrameId'; // Key for client storage
+
+// Helper function to check and send playground state
+async function checkAndSendPlaygroundState() {
+  try {
+    const existingFrameId = await figma.clientStorage.getAsync(PLAYGROUND_FRAME_ID_KEY);
+    let exists = false;
+    if (existingFrameId) {
+      // Optionally verify the node still exists, though not strictly necessary for just the icon
+      const existingFrame = await figma.getNodeByIdAsync(existingFrameId);
+      if (existingFrame && !existingFrame.removed) {
+        exists = true;
+      } else if (!existingFrame) {
+        // Clean up stale ID if node is gone
+         await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY);
+      }
+    }
+    figma.ui.postMessage({ type: 'playground-state', exists: exists });
+  } catch (error) {
+    console.error("Error checking playground state:", error);
+    // Assume it doesn't exist in case of error
+    figma.ui.postMessage({ type: 'playground-state', exists: false });
+  }
+}
+
 // Handle UI messages
 figma.ui.onmessage = async msg => {
   if (msg.type === "close") {
@@ -650,6 +676,7 @@ figma.ui.onmessage = async msg => {
   }
   else if (msg.type === "tab-change") {
     currentTab = msg.tab;
+    checkAndSendPlaygroundState(); // Check state when tab changes
 
     if (currentTab === "icons-tab") {
       // Only load icons if they're not already cached
@@ -925,6 +952,9 @@ figma.ui.onmessage = async msg => {
   else if (msg.type === "get-selected-links") {
     getSelectedElementLinks();
   }
+  else if (msg.type === "create-playground") {
+    await createPlaygroundFrame(); // This function will now send state updates internally
+  }
 };
 
 // Add this handler for the new feature
@@ -1019,6 +1049,114 @@ async function getSelectedElementLinks() {
 
   if (links.length > 0) {
     figma.notify(`Generated ${links.length} link${links.length > 1 ? 's' : ''}.`, { timeout: 2000 });
+  }
+}
+
+// Modified function to create/toggle the playground frame
+async function createPlaygroundFrame() {
+  // --- Check for and remove existing playground frame ---
+  try {
+    const existingFrameId = await figma.clientStorage.getAsync(PLAYGROUND_FRAME_ID_KEY);
+    if (existingFrameId) {
+      const existingFrame = await figma.getNodeByIdAsync(existingFrameId);
+      if (existingFrame && !existingFrame.removed) {
+        existingFrame.remove();
+        await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY);
+        figma.notify("Removed existing playground frame.");
+        await checkAndSendPlaygroundState(); // Send updated state (false)
+        return; // Stop execution after removing the old frame
+      } else {
+        // If frame ID exists but frame is gone, just clear the stored ID
+        await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY);
+        // No need to send state update here, it will be sent when creating new frame or if check fails
+      }
+    }
+  } catch (error) {
+    console.error("Error checking/removing existing playground frame:", error);
+    await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY).catch(() => {}); // Clear ID if possible
+     await checkAndSendPlaygroundState(); // Ensure state is updated even on error
+  }
+
+  // --- If no existing frame was found and removed, proceed to create a new one ---
+  const selection = figma.currentPage.selection;
+
+  if (selection.length !== 1) {
+    figma.notify("Please select a single component, variant, or instance to create a playground.");
+    return;
+  }
+
+  const selectedNode = selection[0];
+  let nodeToInstance = null;
+  let componentName = 'Component'; // Default name
+
+  try {
+    // --- Determine node to instance ---
+    if (selectedNode.type === "INSTANCE") {
+      nodeToInstance = selectedNode.clone();
+      componentName = selectedNode.mainComponent ? selectedNode.mainComponent.name : 'Instance';
+    } else if (selectedNode.type === "COMPONENT") {
+      nodeToInstance = selectedNode.createInstance();
+      componentName = selectedNode.name;
+    } else if (selectedNode.type === "COMPONENT_SET") {
+      const defaultVariant = selectedNode.defaultVariant;
+      if (defaultVariant) {
+        nodeToInstance = defaultVariant.createInstance();
+        componentName = selectedNode.name;
+      } else {
+        figma.notify("Could not find a default variant for this component set.", { error: true });
+        return;
+      }
+    } else {
+      figma.notify("Selected element must be a component, variant, or instance.");
+      return;
+    }
+
+    if (!nodeToInstance) {
+      figma.notify("Failed to create an instance of the selected component.", { error: true });
+      return;
+    }
+
+    // --- Frame Creation ---
+    const frame = figma.createFrame();
+    frame.name = `Playground - ${componentName.replace('❖ ', '')}`;
+    frame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    const frameWidth = 600;
+    const frameHeight = 400;
+    frame.resize(frameWidth, frameHeight);
+
+    // --- Instance Placement ---
+    frame.appendChild(nodeToInstance);
+    nodeToInstance.x = (frameWidth - nodeToInstance.width) / 2;
+    nodeToInstance.y = (frameHeight - nodeToInstance.height) / 2;
+
+    // --- Frame Positioning ---
+    const existingNodeBounds = figma.currentPage.findAll(n => n.parent === figma.currentPage);
+    let offsetX = figma.viewport.center.x + 100;
+    let offsetY = figma.viewport.center.y;
+    if (existingNodeBounds.some(n => n !== frame && Math.abs(n.x - offsetX) < 100 && Math.abs(n.y - offsetY) < 100)) {
+        offsetX += frameWidth + 50;
+    }
+    frame.x = offsetX - frameWidth / 2;
+    frame.y = offsetY - frameHeight / 2;
+
+    // --- Final Steps ---
+    figma.currentPage.appendChild(frame);
+
+    // Store the new frame's ID
+    await figma.clientStorage.setAsync(PLAYGROUND_FRAME_ID_KEY, frame.id);
+    await checkAndSendPlaygroundState(); // Send updated state (true)
+
+    figma.currentPage.selection = [frame];
+    figma.viewport.scrollAndZoomIntoView([frame]);
+    figma.notify(`Created playground frame for '${componentName.replace('❖ ', '')}'`);
+
+  } catch (error) {
+    console.error("Error creating playground frame:", error);
+    figma.notify("Error creating playground frame: " + error.message, { error: true });
+    if (nodeToInstance && !nodeToInstance.removed) {
+        nodeToInstance.remove();
+    }
+    await checkAndSendPlaygroundState(); // Ensure state is updated even on error
   }
 }
 
