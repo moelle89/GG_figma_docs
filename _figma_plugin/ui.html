@@ -1016,6 +1016,33 @@
        background: var(--figma-color-bg-brand-hover);
        border-color: var(--figma-color-bg-brand-hover);
     }
+
+    /* ... existing styles ... */
+    #links-list .export-ts-button {
+        background: var(--figma-color-bg-secondary);
+        border: 1px solid var(--figma-color-border);
+        color: var(--figma-color-text-secondary);
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 4px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+        margin-left: 4px; /* Add some space between buttons */
+    }
+
+    #links-list .export-ts-button:hover {
+        background: var(--figma-color-bg-success-secondary); /* Use success color */
+        color: var(--figma-color-text-success);
+        border-color: var(--figma-color-border-success);
+    }
+
+    #links-list .button-group { /* Container for copy/export buttons */
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+     /* ... rest of styles ... */
   </style>
 </head>
 
@@ -1594,118 +1621,105 @@
         const linksList = document.getElementById('links-list');
         linksList.innerHTML = ''; // Clear previous content
 
-        // Check if there's an error message
         if (data.error) {
-          // Add an error message at the top of the dialog
-          const errorItem = document.createElement('li');
-          errorItem.className = 'error-message';
-          errorItem.style.color = 'var(--figma-color-text-danger)';
-          errorItem.style.fontStyle = 'italic';
-          errorItem.style.marginBottom = '12px';
-          errorItem.style.padding = '8px';
-          errorItem.style.backgroundColor = 'var(--figma-color-bg-danger-secondary)';
-          errorItem.style.borderRadius = '6px';
-          errorItem.textContent = data.error;
-          linksList.appendChild(errorItem);
+            const errorItem = document.createElement('li');
+            // Simplified error styling
+            errorItem.style.color = 'var(--figma-color-text-danger)';
+            errorItem.style.fontStyle = 'italic';
+            errorItem.style.padding = '8px 0';
+            errorItem.textContent = data.error;
+            linksList.appendChild(errorItem);
         }
 
         if (!currentLinksData || currentLinksData.length === 0) {
-          linksList.innerHTML += '<li>No elements selected.</li>';
+            linksList.innerHTML += '<li>No elements selected or links available.</li>';
         } else {
-          currentLinksData.forEach(linkInfo => {
-            const listItem = document.createElement('li');
+            currentLinksData.forEach(linkInfo => {
+                const listItem = document.createElement('li');
 
-            const linkInfoDiv = document.createElement('div');
-            linkInfoDiv.className = 'link-info';
+                const linkInfoDiv = document.createElement('div');
+                linkInfoDiv.className = 'link-info';
 
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'link-name';
-            nameSpan.textContent = linkInfo.name;
-            linkInfoDiv.appendChild(nameSpan);
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'link-name';
+                nameSpan.textContent = linkInfo.name || 'Unnamed Element'; // Handle unnamed
+                linkInfoDiv.appendChild(nameSpan);
 
-            // If it's a placeholder, show node ID instead of URL
-            if (linkInfo.isPlaceholder) {
-              const urlInfo = document.createElement('span');
-              urlInfo.className = 'link-url';
-              urlInfo.textContent = `Node ID: ${linkInfo.id}`;
-              urlInfo.style.fontFamily = 'monospace';
-              linkInfoDiv.appendChild(urlInfo);
-            } else {
-              const urlLink = document.createElement('a');
-              urlLink.className = 'link-url';
-              urlLink.href = linkInfo.url;
-              urlLink.textContent = linkInfo.url;
-              urlLink.target = '_blank'; // Open in new tab
-              urlLink.title = 'Click to open link in new tab';
-              linkInfoDiv.appendChild(urlLink);
-            }
-
-            listItem.appendChild(linkInfoDiv);
-
-            // Only show copy button for real URLs, not placeholders
-            if (!linkInfo.isPlaceholder) {
-              const copyButton = document.createElement('button');
-              copyButton.className = 'copy-link-button';
-              copyButton.textContent = 'Copy';
-              copyButton.onclick = () => {
-                // Use the fallback clipboard method instead of navigator.clipboard
-                const textarea = document.createElement('textarea');
-                textarea.value = linkInfo.url;
-                textarea.style.position = 'fixed';  // Avoid scrolling to bottom
-                document.body.appendChild(textarea);
-                textarea.select();
-
-                try {
-                  const successful = document.execCommand('copy');
-                  if (successful) {
-                    copyButton.textContent = 'Copied!';
-                    setTimeout(() => {
-                      copyButton.textContent = 'Copy';
-                    }, 1500);
-                  } else {
-                    console.error('Copy command was unsuccessful');
-                  }
-                } catch (err) {
-                  console.error('Failed to copy link:', err);
-                } finally {
-                  document.body.removeChild(textarea);
+                if (linkInfo.isPlaceholder) {
+                    const urlInfo = document.createElement('span');
+                    urlInfo.className = 'link-url';
+                    urlInfo.textContent = `Node ID: ${linkInfo.id}`;
+                    urlInfo.style.fontFamily = 'monospace';
+                    linkInfoDiv.appendChild(urlInfo);
+                } else {
+                    const urlLink = document.createElement('a');
+                    urlLink.className = 'link-url';
+                    urlLink.href = linkInfo.url;
+                    urlLink.textContent = linkInfo.url;
+                    urlLink.target = '_blank';
+                    urlLink.title = 'Click to open link in new tab';
+                    linkInfoDiv.appendChild(urlLink);
                 }
-              };
-              listItem.appendChild(copyButton);
-            } else {
-              // For placeholder links, add a button to copy the node ID
-              const copyButton = document.createElement('button');
-              copyButton.className = 'copy-link-button';
-              copyButton.textContent = 'Copy ID';
-              copyButton.onclick = () => {
-                // Use the fallback clipboard method instead of navigator.clipboard
-                const textarea = document.createElement('textarea');
-                textarea.value = linkInfo.id;
-                textarea.style.position = 'fixed';  // Avoid scrolling to bottom
-                document.body.appendChild(textarea);
-                textarea.select();
 
-                try {
-                  const successful = document.execCommand('copy');
-                  if (successful) {
-                    copyButton.textContent = 'Copied!';
-                    setTimeout(() => {
-                      copyButton.textContent = 'Copy ID';
-                    }, 1500);
-                  } else {
-                    console.error('Copy command was unsuccessful');
-                  }
-                } catch (err) {
-                  console.error('Failed to copy node ID:', err);
-                } finally {
-                  document.body.removeChild(textarea);
+                listItem.appendChild(linkInfoDiv);
+
+                // --- Button Group ---
+                const buttonGroup = document.createElement('div');
+                buttonGroup.className = 'button-group';
+
+                // Copy Button (Link or ID)
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-link-button';
+                copyButton.textContent = linkInfo.isPlaceholder ? 'Copy ID' : 'Copy Link';
+                copyButton.onclick = () => {
+                    const textToCopy = linkInfo.isPlaceholder ? linkInfo.id : linkInfo.url;
+                    const textarea = document.createElement('textarea');
+                    textarea.value = textToCopy;
+                    textarea.style.position = 'fixed';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        const successful = document.execCommand('copy');
+                        if (successful) {
+                            copyButton.textContent = 'Copied!';
+                            setTimeout(() => {
+                                copyButton.textContent = linkInfo.isPlaceholder ? 'Copy ID' : 'Copy Link';
+                            }, 1500);
+                        } else { console.error('Copy command failed'); }
+                    } catch (err) { console.error('Failed to copy:', err); }
+                    finally { document.body.removeChild(textarea); }
+                };
+                buttonGroup.appendChild(copyButton);
+
+                // Export TS Button (only if tsContent exists)
+                if (linkInfo.tsFilename && linkInfo.tsContent) {
+                    const exportButton = document.createElement('button');
+                    exportButton.className = 'export-ts-button';
+                    exportButton.textContent = 'Export TS';
+                    exportButton.title = `Export ${linkInfo.tsFilename}`;
+                    exportButton.onclick = () => {
+                        try {
+                            downloadFile(linkInfo.tsFilename, linkInfo.tsContent);
+                            exportButton.textContent = 'Exported!';
+                            setTimeout(() => {
+                                exportButton.textContent = 'Export TS';
+                            }, 1500);
+                        } catch(err) {
+                            console.error("Failed to trigger download:", err);
+                            exportButton.textContent = 'Error';
+                            setTimeout(() => {
+                                exportButton.textContent = 'Export TS';
+                            }, 2000);
+                        }
+                    };
+                    buttonGroup.appendChild(exportButton);
                 }
-              };
-              listItem.appendChild(copyButton);
-            }
 
-            linksList.appendChild(listItem);
-          });
+                listItem.appendChild(buttonGroup);
+                // --- End Button Group ---
+
+                linksList.appendChild(listItem);
+            });
         }
         showDialog('links-dialog');
       }
@@ -2343,6 +2357,19 @@
       parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
       hideDialog('return-dialog');
     });
+
+    // Function to trigger file download
+    function downloadFile(filename, content, mimeType = 'text/typescript') {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
   </script>
 </body>
 

@@ -963,10 +963,75 @@ figma.ui.onmessage = async msg => {
   }
 };
 
+// Function to generate a TypeScript interface from component properties
+function generateTypeScriptInterface(componentNode) {
+    if (!componentNode || !componentNode.name) {
+        return null;
+    }
+
+    // Sanitize component name for interface and filename
+    const baseName = componentNode.name.replace(/❖\s*/, '').replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z_]+/, '_');
+    const interfaceName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+    const filename = `${interfaceName}.ts`;
+
+    let interfaceContent = '';
+    let propertiesAdded = false;
+    let needsReactNodeImport = false;
+
+    const definitions = componentNode.componentPropertyDefinitions;
+
+    if (definitions) {
+        Object.entries(definitions).forEach(([key, def]) => {
+            // Sanitize property name for valid TS identifier
+            let propName = key.split('#')[0];
+            propName = propName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[^a-zA-Z_]+/, '_');
+            propName = propName.replace(/_([a-zA-Z])/g, (g) => g[1].toUpperCase());
+            propName = propName.charAt(0).toLowerCase() + propName.slice(1);
+
+            let propType = 'any'; // Default type
+
+            switch (def.type) {
+                case 'VARIANT':
+                    propType = (def.variantOptions && Array.isArray(def.variantOptions)) 
+                               ? def.variantOptions.map(opt => `'${opt.replace(/'/g, "\\'")}'`).join(' | ') 
+                               : 'string'; // Fallback to string if options don't exist or aren't an array
+                    break;
+                case 'BOOLEAN':
+                    propType = 'boolean';
+                    break;
+                case 'TEXT':
+                    propType = 'string';
+                    break;
+                case 'INSTANCE_SWAP':
+                    propType = 'ReactNode';
+                    needsReactNodeImport = true;
+                    break;
+            }
+            // Simplified check for standard types
+            const isRequired = ['VARIANT', 'BOOLEAN', 'TEXT', 'INSTANCE_SWAP'].includes(def.type);
+            interfaceContent += `\t${propName}${isRequired ? '' : '?'}: ${propType};\n`; // Add optional '?' if not explicitly handled
+            propertiesAdded = true;
+        });
+    }
+
+    if (!propertiesAdded) {
+        return null;
+    }
+
+    let finalContent = '';
+    if (needsReactNodeImport) {
+        finalContent += `import type { ReactNode } from 'react';\n\n`; // Keep 'import type' for potential TS processing
+    }
+    finalContent += `export interface ${interfaceName} {\n${interfaceContent}}`;
+
+    return { filename, content: finalContent };
+}
+
 // Add this handler for the new feature
 async function getSelectedElementLinks() {
   const selectedNodes = figma.currentPage.selection;
   const links = [];
+  let fileKey = null;
 
   if (selectedNodes.length === 0) {
     figma.ui.postMessage({ type: 'show-links-dialog', links: [] });
@@ -974,87 +1039,102 @@ async function getSelectedElementLinks() {
     return;
   }
 
-  // Get document ID from documentAsString
-  // This is a more reliable method than figma.fileKey in some contexts
-  let fileKey = null;
-
   try {
-    // Try both methods to get the file key/ID
     if (figma.fileKey) {
       fileKey = figma.fileKey;
     } else if (figma.root && figma.root.id) {
-      // Fallback to node ID of root
       fileKey = figma.root.id.split(':')[0];
     }
 
-    // Check if we successfully got a file key
-    if (fileKey) {
-      // Generate links with file key
-      for (const node of selectedNodes) {
-        try {
-          // Format the node ID like Figma does
-          const cleanNodeId = node.id.replace(':', '-');
-
-          // Get a random token for the 't' parameter in the URL (this may change but isn't critical)
-          const randomToken = Math.random().toString(36).substring(2, 15);
-
-          // Construct the URL to match Figma's "Copy Link to Selection" format
-          const nodeUrl = `https://www.figma.com/file/${fileKey}/${encodeURIComponent(figma.root.name)}?node-id=${cleanNodeId}&t=${randomToken}-0`;
-
-          links.push({
+    for (const node of selectedNodes) {
+        let linkInfo = {
             id: node.id,
-            name: node.name,
-            url: nodeUrl
-          });
-        } catch (error) {
-          console.error(`Error generating link for node ${node.name}:`, error);
+            name: node.name || 'Unnamed Element',
+            url: `#${node.id}`,
+            isPlaceholder: true,
+            tsFilename: null,
+            tsContent: null
+        };
+
+        if (fileKey) {
+            try {
+                const cleanNodeId = node.id.replace(':', '-');
+                const randomToken = Math.random().toString(36).substring(2, 15);
+                linkInfo.url = `https://www.figma.com/file/${fileKey}/${encodeURIComponent(figma.root.name)}?node-id=${cleanNodeId}&t=${randomToken}-0`;
+                linkInfo.isPlaceholder = false;
+            } catch (error) {
+                console.error(`Error generating link URL for node ${node.name}:`, error);
+                linkInfo.isPlaceholder = true;
+            }
         }
-      }
-    } else {
-      // No file key means the file might not be saved/published yet
-      // Create informational placeholder links
-      for (const node of selectedNodes) {
-        links.push({
-          id: node.id,
-          name: node.name,
-          url: `#${node.id}`,
-          isPlaceholder: true
-        });
-      }
 
-      // Throw an error to show the message about how to get real links
-      throw new Error("File key not available");
+        try {
+             let componentNode = null;
+             if (node.type === 'COMPONENT' || node.type === 'COMPONENT_SET') {
+                 componentNode = node;
+             } else if (node.type === 'INSTANCE') {
+                 const mainComponent = await node.getMainComponentAsync();
+                 if (mainComponent) {
+                     if (mainComponent.type === 'COMPONENT' || mainComponent.type === 'COMPONENT_SET') {
+                        componentNode = mainComponent;
+                     } else {
+                         console.warn(`Main component for instance ${node.name} is not a Component or ComponentSet: ${mainComponent.type}`);
+                     }
+                 } else {
+                    console.warn(`Could not get main component for instance ${node.name}`);
+                 }
+             }
+
+             if (componentNode) {
+                 const tsData = generateTypeScriptInterface(componentNode);
+                 if (tsData) {
+                     linkInfo.tsFilename = tsData.filename;
+                     linkInfo.tsContent = tsData.content;
+                 }
+             }
+        } catch (tsError) {
+             console.warn(`Could not generate TS interface for ${node.name}:`, tsError);
+        }
+
+        links.push(linkInfo);
     }
+
+    if (!fileKey) {
+        throw new Error("File key not available to generate full Figma links.");
+    }
+
   } catch (error) {
-    console.warn("Could not generate proper Figma links:", error);
-
-    if (links.length === 0) {
-      // Create at least placeholder links with node IDs if we have no links at all
-      for (const node of selectedNodes) {
-        links.push({
-          id: node.id,
-          name: node.name,
-          url: `#${node.id}`,
-          isPlaceholder: true
-        });
-      }
+    console.warn("Could not generate proper Figma links or TS interfaces:", error);
+    if (links.length === 0 && selectedNodes.length > 0) {
+         selectedNodes.forEach(node => {
+             links.push({
+                 id: node.id,
+                 name: node.name || 'Unnamed Element',
+                 url: `#${node.id}`,
+                 isPlaceholder: true,
+                 tsFilename: null,
+                 tsContent: null
+             });
+         });
     }
-
-    // Send a message along with the links indicating they're placeholders
     figma.ui.postMessage({
-      type: 'show-links-dialog',
-      links: links,
-      error: "Could not generate full Figma links. Try using Figma's built-in 'Copy Link to Selection' (Ctrl+L) instead."
+        type: 'show-links-dialog',
+        links: links,
+        error: "Could not generate full Figma links. Try using Figma's 'Copy Link to Selection' (Ctrl+L). TS export might also be unavailable."
     });
-
-    figma.notify("Unable to generate proper Figma links. Try using Figma's 'Copy Link to Selection' (Ctrl+L) instead.", { timeout: 5000 });
+    figma.notify("Unable to generate proper Figma links. TS export might be affected.", { timeout: 5000 });
     return;
   }
 
   figma.ui.postMessage({ type: 'show-links-dialog', links: links });
-
   if (links.length > 0) {
-    figma.notify(`Generated ${links.length} link${links.length > 1 ? 's' : ''}.`, { timeout: 2000 });
+    const realLinksCount = links.filter(l => !l.isPlaceholder).length;
+    const tsExportCount = links.filter(l => l.tsFilename).length;
+    let notifyMsg = `Generated ${realLinksCount} link${realLinksCount !== 1 ? 's' : ''}.`;
+    if (tsExportCount > 0) {
+       notifyMsg += ` ${tsExportCount} component${tsExportCount !== 1 ? 's' : ''} ready for TS export.`
+    }
+    figma.notify(notifyMsg, { timeout: 3000 });
   }
 }
 
