@@ -426,7 +426,7 @@
         width: 100%;
         height: 100%;
         color: var(--figma-color-text);
-        padding: 0 14px 0 14px;
+        padding: 0 10px 0 10px;
         box-sizing: border-box;
         z-index: 10;
         display: flex;
@@ -1052,7 +1052,7 @@
      /* ... rest of styles ... */
 
     /* Style for the batch export button */
-    #batch-export-ts-button {
+    #batch-export-ts-button, #batch-export-links-button {
        display: block; /* Make it a block element */
        width: 100%; /* Full width */
        background: var(--figma-color-bg-brand); /* Use brand color for primary action */
@@ -1069,12 +1069,12 @@
        transition: all ease .2s;
      }
 
-     #batch-export-ts-button:hover {
+     #batch-export-ts-button:hover, #batch-export-links-button:hover {
        background: var(--figma-color-bg-brand-hover);
        border-color: var(--figma-color-bg-brand-hover);
      }
 
-     #batch-export-ts-button:disabled {
+     #batch-export-ts-button:disabled, #batch-export-links-button:disabled {
        background: var(--figma-color-bg-disabled);
        border-color: var(--figma-color-border-disabled);
        color: var(--figma-color-text-disabled);
@@ -1090,12 +1090,12 @@
        border-radius: 6px;
        padding: 8px 16px;
        cursor: pointer;
-       color: var(--figma-color-text); 
+       color: var(--figma-color-text);
        font-weight: 500;
        font-size: 12px;
        text-align: center;
        margin-top: 8px; /* Space between buttons */
-       margin-bottom: 10px; 
+       margin-bottom: 10px;
        transition: all ease .2s;
     }
 
@@ -1809,7 +1809,7 @@
                     });
                 }
 
-                // --- Add Single Export URL Button --- 
+                // --- Add Single Export URL Button ---
                 if (linkInfo.url && !linkInfo.isPlaceholder) {
                     // Generate sanitized filename (consistent with batch export and script)
                     const linkFilenameBase = linkInfo.name
@@ -1841,9 +1841,9 @@
                     };
                     buttonGroup.appendChild(exportUrlButton);
                 }
-                // --- End Single Export URL Button --- 
+                // --- End Single Export URL Button ---
 
-                // --- Add to batch link export list --- 
+                // --- Add to batch link export list ---
                 if (linkInfo.url && !linkInfo.isPlaceholder) {
                     // Generate sanitized filename for the link file (should match script logic)
                     const linkFilenameBase = linkInfo.name
@@ -1859,7 +1859,7 @@
                         content: linkInfo.url // Content is just the URL
                     });
                 }
-                // --- End add to batch link export --- 
+                // --- End add to batch link export ---
 
                 listItem.appendChild(buttonGroup);
                 linksList.appendChild(listItem);
@@ -2599,7 +2599,7 @@
         }
     });
 
-    // --- Add click handler for the Batch Export Links button --- 
+    // --- Add click handler for the Batch Export Links button ---
     document.getElementById('batch-export-links-button').addEventListener('click', () => {
         const button = document.getElementById('batch-export-links-button');
         const originalText = button.textContent;
@@ -2653,7 +2653,7 @@
              }, 3000);
         }
     });
-    // --- End Batch Export Links handler --- 
+    // --- End Batch Export Links handler ---
 
   </script>
 </body>
