@@ -5,6 +5,7 @@ const path = require('path');
 const componentsFilePath = path.join(__dirname, '../data/components.json');
 const menuFilePath = path.join(__dirname, '../data/menu.json');
 const figmaPluginCodePath = path.join(__dirname, '../_figma_plugin/code.js');
+const newLinksFilePath = path.join(__dirname, '../data/new_links.json');
 
 // Load existing components data
 const componentsData = JSON.parse(fs.readFileSync(componentsFilePath, 'utf8'));
@@ -52,10 +53,42 @@ function updateFigmaPluginMenuData() {
    }
 }
 
-// Function to update components.json with new items
+// Function to update components.json with new items and links
 function updateComponents() {
-   let newItemsAdded = false;
+   let changesMade = false; // Flag to track if any changes were made
+   let newLinksData = {};
 
+   // --- Check for and process new_links.json ---
+   if (fs.existsSync(newLinksFilePath)) {
+       console.log('Found new_links.json, processing...');
+       try {
+           const newLinksFileContent = fs.readFileSync(newLinksFilePath, 'utf8');
+           newLinksData = JSON.parse(newLinksFileContent);
+           console.log(`Loaded ${Object.keys(newLinksData).length} links from new_links.json.`);
+
+           // Iterate through existing componentsData to update links
+           Object.keys(componentsData).forEach(itemKey => {
+               const component = componentsData[itemKey];
+               // Check if the component name exists in newLinksData and if the current figmaLink is empty
+               if (newLinksData[component.name] && component.figmaLink === "") {
+                   component.figmaLink = newLinksData[component.name];
+                   console.log(`Updated figmaLink for: ${component.name}`);
+                   changesMade = true; // Mark that a change was made
+               }
+           });
+
+           // Delete the new_links.json file after processing
+           fs.unlinkSync(newLinksFilePath);
+           console.log('Deleted new_links.json');
+
+       } catch (error) {
+           console.error('Error processing new_links.json:', error);
+           // Don't exit, continue with adding new items if possible
+       }
+   }
+   // --- End processing new_links.json ---
+
+   // --- Process new items from menuData ---
    menuData.forEach(category => {
       category.items.forEach(item => {
          const itemKey = item.toLowerCase().replace(/\s+/g, '-'); // Create a key from the item name
@@ -63,28 +96,30 @@ function updateComponents() {
          // Check if the item already exists in componentsData
          if (!componentsData[itemKey]) {
             // Create a new data set for the item
-            componentsData[itemKey] = {
+            const newComponent = {
                "name": item,
                "description": "",
-               "figmaLink": "",
+               "figmaLink": newLinksData[item] || "", // Use link from newLinksData if available
                "figmaProto": "",
                "figmaButtonText": item,
                "imagePath1": "assets/prop_table/empty.png",
                "imagePath2": "assets/prop_table/empty.png",
                "nestedComponents": []
             };
-            newItemsAdded = true;
-            console.log(`Added new item: ${item}`);
+            componentsData[itemKey] = newComponent;
+            changesMade = true; // Mark that a change was made
+            console.log(`Added new item: ${item}` + (newComponent.figmaLink ? ' with figmaLink.' : '.'));
          }
       });
    });
+   // --- End processing new items ---
 
-   // Write the updated components data back to components.json if new items were added
-   if (newItemsAdded) {
+   // Write the updated components data back to components.json only if changes were made
+   if (changesMade) {
       fs.writeFileSync(componentsFilePath, JSON.stringify(componentsData, null, 4));
-      console.log('components.json has been updated.');
+      console.log('components.json has been updated with new items and/or links.');
    } else {
-      console.log('No new items to add.');
+      console.log('No new items added or links updated.');
    }
 }
 
