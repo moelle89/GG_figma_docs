@@ -6,6 +6,7 @@ const componentsFilePath = path.join(__dirname, '../data/components.json');
 const menuFilePath = path.join(__dirname, '../data/menu.json');
 const figmaPluginCodePath = path.join(__dirname, '../_figma_plugin/code.js');
 const newLinksFilePath = path.join(__dirname, '../data/new_links.json');
+const componentLinksDirPath = path.join(__dirname, '../data/component_links'); // Directory for exported .url files
 
 // Load existing components data
 const componentsData = JSON.parse(fs.readFileSync(componentsFilePath, 'utf8'));
@@ -56,37 +57,64 @@ function updateFigmaPluginMenuData() {
 // Function to update components.json with new items and links
 function updateComponents() {
    let changesMade = false; // Flag to track if any changes were made
-   let newLinksData = {};
+   let linkFiles = {}; // Store found link files { 'component-name.url': 'url content' }
 
-   // --- Check for and process new_links.json ---
-   if (fs.existsSync(newLinksFilePath)) {
-       console.log('Found new_links.json, processing...');
+   // --- Check for and load link files from component_links directory ---
+   if (fs.existsSync(componentLinksDirPath)) {
+       console.log(`Found ${componentLinksDirPath}, processing link files...`);
        try {
-           const newLinksFileContent = fs.readFileSync(newLinksFilePath, 'utf8');
-           newLinksData = JSON.parse(newLinksFileContent);
-           console.log(`Loaded ${Object.keys(newLinksData).length} links from new_links.json.`);
-
-           // Iterate through existing componentsData to update links
-           Object.keys(componentsData).forEach(itemKey => {
-               const component = componentsData[itemKey];
-               // Check if the component name exists in newLinksData and if the current figmaLink is empty
-               if (newLinksData[component.name] && component.figmaLink === "") {
-                   component.figmaLink = newLinksData[component.name];
-                   console.log(`Updated figmaLink for: ${component.name}`);
-                   changesMade = true; // Mark that a change was made
+           const files = fs.readdirSync(componentLinksDirPath);
+           files.forEach(file => {
+               if (path.extname(file) === '.url') {
+                   const filePath = path.join(componentLinksDirPath, file);
+                   const urlContent = fs.readFileSync(filePath, 'utf8').trim();
+                   if (urlContent) {
+                       linkFiles[file] = urlContent;
+                   } else {
+                       console.warn(`Warning: Link file ${file} is empty.`);
+                   }
                }
            });
-
-           // Delete the new_links.json file after processing
-           fs.unlinkSync(newLinksFilePath);
-           console.log('Deleted new_links.json');
-
+           console.log(`Loaded ${Object.keys(linkFiles).length} URLs from link files.`);
        } catch (error) {
-           console.error('Error processing new_links.json:', error);
-           // Don't exit, continue with adding new items if possible
+           console.error(`Error reading directory ${componentLinksDirPath}:`, error);
        }
    }
-   // --- End processing new_links.json ---
+   // --- End loading link files ---
+
+   // --- Remove old new_links.json processing logic (kept for reference, now commented out) ---
+   /*
+   if (fs.existsSync(newLinksFilePath)) {
+       console.log('Found new_links.json, processing...');
+       // ... (old logic using new_links.json)
+       fs.unlinkSync(newLinksFilePath);
+       console.log('Deleted new_links.json');
+   }
+   */
+   // --- End remove old logic ---
+
+   // --- Process existing componentsData for missing links ---
+   Object.keys(componentsData).forEach(itemKey => {
+       const component = componentsData[itemKey];
+       // Check if the figmaLink is empty
+       if (component.figmaLink === "") {
+           // Sanitize name to find corresponding .url file
+           const linkFilenameBase = component.name
+               .replace(/❖\s*/, '') // Remove prefix if present
+               .replace(/\s+/g, '-') // Replace spaces with hyphens
+               .toLowerCase()
+               .replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric/non-hyphen
+               .replace(/^-+|-+$/g, ''); // Trim leading/trailing hyphens
+           const linkFilename = `${linkFilenameBase || 'component'}.url`;
+
+           if (linkFiles[linkFilename]) {
+               component.figmaLink = linkFiles[linkFilename];
+               console.log(`Updated figmaLink for existing component: ${component.name}`);
+               changesMade = true; // Mark that a change was made
+           }
+       }
+   });
+   // --- End processing existing components ---
 
    // --- Process new items from menuData ---
    menuData.forEach(category => {
@@ -95,11 +123,26 @@ function updateComponents() {
 
          // Check if the item already exists in componentsData
          if (!componentsData[itemKey]) {
-            // Create a new data set for the item
+            // --- Find link from loaded linkFiles ---
+            let linkUrl = "";
+            // Sanitize item name to find corresponding .url file
+            const linkFilenameBase = item
+                .replace(/❖\s*/, '') // Remove prefix if present
+                .replace(/\s+/g, '-') // Replace spaces with hyphens
+                .toLowerCase()
+                .replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric/non-hyphen
+                .replace(/^-+|-+$/g, ''); // Trim leading/trailing hyphens
+            const linkFilename = `${linkFilenameBase || 'component'}.url`;
+
+            if (linkFiles[linkFilename]) {
+                linkUrl = linkFiles[linkFilename];
+            }
+            // --- End find link ---
+
             const newComponent = {
                "name": item,
                "description": "",
-               "figmaLink": newLinksData[item] || "", // Use link from newLinksData if available
+               "figmaLink": linkUrl, // Use the found linkUrl from file
                "figmaProto": "",
                "figmaButtonText": item,
                "imagePath1": "assets/prop_table/empty.png",
@@ -113,6 +156,21 @@ function updateComponents() {
       });
    });
    // --- End processing new items ---
+
+   // --- Delete processed link files ---
+   if (Object.keys(linkFiles).length > 0) {
+       console.log('Deleting processed link files...');
+       Object.keys(linkFiles).forEach(file => {
+           const filePath = path.join(componentLinksDirPath, file);
+           try {
+               fs.unlinkSync(filePath);
+               console.log(`Deleted ${file}`);
+           } catch (err) {
+               console.error(`Error deleting file ${filePath}:`, err);
+           }
+       });
+   }
+   // --- End deleting link files ---
 
    // Write the updated components data back to components.json only if changes were made
    if (changesMade) {
