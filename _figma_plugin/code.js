@@ -992,8 +992,8 @@ function generateTypeScriptInterface(componentNode) {
 
             switch (def.type) {
                 case 'VARIANT':
-                    propType = (def.variantOptions && Array.isArray(def.variantOptions)) 
-                               ? def.variantOptions.map(opt => `'${opt.replace(/'/g, "\\'")}'`).join(' | ') 
+                    propType = (def.variantOptions && Array.isArray(def.variantOptions))
+                               ? def.variantOptions.map(opt => `'${opt.replace(/'/g, "\\'")}'`).join(' | ')
                                : 'string'; // Fallback to string if options don't exist or aren't an array
                     break;
                 case 'BOOLEAN':
@@ -1258,7 +1258,7 @@ async function createPlaygroundFrame() {
     // --- Frame Creation & Sizing ---
     const frame = figma.createFrame();
     frame.name = `Playground - ${componentName.replace('❖ ', '')}`;
-    frame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    frame.fills = [{ type: 'SOLID', color: { r: 228 / 255, g: 228 / 255, b: 228 / 255 } }];
 
     // Get instance dimensions AFTER creation/cloning
     const instanceWidth = nodeToInstance.width;
@@ -1302,8 +1302,10 @@ async function createPlaygroundFrame() {
     await figma.clientStorage.setAsync(PLAYGROUND_FRAME_ID_KEY, frame.id);
     await checkAndSendPlaygroundState(); // Send updated state (true)
 
-    figma.currentPage.selection = [frame];
-    figma.viewport.scrollAndZoomIntoView([frame]); // Move user's view to the new frame
+    // Select the instance instead of the frame
+    figma.currentPage.selection = [nodeToInstance];
+    // Scroll and zoom to the instance
+    figma.viewport.scrollAndZoomIntoView([nodeToInstance]);
     figma.notify(`Created playground frame for '${componentName.replace('❖ ', '')}'`);
 
   } catch (error) {
