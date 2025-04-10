@@ -1073,6 +1073,36 @@
        color: var(--figma-color-text-disabled);
        cursor: not-allowed;
      }
+
+    /* Style for the new copy link data button */
+    #copy-link-data-button {
+       display: block; /* Make it a block element */
+       width: 100%; /* Full width */
+       background: var(--figma-color-bg-secondary); /* Use secondary color */
+       border: 1px solid var(--figma-color-border);
+       border-radius: 6px;
+       padding: 8px 16px;
+       cursor: pointer;
+       color: var(--figma-color-text); 
+       font-weight: 500;
+       font-size: 12px;
+       text-align: center;
+       margin-top: 8px; /* Space between buttons */
+       margin-bottom: 10px; 
+       transition: all ease .2s;
+    }
+
+    #copy-link-data-button:hover {
+       background: var(--figma-color-bg-hover);
+       border-color: var(--figma-color-border-strong);
+    }
+
+    #copy-link-data-button:disabled { /* Apply disabled styles to new button too */
+       background: var(--figma-color-bg-disabled);
+       border-color: var(--figma-color-border-disabled);
+       color: var(--figma-color-text-disabled);
+       cursor: not-allowed;
+    }
   </style>
   <!-- Add JSZip library from CDN -->
   <!-- REMOVED from here -->
@@ -1158,6 +1188,8 @@
       </ul>
       <!-- Add Batch Export Button here -->
       <button id="batch-export-ts-button" disabled>Batch Export TS</button>
+      <!-- Add Copy Link Data Button here -->
+      <button id="copy-link-data-button" disabled>Copy Link Data for Script</button>
       <button id="close-links-dialog">Close</button>
     </div>
   </div>
@@ -1657,9 +1689,12 @@
         exportableTsItems = []; // Reset batch export list for this dialog instance
         const linksList = document.getElementById('links-list');
         const batchExportButton = document.getElementById('batch-export-ts-button');
+        const copyLinkDataButton = document.getElementById('copy-link-data-button'); // Get the new button
         linksList.innerHTML = ''; // Clear previous content
         batchExportButton.disabled = true; // Disable initially
+        copyLinkDataButton.disabled = true; // Disable new button initially
         batchExportButton.textContent = 'Batch Export TS'; // Reset text
+        copyLinkDataButton.textContent = 'Copy Link Data for Script'; // Reset text
 
         if (data.error) {
             const errorItem = document.createElement('li');
@@ -1768,6 +1803,16 @@
                 batchExportButton.textContent = `Batch Export TS (${exportableTsItems.length})`;
             } else {
                 batchExportButton.textContent = 'Batch Export TS'; // Keep default text if none
+            }
+
+            // Enable Copy Link Data button if valid links are present
+            const hasValidLinks = currentLinksData.some(link => link.url && !link.isPlaceholder); // Corrected: check currentLinksData
+            copyLinkDataButton.disabled = !hasValidLinks;
+            if (hasValidLinks) {
+                const validLinkCount = currentLinksData.filter(link => link.url && !link.isPlaceholder).length;
+                 copyLinkDataButton.textContent = `Copy Link Data for Script (${validLinkCount})`;
+            } else {
+                copyLinkDataButton.textContent = 'Copy Link Data for Script';
             }
         }
         showDialog('links-dialog');
@@ -2474,6 +2519,89 @@
                 button.textContent = originalText;
                 button.disabled = false;
              }, 3000);
+        }
+    });
+
+    // Add click handler for the copy link data button
+    document.getElementById('copy-link-data-button').addEventListener('click', () => {
+        const button = document.getElementById('copy-link-data-button');
+        const originalText = button.textContent;
+
+        if (!currentLinksData || currentLinksData.length === 0) {
+            console.warn("No link data available to copy.");
+            return;
+        }
+
+        const linkMappings = {};
+        let validLinksFound = 0;
+        currentLinksData.forEach(linkInfo => {
+            // Only include items that have a valid (non-placeholder) URL
+            if (linkInfo.url && !linkInfo.isPlaceholder) {
+                linkMappings[linkInfo.name] = linkInfo.url;
+                validLinksFound++;
+            }
+        });
+
+        if (validLinksFound === 0) {
+            console.warn("No valid Figma links found in the selection to copy.");
+            button.textContent = 'No Links Found';
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.disabled = true; // Keep disabled if no valid links
+            }, 2000);
+            return;
+        }
+
+        const jsonString = JSON.stringify(linkMappings, null, 2);
+
+        // Check if Clipboard API is available and use it if possible
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(jsonString).then(() => {
+                console.log('Link data JSON copied to clipboard (API):', jsonString);
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy link data JSON (API):', err);
+                button.textContent = 'Copy Failed';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        } else {
+            // Fallback using document.execCommand('copy')
+            console.log('Clipboard API unavailable, using fallback method.');
+            const textarea = document.createElement('textarea');
+            textarea.value = jsonString;
+            textarea.style.position = 'fixed'; // Prevent scrolling to bottom
+            textarea.style.opacity = '0'; // Hide the textarea
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    console.log('Link data JSON copied to clipboard (Fallback):', jsonString);
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 1500);
+                } else {
+                    console.error('Copy command failed (Fallback)');
+                    button.textContent = 'Copy Failed';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Failed to copy (Fallback):', err);
+                button.textContent = 'Copy Failed';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            } finally {
+                document.body.removeChild(textarea);
+            }
         }
     });
   </script>

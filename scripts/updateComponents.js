@@ -24,28 +24,28 @@ try {
 // Function to update the Figma plugin's code.js with menu data from menu.json
 function updateFigmaPluginMenuData() {
    console.log('Updating Figma plugin menu data...');
-   
+
    try {
       // Read the code.js file
       let codeJsContent = fs.readFileSync(figmaPluginCodePath, 'utf8');
-      
+
       // Create a string representation of the menu data with proper formatting
       const menuDataString = JSON.stringify(menuData, null, 2)
          .replace(/^/gm, '  ') // Add 2 spaces at the beginning of each line for indentation
          .replace(/\n$/, '');   // Remove the last newline
-      
+
       // Regular expression to find the defaultMenuData array
       const menuDataRegex = /(const\s+defaultMenuData\s*=\s*)\[[\s\S]*?\];/;
-      
+
       // Replace the entire defaultMenuData array with the new menu data
       const updatedCodeJs = codeJsContent.replace(
          menuDataRegex,
          `$1${menuDataString};`
       );
-      
+
       // Write the updated code back to code.js
       fs.writeFileSync(figmaPluginCodePath, updatedCodeJs);
-      
+
       console.log('Successfully updated Figma plugin menu data in code.js');
    } catch (error) {
       console.error('Error updating Figma plugin menu data:', error);

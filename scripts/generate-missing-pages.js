@@ -9,7 +9,7 @@ function extractProtoId(figmaProto) {
 }
 // Function to extract menuData from index.html
 function extractMenuData() {
-    const indexPath = path.join(__dirname, '../index.html');
+    const indexPath = path.join(__dirname, '../data/menu.json');
     const indexContent = fs.readFileSync(indexPath, 'utf-8');
 
     // Regular expression to find the menuData variable
