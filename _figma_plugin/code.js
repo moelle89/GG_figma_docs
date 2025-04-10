@@ -1052,6 +1052,40 @@ async function getSelectedElementLinks() {
   }
 }
 
+// Helper function to calculate the bounding box of multiple nodes
+function calculateOverallBounds(nodes) {
+  if (!nodes || nodes.length === 0) {
+    return null;
+  }
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+  nodes.forEach(node => {
+    // Basic check to ignore nodes without dimensions or position (like Guides)
+    if (typeof node.x === 'number' && typeof node.y === 'number' && typeof node.width === 'number' && typeof node.height === 'number') {
+      const nodeMaxX = node.x + node.width;
+      const nodeMaxY = node.y + node.height;
+
+      minX = Math.min(minX, node.x);
+      minY = Math.min(minY, node.y);
+      maxX = Math.max(maxX, nodeMaxX);
+      maxY = Math.max(maxY, nodeMaxY);
+    }
+  });
+
+  // If no valid nodes were found to calculate bounds
+  if (minX === Infinity || minY === Infinity || maxX === -Infinity || maxY === -Infinity) {
+    return null;
+  }
+
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY
+  };
+}
+
 // Modified function to create/toggle the playground frame
 async function createPlaygroundFrame() {
   // --- Check for and remove existing playground frame ---
@@ -1117,38 +1151,55 @@ async function createPlaygroundFrame() {
       return;
     }
 
-    // --- Frame Creation ---
+    // --- Frame Creation & Sizing ---
     const frame = figma.createFrame();
     frame.name = `Playground - ${componentName.replace('❖ ', '')}`;
     frame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
-    const frameWidth = 600;
-    const frameHeight = 400;
+
+    // Get instance dimensions AFTER creation/cloning
+    const instanceWidth = nodeToInstance.width;
+    const instanceHeight = nodeToInstance.height;
+    const padding = 100; // Whitespace around the instance
+
+    // Calculate dynamic frame size
+    const frameWidth = instanceWidth + 2 * padding;
+    const frameHeight = instanceHeight + 2 * padding;
     frame.resize(frameWidth, frameHeight);
 
-    // --- Instance Placement ---
+    // --- Instance Placement (Centered within Frame) ---
     frame.appendChild(nodeToInstance);
-    nodeToInstance.x = (frameWidth - nodeToInstance.width) / 2;
-    nodeToInstance.y = (frameHeight - nodeToInstance.height) / 2;
+    nodeToInstance.x = padding; // Position instance using padding
+    nodeToInstance.y = padding;
 
-    // --- Frame Positioning ---
-    const existingNodeBounds = figma.currentPage.findAll(n => n.parent === figma.currentPage);
-    let offsetX = figma.viewport.center.x + 100;
-    let offsetY = figma.viewport.center.y;
-    if (existingNodeBounds.some(n => n !== frame && Math.abs(n.x - offsetX) < 100 && Math.abs(n.y - offsetY) < 100)) {
-        offsetX += frameWidth + 50;
+    // --- Frame Positioning (Avoid Overlap) ---
+    const allNodes = figma.currentPage.children;
+    const otherNodes = allNodes.filter(n => n.id !== frame.id); // Exclude the frame itself
+    const bounds = calculateOverallBounds(otherNodes);
+
+    let frameX, frameY;
+
+    if (bounds) {
+      // Position 100px to the right of all existing content
+      frameX = bounds.x + bounds.width + 100;
+      frameY = bounds.y; // Align top with the top of existing content bounds
+    } else {
+      // If canvas is empty or no bounds calculable, place near viewport center
+      frameX = figma.viewport.center.x - frameWidth / 2;
+      frameY = figma.viewport.center.y - frameHeight / 2;
     }
-    frame.x = offsetX - frameWidth / 2;
-    frame.y = offsetY - frameHeight / 2;
+
+    frame.x = frameX;
+    frame.y = frameY;
 
     // --- Final Steps ---
-    figma.currentPage.appendChild(frame);
+    figma.currentPage.appendChild(frame); // Add to page (might already be added implicitly by createFrame, but explicit is safe)
 
     // Store the new frame's ID
     await figma.clientStorage.setAsync(PLAYGROUND_FRAME_ID_KEY, frame.id);
     await checkAndSendPlaygroundState(); // Send updated state (true)
 
     figma.currentPage.selection = [frame];
-    figma.viewport.scrollAndZoomIntoView([frame]);
+    figma.viewport.scrollAndZoomIntoView([frame]); // Move user's view to the new frame
     figma.notify(`Created playground frame for '${componentName.replace('❖ ', '')}'`);
 
   } catch (error) {
