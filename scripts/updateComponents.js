@@ -58,6 +58,7 @@ function updateFigmaPluginMenuData() {
 function updateComponents() {
    let changesMade = false; // Flag to track if any changes were made
    let linkFiles = {}; // Store found link files { 'component-name.url': 'url content' }
+   let usedLinkFiles = new Set(); // Keep track of link files that were actually used
 
    // --- Check for and load link files from component_links directory ---
    if (fs.existsSync(componentLinksDirPath)) {
@@ -111,6 +112,7 @@ function updateComponents() {
                component.figmaLink = linkFiles[linkFilename];
                console.log(`Updated figmaLink for existing component: ${component.name}`);
                changesMade = true; // Mark that a change was made
+               usedLinkFiles.add(linkFilename); // Mark this file as used
            }
        }
    });
@@ -136,6 +138,7 @@ function updateComponents() {
 
             if (linkFiles[linkFilename]) {
                 linkUrl = linkFiles[linkFilename];
+                usedLinkFiles.add(linkFilename); // Mark this file as used
             }
             // --- End find link ---
 
@@ -158,9 +161,9 @@ function updateComponents() {
    // --- End processing new items ---
 
    // --- Delete processed link files ---
-   if (Object.keys(linkFiles).length > 0) {
-       console.log('Deleting processed link files...');
-       Object.keys(linkFiles).forEach(file => {
+   if (usedLinkFiles.size > 0) { // Check if the Set has any used files
+       console.log('Deleting used link files...');
+       usedLinkFiles.forEach(file => { // Iterate over the Set of used files
            const filePath = path.join(componentLinksDirPath, file);
            try {
                fs.unlinkSync(filePath);
@@ -169,6 +172,8 @@ function updateComponents() {
                console.error(`Error deleting file ${filePath}:`, err);
            }
        });
+   } else if (Object.keys(linkFiles).length > 0) {
+       console.log('No link files were used in this run.');
    }
    // --- End deleting link files ---
 
