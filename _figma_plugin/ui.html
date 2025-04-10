@@ -1043,7 +1043,39 @@
         flex-shrink: 0;
     }
      /* ... rest of styles ... */
+
+    /* Style for the batch export button */
+    #batch-export-ts-button {
+       display: block; /* Make it a block element */
+       width: 100%; /* Full width */
+       background: var(--figma-color-bg-brand); /* Use brand color for primary action */
+       border: 1px solid var(--figma-color-bg-brand);
+       border-radius: 6px;
+       padding: 8px 16px;
+       cursor: pointer;
+       color: var(--figma-color-text-onbrand); /* Text on brand color */
+       font-weight: 500;
+       font-size: 12px;
+       text-align: center;
+       margin-top: 8px; /* Space between list and this button */
+       margin-bottom: 10px; /* Space between this button and close button */
+       transition: all ease .2s;
+     }
+
+     #batch-export-ts-button:hover {
+       background: var(--figma-color-bg-brand-hover);
+       border-color: var(--figma-color-bg-brand-hover);
+     }
+
+     #batch-export-ts-button:disabled {
+       background: var(--figma-color-bg-disabled);
+       border-color: var(--figma-color-border-disabled);
+       color: var(--figma-color-text-disabled);
+       cursor: not-allowed;
+     }
   </style>
+  <!-- Add JSZip library from CDN -->
+  <!-- REMOVED from here -->
 </head>
 
 <body>
@@ -1124,6 +1156,8 @@
         <!-- Links will be populated here -->
         <li>Loading links...</li>
       </ul>
+      <!-- Add Batch Export Button here -->
+      <button id="batch-export-ts-button" disabled>Batch Export TS</button>
       <button id="close-links-dialog">Close</button>
     </div>
   </div>
@@ -1144,6 +1178,8 @@
    </div>
   </div>
 
+  <!-- Add JSZip script tag HERE, before the main script block -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" referrerpolicy="no-referrer"></script>
   <script>
     // Helper function to load SVG icons
     function createSvgIcon(svgPath, className = '') {
@@ -1618,12 +1654,15 @@
       // Handle showing the links dialog
       if (data && data.type === "show-links-dialog") {
         currentLinksData = data.links;
+        exportableTsItems = []; // Reset batch export list for this dialog instance
         const linksList = document.getElementById('links-list');
+        const batchExportButton = document.getElementById('batch-export-ts-button');
         linksList.innerHTML = ''; // Clear previous content
+        batchExportButton.disabled = true; // Disable initially
+        batchExportButton.textContent = 'Batch Export TS'; // Reset text
 
         if (data.error) {
             const errorItem = document.createElement('li');
-            // Simplified error styling
             errorItem.style.color = 'var(--figma-color-text-danger)';
             errorItem.style.fontStyle = 'italic';
             errorItem.style.padding = '8px 0';
@@ -1636,13 +1675,12 @@
         } else {
             currentLinksData.forEach(linkInfo => {
                 const listItem = document.createElement('li');
-
                 const linkInfoDiv = document.createElement('div');
                 linkInfoDiv.className = 'link-info';
 
                 const nameSpan = document.createElement('span');
                 nameSpan.className = 'link-name';
-                nameSpan.textContent = linkInfo.name || 'Unnamed Element'; // Handle unnamed
+                nameSpan.textContent = linkInfo.name || 'Unnamed Element';
                 linkInfoDiv.appendChild(nameSpan);
 
                 if (linkInfo.isPlaceholder) {
@@ -1663,11 +1701,10 @@
 
                 listItem.appendChild(linkInfoDiv);
 
-                // --- Button Group ---
                 const buttonGroup = document.createElement('div');
                 buttonGroup.className = 'button-group';
 
-                // Copy Button (Link or ID)
+                // Copy Button
                 const copyButton = document.createElement('button');
                 copyButton.className = 'copy-link-button';
                 copyButton.textContent = linkInfo.isPlaceholder ? 'Copy ID' : 'Copy Link';
@@ -1691,7 +1728,7 @@
                 };
                 buttonGroup.appendChild(copyButton);
 
-                // Export TS Button (only if tsContent exists)
+                // Export TS Button & Add to batch list
                 if (linkInfo.tsFilename && linkInfo.tsContent) {
                     const exportButton = document.createElement('button');
                     exportButton.className = 'export-ts-button';
@@ -1713,13 +1750,25 @@
                         }
                     };
                     buttonGroup.appendChild(exportButton);
+
+                    // Add to the list for batch export
+                    exportableTsItems.push({
+                        filename: linkInfo.tsFilename,
+                        content: linkInfo.tsContent
+                    });
                 }
 
                 listItem.appendChild(buttonGroup);
-                // --- End Button Group ---
-
                 linksList.appendChild(listItem);
-            });
+            }); // end forEach loop
+
+            // Enable batch export button if items are available
+            if (exportableTsItems.length > 0) {
+                batchExportButton.disabled = false;
+                batchExportButton.textContent = `Batch Export TS (${exportableTsItems.length})`;
+            } else {
+                batchExportButton.textContent = 'Batch Export TS'; // Keep default text if none
+            }
         }
         showDialog('links-dialog');
       }
@@ -2370,6 +2419,63 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
+
+    // Add click handler for the batch export button
+    document.getElementById('batch-export-ts-button').addEventListener('click', () => {
+        const button = document.getElementById('batch-export-ts-button');
+        const originalText = button.textContent;
+
+        if (exportableTsItems.length === 0) {
+            console.warn("No items to batch export.");
+            return;
+        }
+
+        if (typeof JSZip === 'undefined') {
+            console.error("JSZip library is not loaded.");
+            button.textContent = 'Error: JSZip missing';
+             setTimeout(() => { button.textContent = originalText; button.disabled = true; }, 3000);
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = 'Zipping...';
+
+        try {
+            const zip = new JSZip();
+            exportableTsItems.forEach(item => {
+                // Add file to zip. Handle potential duplicate filenames if necessary (e.g., by adding prefix/suffix)
+                // For now, assuming filenames are unique enough or overwriting is acceptable.
+                zip.file(item.filename, item.content);
+            });
+
+            zip.generateAsync({ type: "blob" })
+                .then(function(content) {
+                    // Trigger download
+                    downloadFile("Figma_TS_Exports.zip", content, "application/zip");
+                    button.textContent = 'Exported!';
+                    setTimeout(() => {
+                        button.textContent = originalText; // Restore original text (with count)
+                        button.disabled = false;
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error("Error generating zip file:", err);
+                    button.textContent = 'Error Zipping';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false; // Re-enable even on error
+                    }, 3000);
+                });
+
+        } catch (error) {
+             console.error("Error during zipping process:", error);
+             button.textContent = 'Error';
+             setTimeout(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+             }, 3000);
+        }
+    });
   </script>
 </body>
 
