@@ -967,6 +967,53 @@
       background-color: var(--figma-color-bg-hover);
       color: var(--figma-color-text);
     }
+
+    /* Styles for the return dialog */
+    #return-dialog .dialog-content {
+       height: auto;
+       max-height: 80vh;
+       padding: 16px; /* Add padding */
+    }
+
+    #return-dialog p {
+       margin-top: 0;
+       margin-bottom: 16px;
+       font-size: 13px;
+       text-align: center;
+    }
+
+    .return-dialog-actions {
+       display: flex;
+       gap: 10px;
+       justify-content: center;
+    }
+
+    .return-dialog-actions button {
+       background: var(--figma-color-bg-secondary);
+       border: 1px solid var(--figma-color-border);
+       border-radius: 6px;
+       padding: 8px 16px;
+       cursor: pointer;
+       color: var(--figma-color-text);
+       font-weight: 500;
+       font-size: 12px;
+       transition: all ease .2s;
+    }
+
+    .return-dialog-actions button:hover {
+       border-color: var(--figma-color-border-strong);
+       background: var(--figma-color-bg-hover);
+    }
+
+    .return-dialog-actions button.primary {
+       background: var(--figma-color-bg-brand);
+       border-color: var(--figma-color-bg-brand);
+       color: var(--figma-color-text-onbrand);
+    }
+     .return-dialog-actions button.primary:hover {
+       background: var(--figma-color-bg-brand-hover);
+       border-color: var(--figma-color-bg-brand-hover);
+    }
   </style>
 </head>
 
@@ -1050,6 +1097,22 @@
       </ul>
       <button id="close-links-dialog">Close</button>
     </div>
+  </div>
+
+  <!-- Add the new return dialog -->
+  <div id="return-dialog"
+      class="dialog"
+      role="dialog"
+      aria-labelledby="return-dialog-title"
+      aria-modal="true">
+   <div class="dialog-content">
+       <h4 id="return-dialog-title" style="text-align: center; margin-bottom: 8px;">Playground Removed</h4>
+       <p>Return to your previous location on the canvas?</p>
+       <div class="return-dialog-actions">
+           <button id="return-dialog-stay">Stay Here</button>
+           <button id="return-dialog-goback" class="primary">Go Back</button>
+       </div>
+   </div>
   </div>
 
   <script>
@@ -1713,6 +1776,11 @@
         }, 300); // Match the transition duration
         hideDialog('component-properties');
       };
+
+      // Handle showing the return dialog
+      if (data && data.type === 'show-return-dialog') {
+        showDialog('return-dialog');
+      }
     };
 
     // Update the renderComponents function
@@ -2261,6 +2329,17 @@
         e.preventDefault();
         document.getElementById('icons-search-clear').click();
       }
+    });
+
+    // Add event listeners for the return dialog buttons
+    document.getElementById('return-dialog-goback').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'go-back' } }, '*');
+      hideDialog('return-dialog');
+    });
+
+    document.getElementById('return-dialog-stay').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
+      hideDialog('return-dialog');
     });
   </script>
 </body>
