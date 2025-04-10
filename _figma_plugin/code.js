@@ -1355,7 +1355,9 @@ async function createPlaygroundFrame() {
     figma.currentPage.appendChild(frame); // Add to page (might already be added implicitly by createFrame, but explicit is safe)
 
     // --- Create and Position Flow Starting Point ---
+    console.log("Attempting to create flow starting point..."); // Add log
     const flowStart = figma.createFlowStartingPoint();
+    console.log("Flow starting point created:", flowStart.id); // Add log
     flowStart.name = `Start - ${frame.name}`; // Give it a related name
     // Position it slightly to the left of the frame
     flowStart.x = frame.x - 60; // Adjust offset as needed
