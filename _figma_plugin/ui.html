@@ -1190,8 +1190,8 @@
       <button id="batch-export-ts-button" disabled>Batch Export TS</button>
       <!-- Add Batch Export Links Button here -->
       <button id="batch-export-links-button" disabled>Batch Export Links</button>
-      <!-- Add Copy Link Data Button here -->
-      <button id="copy-link-data-button" disabled>Copy Link Data for Script</button>
+      <!-- Add Copy Link Data Button here REMOVED-->
+      <!-- <button id="copy-link-data-button" disabled>Copy Link Data for Script</button> -->
       <button id="close-links-dialog">Close</button>
     </div>
   </div>
@@ -1695,14 +1695,14 @@
         const linksList = document.getElementById('links-list');
         const batchExportButton = document.getElementById('batch-export-ts-button');
         const batchExportLinksButton = document.getElementById('batch-export-links-button'); // Get the new button
-        const copyLinkDataButton = document.getElementById('copy-link-data-button');
+        const copyLinkDataButton = document.getElementById('copy-link-data-button'); // Keep reference for now, though button is removed
         linksList.innerHTML = ''; // Clear previous content
         batchExportButton.disabled = true;
         batchExportLinksButton.disabled = true; // Disable initially
-        copyLinkDataButton.disabled = true;
+        // copyLinkDataButton.disabled = true; // No longer needed
         batchExportButton.textContent = 'Batch Export TS';
         batchExportLinksButton.textContent = 'Batch Export Links'; // Reset text
-        copyLinkDataButton.textContent = 'Copy Link Data for Script';
+        // copyLinkDataButton.textContent = 'Copy Link Data for Script'; // No longer needed
 
         if (data.error) {
             const errorItem = document.createElement('li');
@@ -1749,6 +1749,7 @@
                 const copyButton = document.createElement('button');
                 copyButton.className = 'copy-link-button';
                 copyButton.textContent = linkInfo.isPlaceholder ? 'Copy ID' : 'Copy Link';
+                copyButton.title = linkInfo.isPlaceholder ? `Copy Node ID for ${linkInfo.name}` : `Copy Figma Link for ${linkInfo.name}`; // Add title
                 copyButton.onclick = () => {
                     const textToCopy = linkInfo.isPlaceholder ? linkInfo.id : linkInfo.url;
                     const textarea = document.createElement('textarea');
@@ -1774,7 +1775,7 @@
                     const exportButton = document.createElement('button');
                     exportButton.className = 'export-ts-button';
                     exportButton.textContent = 'Export TS';
-                    exportButton.title = `Export ${linkInfo.tsFilename}`;
+                    exportButton.title = `Export TS Interface for ${linkInfo.name} (${linkInfo.tsFilename})`; // Add title
                     exportButton.onclick = () => {
                         try {
                             downloadFile(linkInfo.tsFilename, linkInfo.tsContent);
@@ -1799,7 +1800,41 @@
                     });
                 }
 
-                // --- Add to batch link export --- 
+                // --- Add Single Export URL Button --- 
+                if (linkInfo.url && !linkInfo.isPlaceholder) {
+                    // Generate sanitized filename (consistent with batch export and script)
+                    const linkFilenameBase = linkInfo.name
+                        .replace(/❖\s*/, '')
+                        .replace(/\s+/g, '-')
+                        .toLowerCase()
+                        .replace(/[^a-z0-9-]/g, '')
+                        .replace(/^-+|-+$/g, '');
+                    const linkFilename = `${linkFilenameBase || 'component'}.url`;
+
+                    const exportUrlButton = document.createElement('button');
+                    exportUrlButton.className = 'export-ts-button'; // Use same style as TS export
+                    exportUrlButton.textContent = 'Export URL';
+                    exportUrlButton.title = `Export Link File for ${linkInfo.name} (${linkFilename})`;
+                    exportUrlButton.onclick = () => {
+                         try {
+                            downloadFile(linkFilename, linkInfo.url, 'text/plain'); // Download .url file
+                            exportUrlButton.textContent = 'Exported!';
+                            setTimeout(() => {
+                                exportUrlButton.textContent = 'Export URL';
+                            }, 1500);
+                        } catch(err) {
+                            console.error("Failed to trigger URL download:", err);
+                            exportUrlButton.textContent = 'Error';
+                            setTimeout(() => {
+                                exportUrlButton.textContent = 'Export URL';
+                            }, 2000);
+                        }
+                    };
+                    buttonGroup.appendChild(exportUrlButton);
+                }
+                // --- End Single Export URL Button --- 
+
+                // --- Add to batch link export list --- 
                 if (linkInfo.url && !linkInfo.isPlaceholder) {
                     // Generate sanitized filename for the link file (should match script logic)
                     const linkFilenameBase = linkInfo.name
@@ -1836,8 +1871,9 @@
                 batchExportLinksButton.textContent = 'Batch Export Links';
             }
 
-            // Enable Copy Link Data button if valid links are present
-            const hasValidLinks = currentLinksData.some(link => link.url && !link.isPlaceholder); // Corrected: check currentLinksData
+            // Enable Copy Link Data button if valid links are present - REMOVED
+            /*
+            const hasValidLinks = currentLinksData.some(link => link.url && !link.isPlaceholder);
             copyLinkDataButton.disabled = !hasValidLinks;
             if (hasValidLinks) {
                 const validLinkCount = currentLinksData.filter(link => link.url && !link.isPlaceholder).length;
@@ -1845,6 +1881,7 @@
             } else {
                 copyLinkDataButton.textContent = 'Copy Link Data for Script';
             }
+            */
         }
         showDialog('links-dialog');
       }
@@ -2550,89 +2587,6 @@
                 button.textContent = originalText;
                 button.disabled = false;
              }, 3000);
-        }
-    });
-
-    // Add click handler for the copy link data button
-    document.getElementById('copy-link-data-button').addEventListener('click', () => {
-        const button = document.getElementById('copy-link-data-button');
-        const originalText = button.textContent;
-
-        if (!currentLinksData || currentLinksData.length === 0) {
-            console.warn("No link data available to copy.");
-            return;
-        }
-
-        const linkMappings = {};
-        let validLinksFound = 0;
-        currentLinksData.forEach(linkInfo => {
-            // Only include items that have a valid (non-placeholder) URL
-            if (linkInfo.url && !linkInfo.isPlaceholder) {
-                linkMappings[linkInfo.name] = linkInfo.url;
-                validLinksFound++;
-            }
-        });
-
-        if (validLinksFound === 0) {
-            console.warn("No valid Figma links found in the selection to copy.");
-            button.textContent = 'No Links Found';
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.disabled = true; // Keep disabled if no valid links
-            }, 2000);
-            return;
-        }
-
-        const jsonString = JSON.stringify(linkMappings, null, 2);
-
-        // Check if Clipboard API is available and use it if possible
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(jsonString).then(() => {
-                console.log('Link data JSON copied to clipboard (API):', jsonString);
-                button.textContent = 'Copied!';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 1500);
-            }).catch(err => {
-                console.error('Failed to copy link data JSON (API):', err);
-                button.textContent = 'Copy Failed';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 2000);
-            });
-        } else {
-            // Fallback using document.execCommand('copy')
-            console.log('Clipboard API unavailable, using fallback method.');
-            const textarea = document.createElement('textarea');
-            textarea.value = jsonString;
-            textarea.style.position = 'fixed'; // Prevent scrolling to bottom
-            textarea.style.opacity = '0'; // Hide the textarea
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    console.log('Link data JSON copied to clipboard (Fallback):', jsonString);
-                    button.textContent = 'Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                    }, 1500);
-                } else {
-                    console.error('Copy command failed (Fallback)');
-                    button.textContent = 'Copy Failed';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                    }, 2000);
-                }
-            } catch (err) {
-                console.error('Failed to copy (Fallback):', err);
-                button.textContent = 'Copy Failed';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 2000);
-            } finally {
-                document.body.removeChild(textarea);
-            }
         }
     });
 
