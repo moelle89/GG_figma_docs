@@ -1256,39 +1256,21 @@ async function createPlaygroundFrame() {
   const selection = figma.currentPage.selection;
 
   if (selection.length !== 1) {
-    figma.notify("Please select a single component, variant, or instance to create a playground.");
+    figma.notify("Please select a single element to create a playground.");
     return;
   }
 
   const selectedNode = selection[0];
-  let nodeToInstance = null;
-  let componentName = 'Component'; // Default name
+  let nodeToPlaceInFrame = null;
+  let nodeName = selectedNode.name || 'Element'; // Use selected node name
 
   try {
-    // --- Determine node to instance ---
-    if (selectedNode.type === "INSTANCE") {
-      nodeToInstance = selectedNode.clone();
-      const mainComponent = await selectedNode.getMainComponentAsync();
-      componentName = mainComponent ? mainComponent.name : 'Instance';
-    } else if (selectedNode.type === "COMPONENT") {
-      nodeToInstance = selectedNode.createInstance();
-      componentName = selectedNode.name;
-    } else if (selectedNode.type === "COMPONENT_SET") {
-      const defaultVariant = selectedNode.defaultVariant;
-      if (defaultVariant) {
-        nodeToInstance = defaultVariant.createInstance();
-        componentName = selectedNode.name;
-      } else {
-        figma.notify("Could not find a default variant for this component set.", { error: true });
-        return;
-      }
-    } else {
-      figma.notify("Selected element must be a component, variant, or instance.");
-      return;
-    }
+    // --- Clone the selected node directly ---
+    console.log(`Cloning selected node: ${nodeName} (Type: ${selectedNode.type})`);
+    nodeToPlaceInFrame = selectedNode.clone();
 
-    if (!nodeToInstance) {
-      figma.notify("Failed to create an instance of the selected component.", { error: true });
+    if (!nodeToPlaceInFrame) {
+      figma.notify("Failed to clone the selected element.", { error: true });
       return;
     }
 
@@ -1309,23 +1291,23 @@ async function createPlaygroundFrame() {
 
     // --- Frame Creation & Sizing ---
     const frame = figma.createFrame();
-    frame.name = `Playground - ${componentName.replace('❖ ', '')}`;
+    frame.name = `Playground - ${nodeName.replace('❖ ', '')}`;
     frame.fills = [{ type: 'SOLID', color: { r: 228 / 255, g: 228 / 255, b: 228 / 255 } }];
 
-    // Get instance dimensions AFTER creation/cloning
-    const instanceWidth = nodeToInstance.width;
-    const instanceHeight = nodeToInstance.height;
-    const padding = 100; // Whitespace around the instance
+    // Get cloned node dimensions AFTER creation/cloning
+    const nodeWidth = nodeToPlaceInFrame.width;
+    const nodeHeight = nodeToPlaceInFrame.height;
+    const padding = 100; // Whitespace around the node
 
     // Calculate dynamic frame size
-    const frameWidth = instanceWidth + 2 * padding;
-    const frameHeight = instanceHeight + 2 * padding;
+    const frameWidth = nodeWidth + 2 * padding;
+    const frameHeight = nodeHeight + 2 * padding;
     frame.resize(frameWidth, frameHeight);
 
-    // --- Instance Placement (Centered within Frame) ---
-    frame.appendChild(nodeToInstance);
-    nodeToInstance.x = padding; // Position instance using padding
-    nodeToInstance.y = padding;
+    // --- Node Placement (Centered within Frame) ---
+    frame.appendChild(nodeToPlaceInFrame);
+    nodeToPlaceInFrame.x = padding; // Position node using padding
+    nodeToPlaceInFrame.y = padding;
 
     // --- Frame Positioning (Avoid Overlap) ---
     const allNodes = figma.currentPage.children;
@@ -1355,17 +1337,17 @@ async function createPlaygroundFrame() {
 
     await checkAndSendPlaygroundState(); // Send updated state (true)
 
-    // Select the instance instead of the frame
-    figma.currentPage.selection = [nodeToInstance];
-    // Scroll and zoom to the instance
-    figma.viewport.scrollAndZoomIntoView([nodeToInstance]);
-    figma.notify(`Created playground frame for '${componentName.replace('❖ ', '')}'`);
+    // Select the cloned node inside the frame
+    figma.currentPage.selection = [nodeToPlaceInFrame];
+    // Scroll and zoom to the node
+    figma.viewport.scrollAndZoomIntoView([nodeToPlaceInFrame]);
+    figma.notify(`Created playground frame for '${nodeName.replace('❖ ', '')}'`);
 
   } catch (error) {
     console.error("Error creating playground frame:", error);
     figma.notify("Error creating playground frame: " + error.message, { error: true });
-    if (nodeToInstance && !nodeToInstance.removed) {
-        nodeToInstance.remove();
+    if (nodeToPlaceInFrame && !nodeToPlaceInFrame.removed) {
+        nodeToPlaceInFrame.remove();
     }
     await checkAndSendPlaygroundState(); // Ensure state is updated even on error
     // Clear stored viewport if creation failed
@@ -1379,6 +1361,7 @@ async function createPlaygroundFrame() {
 async function handleReturnDecision(choice) {
   const frameId = await figma.clientStorage.getAsync(PLAYGROUND_FRAME_ID_KEY);
   let lastX = null, lastY = null, lastZoom = null;
+  let frameRemoved = false; // Flag to track if frame was actually removed
 
   // Retrieve viewport data regardless of choice, as we need to clear it
   try {
@@ -1392,8 +1375,22 @@ async function handleReturnDecision(choice) {
   // Delete the frame if it exists
   if (frameId) {
     const frame = await figma.getNodeByIdAsync(frameId);
-    if (frame && !frame.removed) {
+    if (frame && !frame.removed && frame.type === 'FRAME') {
+
+      // --- Select content and notify user to copy ---
+      if (frame.children.length > 0) {
+          const contentNode = frame.children[0];
+          figma.currentPage.selection = [contentNode];
+          figma.notify("Playground content selected. Press Ctrl/Cmd+C to copy.", { timeout: 4000 });
+          // Brief pause to allow selection change to register before deletion
+          await new Promise(resolve => setTimeout(resolve, 100));
+      } else {
+          console.log("Playground frame was empty, nothing to select for copying.");
+      }
+      // --- End Select content ---
+
       frame.remove();
+      frameRemoved = true; // Mark frame as removed
     }
   }
 
@@ -1415,7 +1412,13 @@ async function handleReturnDecision(choice) {
        figma.notify("Could not retrieve previous location data.");
     }
   } else {
-     figma.notify("Playground frame removed."); // Notify even if staying
+     // Only show removal message if the frame was actually removed in this action
+     if (frameRemoved) {
+        figma.notify("Playground frame removed.");
+     } else {
+        // If frame wasn't found or already removed, don't show the message
+        console.log("Playground frame was already gone or not found.");
+     }
   }
 }
 
