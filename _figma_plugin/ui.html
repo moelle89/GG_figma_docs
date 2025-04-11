@@ -1302,15 +1302,21 @@
         }, '*');
       });
 
-      document.getElementById('refresh-icons').addEventListener('click', () => {
-        document.getElementById('icons-status-message').textContent = "Refreshing icons...";
-        parent.postMessage({
-          pluginMessage: {
-            type: 'refresh',
-            target: 'icons'
-          }
-        }, '*');
-      });
+      // Add an explicit check before adding the listener
+      const refreshIconsButton = document.getElementById('refresh-icons');
+      if (refreshIconsButton) {
+          refreshIconsButton.addEventListener('click', () => {
+              document.getElementById('icons-status-message').textContent = "Refreshing icons...";
+              parent.postMessage({
+                  pluginMessage: {
+                      type: 'refresh',
+                      target: 'icons'
+                  }
+              }, '*');
+          });
+      } else {
+          console.error("Could not find the #refresh-icons button element.");
+      }
 
       // Keep this event listener
       document.getElementById('clear-icons-cache').addEventListener('click', () => {
