@@ -1289,7 +1289,7 @@ async function createPlaygroundFrame() {
       if (selectedNode.parent && selectedNode.parent.type === 'COMPONENT_SET') {
         // It's a variant, use its own name for the frame
         console.log(`Selected node is a COMPONENT variant (part of ${selectedNode.parent.name}).`);
-        nodeName = selectedNode.name; 
+        nodeName = selectedNode.name;
       } else {
         // It's a standalone component
         console.log('Selected node is a standalone COMPONENT.');
@@ -1439,7 +1439,6 @@ async function handleReturnDecision(choice) {
       if (frame.children.length > 0) {
           const contentNode = frame.children[0];
           figma.currentPage.selection = [contentNode];
-          figma.notify("Playground content selected. Press Ctrl/Cmd+C to copy.", { timeout: 4000 });
           // Brief pause to allow selection change to register before deletion
           await new Promise(resolve => setTimeout(resolve, 100));
       } else {
