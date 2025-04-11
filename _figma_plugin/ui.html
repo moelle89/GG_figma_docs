@@ -2534,7 +2534,7 @@
 
     // Add event listener for the cancel button in the return dialog
     document.getElementById('return-dialog-cancel').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
+      // Only hide the dialog without affecting the playground
       hideDialog('return-dialog');
     });
 

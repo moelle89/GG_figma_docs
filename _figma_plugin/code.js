@@ -1267,7 +1267,22 @@ async function createPlaygroundFrame() {
   try {
     // --- Clone the selected node directly ---
     console.log(`Cloning selected node: ${nodeName} (Type: ${selectedNode.type})`);
-    nodeToPlaceInFrame = selectedNode.clone();
+    
+    // Handle component sets by only using the default variant
+    if (selectedNode.type === 'COMPONENT_SET') {
+      console.log('Selected node is a component set, using default variant');
+      const defaultVariant = selectedNode.defaultVariant;
+      if (defaultVariant) {
+        nodeToPlaceInFrame = defaultVariant.clone();
+        nodeName = defaultVariant.name || 'Default Variant';
+      } else {
+        figma.notify("Could not find default variant for the component set.", { error: true });
+        return;
+      }
+    } else {
+      // For all other node types, clone directly
+      nodeToPlaceInFrame = selectedNode.clone();
+    }
 
     if (!nodeToPlaceInFrame) {
       figma.notify("Failed to clone the selected element.", { error: true });
