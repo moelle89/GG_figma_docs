@@ -1226,344 +1226,296 @@
   <!-- Add JSZip script tag HERE, before the main script block -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" referrerpolicy="no-referrer"></script>
   <script>
-    // Helper function to load SVG icons
-    function createSvgIcon(svgPath, className = '') {
-      const svgContainer = document.createElement('div');
-      svgContainer.className = className;
+    document.addEventListener('DOMContentLoaded', () => {
+      // Helper function to load SVG icons
+      function createSvgIcon(svgPath, className = '') {
+        const svgContainer = document.createElement('div');
+        svgContainer.className = className;
 
-      // Instead of fetching from files, use inline SVG content
-      let svgContent = '';
+        // Instead of fetching from files, use inline SVG content
+        let svgContent = '';
 
-      if (svgPath.includes('down')) {
-        // Chevron down SVG
-        svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><polyline points="112 184 256 328 400 184" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"/></svg>';
-      } else if (svgPath.includes('up')) {
-        // Chevron up SVG
-        svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><polyline points="112 328 256 184 400 328" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"/></svg>';
-      } else {
-        // Fallback to text
-        svgContainer.textContent = svgPath.includes('up') ? '▲' : '▼';
+        if (svgPath.includes('down')) {
+          // Chevron down SVG
+          svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><polyline points="112 184 256 328 400 184" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"/></svg>';
+        } else if (svgPath.includes('up')) {
+          // Chevron up SVG
+          svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><polyline points="112 328 256 184 400 328" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"/></svg>';
+        } else {
+          // Fallback to text
+          svgContainer.textContent = svgPath.includes('up') ? '▲' : '▼';
+          return svgContainer;
+        }
+
+        svgContainer.innerHTML = svgContent;
+
+        // Set the color to currentColor for better theming
+        const svgElement = svgContainer.querySelector('svg');
+        if (svgElement) {
+          svgElement.style.width = '100%';
+          svgElement.style.height = '100%';
+        }
+
         return svgContainer;
       }
 
-      svgContainer.innerHTML = svgContent;
+      // Handle tab switching
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      let componentsData = [];
+      let iconsData = [];
+      let currentComponentData = null;
+      let currentLinksData = null; // Store links data
+      let exportableTsItems = []; // Store TS items for batch export
+      let exportableLinkItems = []; // Store Link items for batch export
 
-      // Set the color to currentColor for better theming
-      const svgElement = svgContainer.querySelector('svg');
-      if (svgElement) {
-        svgElement.style.width = '100%';
-        svgElement.style.height = '100%';
-      }
+      // Add loading state management
+      function setLoadingState(tabId, isLoading) {
+        const statusMessage = tabId === 'components-tab' ?
+          document.getElementById('status-message') :
+          document.getElementById('icons-status-message');
 
-      return svgContainer;
-    }
-
-    // Handle tab switching
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    let componentsData = [];
-    let iconsData = [];
-    let currentComponentData = null;
-    let currentLinksData = null; // Store links data
-    let exportableTsItems = []; // Store TS items for batch export
-    let exportableLinkItems = []; // Store Link items for batch export
-
-    // Add loading state management
-    function setLoadingState(tabId, isLoading) {
-      const statusMessage = tabId === 'components-tab' ?
-        document.getElementById('status-message') :
-        document.getElementById('icons-status-message');
-
-      if (isLoading) {
-        statusMessage.textContent = "Loading...";
-        statusMessage.style.color = "var(--figma-color-text-secondary)";
-      } else {
-        if (tabId === 'components-tab') {
-          // Count total components across all categories
-          const totalComponents = componentsData.reduce((total, category) =>
-            category.isCategory ? total + category.items.length : total, 0);
-          statusMessage.textContent = `Found ${totalComponents} components.`;
+        if (isLoading) {
+          statusMessage.textContent = "Loading...";
+          statusMessage.style.color = "var(--figma-color-text-secondary)";
         } else {
-          statusMessage.textContent = `Found ${iconsData.length} icons.`;
+          if (tabId === 'components-tab') {
+            // Count total components across all categories
+            const totalComponents = componentsData.reduce((total, category) =>
+              category.isCategory ? total + category.items.length : total, 0);
+            statusMessage.textContent = `Found ${totalComponents} components.`;
+          } else {
+            statusMessage.textContent = `Found ${iconsData.length} icons.`;
+          }
+          statusMessage.style.color = "var(--figma-color-text)";
         }
-        statusMessage.style.color = "var(--figma-color-text)";
       }
-    }
 
-    // Set up refresh buttons
-    document.getElementById('refresh-components').addEventListener('click', () => {
-      document.getElementById('status-message').textContent = "Refreshing components...";
-      parent.postMessage({
-        pluginMessage: {
-          type: 'refresh',
-          target: 'components'
-        }
-      }, '*');
-    });
-
-    document.getElementById('refresh-icons').addEventListener('click', () => {
-      document.getElementById('icons-status-message').textContent = "Refreshing icons...";
-      parent.postMessage({
-        pluginMessage: {
-          type: 'refresh',
-          target: 'icons'
-        }
-      }, '*');
-    });
-
-    // Keep this event listener
-    document.getElementById('clear-icons-cache').addEventListener('click', () => {
-      parent.postMessage({
-        pluginMessage: { type: 'clear-icons-cache' }
-      }, '*');
-    });
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        // Remove active class from all tabs and contents
-        tabs.forEach(t => t.classList.remove('active'));
-        tabContents.forEach(c => c.classList.remove('active'));
-
-        // Add active class to clicked tab and corresponding content
-        tab.classList.add('active');
-        const tabId = tab.getAttribute('data-tab');
-        document.getElementById(tabId).classList.add('active');
-
-        // Set loading state
-        setLoadingState(tabId, true);
-
-        // When switching to components tab, make sure to update the toggle icon state
-        if (tabId === 'components-tab' && componentsData && componentsData.length > 0) {
-          // Schedule this after render to ensure the DOM has category elements
-          setTimeout(() => {
-            updateToggleAllIcon();
-          }, 0);
-        }
-
-        // Notify the plugin about tab change
+      // Set up refresh buttons
+      document.getElementById('refresh-components').addEventListener('click', () => {
+        document.getElementById('status-message').textContent = "Refreshing components...";
         parent.postMessage({
           pluginMessage: {
-            type: 'tab-change',
-            tab: tabId
+            type: 'refresh',
+            target: 'components'
           }
         }, '*');
       });
-    });
 
-    // Function to update the toggle-all icon based on collapsed state
-    function updateToggleAllIcon() {
-      // Check if all categories are collapsed
-      const allCategoryHeaders = document.querySelectorAll('.category-header');
-      if (allCategoryHeaders.length === 0) return; // No categories to check
+      document.getElementById('refresh-icons').addEventListener('click', () => {
+        document.getElementById('icons-status-message').textContent = "Refreshing icons...";
+        parent.postMessage({
+          pluginMessage: {
+            type: 'refresh',
+            target: 'icons'
+          }
+        }, '*');
+      });
 
-      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
-        header.classList.contains('collapsed')
-      );
+      // Keep this event listener
+      document.getElementById('clear-icons-cache').addEventListener('click', () => {
+        parent.postMessage({
+          pluginMessage: { type: 'clear-icons-cache' }
+        }, '*');
+      });
 
-      // Update the toggle all icon class
-      const toggleAllIcon = document.getElementById('toggle-all-icon');
-      if (allCollapsed) {
-        toggleAllIcon.classList.add('collapsed');
-      } else {
-        toggleAllIcon.classList.remove('collapsed');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs and contents
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+
+          // Add active class to clicked tab and corresponding content
+          tab.classList.add('active');
+          const tabId = tab.getAttribute('data-tab');
+          document.getElementById(tabId).classList.add('active');
+
+          // Set loading state
+          setLoadingState(tabId, true);
+
+          // When switching to components tab, make sure to update the toggle icon state
+          if (tabId === 'components-tab' && componentsData && componentsData.length > 0) {
+            // Schedule this after render to ensure the DOM has category elements
+            setTimeout(() => {
+              updateToggleAllIcon();
+            }, 0);
+          }
+
+          // Notify the plugin about tab change
+          parent.postMessage({
+            pluginMessage: {
+              type: 'tab-change',
+              tab: tabId
+            }
+          }, '*');
+        });
+      });
+
+      // Function to update the toggle-all icon based on collapsed state
+      function updateToggleAllIcon() {
+        // Check if all categories are collapsed
+        const allCategoryHeaders = document.querySelectorAll('.category-header');
+        if (allCategoryHeaders.length === 0) return; // No categories to check
+
+        const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+          header.classList.contains('collapsed')
+        );
+
+        // Update the toggle all icon class
+        const toggleAllIcon = document.getElementById('toggle-all-icon');
+        if (allCollapsed) {
+          toggleAllIcon.classList.add('collapsed');
+        } else {
+          toggleAllIcon.classList.remove('collapsed');
+        }
       }
-    }
 
-    // Handle messages from the plugin
-    window.onmessage = (event) => {
-      const data = event.data.pluginMessage;
+      // Handle messages from the plugin
+      window.onmessage = (event) => {
+        const data = event.data.pluginMessage;
 
-      // Handle components data (Tab 1)
-      if (data && data.components) {
-        componentsData = data.components;
-        renderComponents();
-        // Update the toggle icon after rendering components
-        updateToggleAllIcon();
-      }
-
-      // Handle collapsed state
-      if (data && data.type === 'collapsed-state') {
-        window.collapsedCategoriesState = data.collapsedCategories;
-        // If we already have components rendered, update the UI
-        if (componentsData && componentsData.length > 0) {
+        // Handle components data (Tab 1)
+        if (data && data.components) {
+          componentsData = data.components;
           renderComponents();
-          // Update the toggle icon after rendering components with collapsed state
+          // Update the toggle icon after rendering components
           updateToggleAllIcon();
         }
-      }
 
-      // Handle icons data (Tab 2)
-      if (data && data.icons) {
-        iconsData = data.icons;
-        renderIcons();
-      }
-
-      // Handle icon updates
-      if (data && data.iconsUpdate) {
-        // Update specific icons with thumbnails
-        const updateStartIndex = data.iconsUpdateStartIndex || 0;
-
-        for (let i = 0; i < data.iconsUpdate.length; i++) {
-          const index = updateStartIndex + i;
-          if (index < iconsData.length) {
-            // Update the icon data
-            iconsData[index] = data.iconsUpdate[i];
+        // Handle collapsed state
+        if (data && data.type === 'collapsed-state') {
+          window.collapsedCategoriesState = data.collapsedCategories;
+          // If we already have components rendered, update the UI
+          if (componentsData && componentsData.length > 0) {
+            renderComponents();
+            // Update the toggle icon after rendering components with collapsed state
+            updateToggleAllIcon();
           }
         }
 
-        // Re-render the current view
-        renderIcons();
-      }
+        // Handle icons data (Tab 2)
+        if (data && data.icons) {
+          iconsData = data.icons;
+          renderIcons();
+        }
 
-      // Handle status messages
-      if (data && data.status) {
-        document.getElementById('status-message').textContent = data.status;
-      }
+        // Handle icon updates
+        if (data && data.iconsUpdate) {
+          // Update specific icons with thumbnails
+          const updateStartIndex = data.iconsUpdateStartIndex || 0;
 
-      if (data && data.iconsStatus) {
-        document.getElementById('icons-status-message').textContent = data.iconsStatus;
-      }
-
-      // Handle errors
-      if (data && data.error) {
-        document.getElementById('status-message').textContent = data.error;
-        document.getElementById('status-message').style.color = '#FF0000';
-      }
-
-      if (data && data.iconsError) {
-        document.getElementById('icons-status-message').textContent = data.iconsError;
-        document.getElementById('icons-status-message').style.color = '#FF0000';
-      }
-
-      // Handle showing component properties
-      if (data && data.type === "show-component-properties") {
-        const properties = data.properties;
-        currentComponentData = properties;
-        const variantPropertiesContainer = document.getElementById('variant-properties');
-        variantPropertiesContainer.innerHTML = '';
-
-        // Update dialog title to reflect we're editing an existing instance
-        document.querySelector('.dialog-header h4').textContent = data.instanceId ?
-          "Edit Component Properties" : "Component Properties";
-
-        // Update the button text
-        const actionButton = document.getElementById('create-variant');
-        actionButton.textContent = data.instanceId ? "Done" : "Create Instance";
-
-        // First, handle variant properties as they should appear at the top
-        const variantProps = [];
-        const textProps = [];
-        const otherProps = [];
-
-        // Sort properties into categories
-        Object.entries(properties.componentProperties).forEach(([key, definition]) => {
-          // Clean the property name - remove ID suffixes (anything after #)
-          const cleanPropertyName = key.split('#')[0];
-
-          // Store both original key and clean name
-          const propData = {
-            originalKey: key,
-            cleanName: cleanPropertyName,
-            definition: definition
-          };
-
-          // Sort by type
-          if (definition.type === 'VARIANT') {
-            variantProps.push(propData);
-          } else if (definition.type === 'TEXT') {
-            textProps.push(propData);
-          } else {
-            otherProps.push(propData);
-          }
-        });
-
-        // Combine all properties in the desired order
-        const sortedProps = [...variantProps, ...textProps, ...otherProps];
-
-        // Create UI for sorted properties
-        sortedProps.forEach(({originalKey, cleanName, definition}) => {
-          console.log("Creating input for property:", cleanName, definition);
-          const propertyGroup = document.createElement('div');
-          propertyGroup.className = 'property-group';
-
-          const label = document.createElement('div');
-          label.className = 'property-label';
-          label.textContent = cleanName; // Use the clean name without ID suffix
-          propertyGroup.appendChild(label);
-
-          // Create different input types based on property type
-          if (definition.type === 'VARIANT') {
-            const select = document.createElement('select');
-            select.className = 'property-select';
-            select.dataset.property = originalKey;
-            select.dataset.type = 'VARIANT';
-
-            // Add options for variant properties
-            if (definition.variantOptions) {
-              definition.variantOptions.forEach(option => {
-                const optionEl = document.createElement('option');
-                optionEl.value = option;
-                optionEl.textContent = option;
-                if (option === (definition.currentValue || definition.defaultValue) ||
-                    (option === 'True' && (definition.currentValue === true || definition.defaultValue === true)) ||
-                    (option === 'False' && (definition.currentValue === false || definition.defaultValue === false))) {
-                  optionEl.selected = true;
-                }
-                select.appendChild(optionEl);
-              });
+          for (let i = 0; i < data.iconsUpdate.length; i++) {
+            const index = updateStartIndex + i;
+            if (index < iconsData.length) {
+              // Update the icon data
+              iconsData[index] = data.iconsUpdate[i];
             }
-
-            // Add live update event
-            select.addEventListener('change', (e) => {
-              if (currentComponentData && currentComponentData.instanceId) {
-                const propUpdate = {};
-                propUpdate[originalKey] = e.target.value;
-
-                parent.postMessage({
-                  pluginMessage: {
-                    type: 'live-update-property',
-                    instanceId: currentComponentData.instanceId,
-                    properties: propUpdate
-                  }
-                }, '*');
-              }
-            });
-
-            propertyGroup.appendChild(select);
           }
-          else if (definition.type === 'TEXT') {
-            // Check if this is a multi-line text property (usually larger text blocks)
-            const isMultiline = originalKey.toLowerCase().includes('description') ||
-                                 originalKey.toLowerCase().includes('content') ||
-                                 originalKey.toLowerCase().includes('subtext') ||
-                                 originalKey.toLowerCase().includes('sub text') ||
-                                 definition.defaultValue?.includes('\n') ||
-                                 definition.defaultValue?.length > 80;
 
-            if (isMultiline) {
-              const textarea = document.createElement('textarea');
-              textarea.className = 'property-textarea';
-              textarea.dataset.property = originalKey;
-              textarea.dataset.type = 'TEXT';
-              textarea.value = definition.defaultValue || '';
-              textarea.placeholder = 'Enter text...';
-              textarea.rows = 3;
+          // Re-render the current view
+          renderIcons();
+        }
 
-              // Auto-resize logic
-              textarea.addEventListener('input', function() {
-                // Reset height to auto to correctly calculate new height
-                this.style.height = 'auto';
-                // Set new height based on scrollHeight with small buffer
-                this.style.height = (this.scrollHeight + 4) + 'px';
-              });
+        // Handle status messages
+        if (data && data.status) {
+          document.getElementById('status-message').textContent = data.status;
+        }
 
-              // Trigger resize on initial load
-              setTimeout(() => {
-                textarea.style.height = (textarea.scrollHeight + 4) + 'px';
-              }, 10);
+        if (data && data.iconsStatus) {
+          document.getElementById('icons-status-message').textContent = data.iconsStatus;
+        }
+
+        // Handle errors
+        if (data && data.error) {
+          document.getElementById('status-message').textContent = data.error;
+          document.getElementById('status-message').style.color = '#FF0000';
+        }
+
+        if (data && data.iconsError) {
+          document.getElementById('icons-status-message').textContent = data.iconsError;
+          document.getElementById('icons-status-message').style.color = '#FF0000';
+        }
+
+        // Handle showing component properties
+        if (data && data.type === "show-component-properties") {
+          const properties = data.properties;
+          currentComponentData = properties;
+          const variantPropertiesContainer = document.getElementById('variant-properties');
+          variantPropertiesContainer.innerHTML = '';
+
+          // Update dialog title to reflect we're editing an existing instance
+          document.querySelector('.dialog-header h4').textContent = data.instanceId ?
+            "Edit Component Properties" : "Component Properties";
+
+          // Update the button text
+          const actionButton = document.getElementById('create-variant');
+          actionButton.textContent = data.instanceId ? "Done" : "Create Instance";
+
+          // First, handle variant properties as they should appear at the top
+          const variantProps = [];
+          const textProps = [];
+          const otherProps = [];
+
+          // Sort properties into categories
+          Object.entries(properties.componentProperties).forEach(([key, definition]) => {
+            // Clean the property name - remove ID suffixes (anything after #)
+            const cleanPropertyName = key.split('#')[0];
+
+            // Store both original key and clean name
+            const propData = {
+              originalKey: key,
+              cleanName: cleanPropertyName,
+              definition: definition
+            };
+
+            // Sort by type
+            if (definition.type === 'VARIANT') {
+              variantProps.push(propData);
+            } else if (definition.type === 'TEXT') {
+              textProps.push(propData);
+            } else {
+              otherProps.push(propData);
+            }
+          });
+
+          // Combine all properties in the desired order
+          const sortedProps = [...variantProps, ...textProps, ...otherProps];
+
+          // Create UI for sorted properties
+          sortedProps.forEach(({originalKey, cleanName, definition}) => {
+            console.log("Creating input for property:", cleanName, definition);
+            const propertyGroup = document.createElement('div');
+            propertyGroup.className = 'property-group';
+
+            const label = document.createElement('div');
+            label.className = 'property-label';
+            label.textContent = cleanName; // Use the clean name without ID suffix
+            propertyGroup.appendChild(label);
+
+            // Create different input types based on property type
+            if (definition.type === 'VARIANT') {
+              const select = document.createElement('select');
+              select.className = 'property-select';
+              select.dataset.property = originalKey;
+              select.dataset.type = 'VARIANT';
+
+              // Add options for variant properties
+              if (definition.variantOptions) {
+                definition.variantOptions.forEach(option => {
+                  const optionEl = document.createElement('option');
+                  optionEl.value = option;
+                  optionEl.textContent = option;
+                  if (option === (definition.currentValue || definition.defaultValue) ||
+                      (option === 'True' && (definition.currentValue === true || definition.defaultValue === true)) ||
+                      (option === 'False' && (definition.currentValue === false || definition.defaultValue === false))) {
+                    optionEl.selected = true;
+                  }
+                  select.appendChild(optionEl);
+                });
+              }
 
               // Add live update event
-              textarea.addEventListener('input', (e) => {
+              select.addEventListener('change', (e) => {
                 if (currentComponentData && currentComponentData.instanceId) {
                   const propUpdate = {};
                   propUpdate[originalKey] = e.target.value;
@@ -1578,22 +1530,145 @@
                 }
               });
 
-              propertyGroup.appendChild(textarea);
-            } else {
-              // Regular single-line text input
+              propertyGroup.appendChild(select);
+            }
+            else if (definition.type === 'TEXT') {
+              // Check if this is a multi-line text property (usually larger text blocks)
+              const isMultiline = originalKey.toLowerCase().includes('description') ||
+                                   originalKey.toLowerCase().includes('content') ||
+                                   originalKey.toLowerCase().includes('subtext') ||
+                                   originalKey.toLowerCase().includes('sub text') ||
+                                   definition.defaultValue?.includes('\n') ||
+                                   definition.defaultValue?.length > 80;
+
+              if (isMultiline) {
+                const textarea = document.createElement('textarea');
+                textarea.className = 'property-textarea';
+                textarea.dataset.property = originalKey;
+                textarea.dataset.type = 'TEXT';
+                textarea.value = definition.defaultValue || '';
+                textarea.placeholder = 'Enter text...';
+                textarea.rows = 3;
+
+                // Auto-resize logic
+                textarea.addEventListener('input', function() {
+                  // Reset height to auto to correctly calculate new height
+                  this.style.height = 'auto';
+                  // Set new height based on scrollHeight with small buffer
+                  this.style.height = (this.scrollHeight + 4) + 'px';
+                });
+
+                // Trigger resize on initial load
+                setTimeout(() => {
+                  textarea.style.height = (textarea.scrollHeight + 4) + 'px';
+                }, 10);
+
+                // Add live update event
+                textarea.addEventListener('input', (e) => {
+                  if (currentComponentData && currentComponentData.instanceId) {
+                    const propUpdate = {};
+                    propUpdate[originalKey] = e.target.value;
+
+                    parent.postMessage({
+                      pluginMessage: {
+                        type: 'live-update-property',
+                        instanceId: currentComponentData.instanceId,
+                        properties: propUpdate
+                      }
+                    }, '*');
+                  }
+                });
+
+                propertyGroup.appendChild(textarea);
+              } else {
+                // Regular single-line text input
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'property-input';
+                input.dataset.property = originalKey;
+                input.dataset.type = 'TEXT';
+                input.value = definition.defaultValue || '';
+                input.placeholder = 'Enter text...';
+
+                // Add live update event
+                input.addEventListener('input', (e) => {
+                  if (currentComponentData && currentComponentData.instanceId) {
+                    const propUpdate = {};
+                    propUpdate[originalKey] = e.target.value;
+
+                    parent.postMessage({
+                      pluginMessage: {
+                        type: 'live-update-property',
+                        instanceId: currentComponentData.instanceId,
+                        properties: propUpdate
+                      }
+                    }, '*');
+                  }
+                });
+
+                propertyGroup.appendChild(input);
+              }
+            }
+            else if (definition.type === 'BOOLEAN') {
+              // Create a container for the switch and label in one row, replacing the group label
+              const booleanContainer = document.createElement('div');
+              booleanContainer.className = 'boolean-property';
+
+              // The label comes first in the row, using the property label directly
+              const label = document.createElement('div');
+              label.className = 'property-label';
+              label.textContent = cleanName;
+              booleanContainer.appendChild(label);
+
+              // Create the toggle switch
+              const toggleSwitch = document.createElement('label');
+              toggleSwitch.className = 'toggle-switch';
+
+              const checkbox = document.createElement('input');
+              checkbox.type = 'checkbox';
+              checkbox.dataset.property = originalKey;
+              checkbox.dataset.type = 'BOOLEAN';
+              checkbox.checked = definition.defaultValue === 'true' || definition.defaultValue === true;
+
+              const slider = document.createElement('span');
+              slider.className = 'toggle-slider';
+
+              toggleSwitch.appendChild(checkbox);
+              toggleSwitch.appendChild(slider);
+              booleanContainer.appendChild(toggleSwitch);
+
+              // Add the boolean container directly to property group, without a separate label
+              propertyGroup.appendChild(booleanContainer);
+
+              // Add live update event
+              checkbox.addEventListener('change', (e) => {
+                if (currentComponentData && currentComponentData.instanceId) {
+                  const propUpdate = {};
+                  propUpdate[originalKey] = e.target.checked;
+
+                  parent.postMessage({
+                    pluginMessage: {
+                      type: 'live-update-property',
+                      instanceId: currentComponentData.instanceId,
+                      properties: propUpdate
+                    }
+                  }, '*');
+                }
+              });
+            }
+            else if (definition.type === 'NUMBER') {
               const input = document.createElement('input');
-              input.type = 'text';
+              input.type = 'number';
               input.className = 'property-input';
-              input.dataset.property = originalKey;
-              input.dataset.type = 'TEXT';
-              input.value = definition.defaultValue || '';
-              input.placeholder = 'Enter text...';
+              input.dataset.property = originalKey; // Keep original key for data
+              input.dataset.type = 'NUMBER';
+              input.value = definition.defaultValue || 0;
 
               // Add live update event
               input.addEventListener('input', (e) => {
                 if (currentComponentData && currentComponentData.instanceId) {
                   const propUpdate = {};
-                  propUpdate[originalKey] = e.target.value;
+                  propUpdate[originalKey] = parseFloat(e.target.value);
 
                   parent.postMessage({
                     pluginMessage: {
@@ -1607,600 +1682,539 @@
 
               propertyGroup.appendChild(input);
             }
+            else if (definition.type === 'INSTANCE_SWAP') {
+              // Skip instance swap properties as they're not supported in the dialog
+              return; // Skip this property group entirely
+            }
+
+            variantPropertiesContainer.appendChild(propertyGroup);
+          });
+
+          // Show the dialog with transition
+          document.querySelector('.tab-container').style.display = 'none';
+          const dialog = document.getElementById('component-properties');
+          dialog.style.display = 'flex';
+          void dialog.offsetWidth;
+          dialog.classList.add('visible');
+          showDialog('component-properties');
+        }
+
+        // Handle showing the links dialog
+        if (data && data.type === "show-links-dialog") {
+          currentLinksData = data.links;
+          exportableTsItems = []; // Reset batch export list for this dialog instance
+          exportableLinkItems = []; // Reset batch link export list
+          const linksList = document.getElementById('links-list');
+          const batchExportButton = document.getElementById('batch-export-ts-button');
+          const batchExportLinksButton = document.getElementById('batch-export-links-button'); // Get the new button
+          const copyLinkDataButton = document.getElementById('copy-link-data-button'); // Keep reference for now, though button is removed
+          linksList.innerHTML = ''; // Clear previous content
+          batchExportButton.disabled = true;
+          batchExportLinksButton.disabled = true; // Disable initially
+          // copyLinkDataButton.disabled = true; // No longer needed
+          batchExportButton.textContent = 'Batch Export TS';
+          batchExportLinksButton.textContent = 'Batch Export Links'; // Reset text
+          // copyLinkDataButton.textContent = 'Copy Link Data for Script'; // No longer needed
+
+          if (data.error) {
+              const errorItem = document.createElement('li');
+              errorItem.style.color = 'var(--figma-color-text-danger)';
+              errorItem.style.fontStyle = 'italic';
+              errorItem.style.padding = '8px 0';
+              errorItem.textContent = data.error;
+              linksList.appendChild(errorItem);
           }
-          else if (definition.type === 'BOOLEAN') {
-            // Create a container for the switch and label in one row, replacing the group label
-            const booleanContainer = document.createElement('div');
-            booleanContainer.className = 'boolean-property';
 
-            // The label comes first in the row, using the property label directly
-            const label = document.createElement('div');
-            label.className = 'property-label';
-            label.textContent = cleanName;
-            booleanContainer.appendChild(label);
+          if (!currentLinksData || currentLinksData.length === 0) {
+              linksList.innerHTML += '<li>No elements selected or links available.</li>';
+          } else {
+              currentLinksData.forEach(linkInfo => {
+                  const listItem = document.createElement('li');
+                  const linkInfoDiv = document.createElement('div');
+                  linkInfoDiv.className = 'link-info';
 
-            // Create the toggle switch
-            const toggleSwitch = document.createElement('label');
-            toggleSwitch.className = 'toggle-switch';
+                  const nameSpan = document.createElement('span');
+                  nameSpan.className = 'link-name';
+                  nameSpan.textContent = linkInfo.name || 'Unnamed Element';
+                  linkInfoDiv.appendChild(nameSpan);
 
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.dataset.property = originalKey;
-            checkbox.dataset.type = 'BOOLEAN';
-            checkbox.checked = definition.defaultValue === 'true' || definition.defaultValue === true;
-
-            const slider = document.createElement('span');
-            slider.className = 'toggle-slider';
-
-            toggleSwitch.appendChild(checkbox);
-            toggleSwitch.appendChild(slider);
-            booleanContainer.appendChild(toggleSwitch);
-
-            // Add the boolean container directly to property group, without a separate label
-            propertyGroup.appendChild(booleanContainer);
-
-            // Add live update event
-            checkbox.addEventListener('change', (e) => {
-              if (currentComponentData && currentComponentData.instanceId) {
-                const propUpdate = {};
-                propUpdate[originalKey] = e.target.checked;
-
-                parent.postMessage({
-                  pluginMessage: {
-                    type: 'live-update-property',
-                    instanceId: currentComponentData.instanceId,
-                    properties: propUpdate
+                  if (linkInfo.isPlaceholder) {
+                      const urlInfo = document.createElement('span');
+                      urlInfo.className = 'link-url';
+                      urlInfo.textContent = `Node ID: ${linkInfo.id}`;
+                      urlInfo.style.fontFamily = 'monospace';
+                      linkInfoDiv.appendChild(urlInfo);
+                  } else {
+                      const urlLink = document.createElement('a');
+                      urlLink.className = 'link-url';
+                      urlLink.href = linkInfo.url;
+                      urlLink.textContent = linkInfo.url;
+                      urlLink.target = '_blank';
+                      urlLink.title = 'Click to open link in new tab';
+                      linkInfoDiv.appendChild(urlLink);
                   }
-                }, '*');
-              }
-            });
-          }
-          else if (definition.type === 'NUMBER') {
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.className = 'property-input';
-            input.dataset.property = originalKey; // Keep original key for data
-            input.dataset.type = 'NUMBER';
-            input.value = definition.defaultValue || 0;
 
-            // Add live update event
-            input.addEventListener('input', (e) => {
-              if (currentComponentData && currentComponentData.instanceId) {
-                const propUpdate = {};
-                propUpdate[originalKey] = parseFloat(e.target.value);
+                  listItem.appendChild(linkInfoDiv); // Ensure link info div is added FIRST
 
-                parent.postMessage({
-                  pluginMessage: {
-                    type: 'live-update-property',
-                    instanceId: currentComponentData.instanceId,
-                    properties: propUpdate
+                  const buttonGroup = document.createElement('div');
+                  buttonGroup.className = 'button-group';
+
+                  // Copy Button
+                  const copyButton = document.createElement('button');
+                  copyButton.className = 'copy-link-button';
+                  copyButton.textContent = linkInfo.isPlaceholder ? 'Copy ID' : 'Copy Link';
+                  copyButton.title = linkInfo.isPlaceholder ? `Copy Node ID for ${linkInfo.name}` : `Copy Figma Link for ${linkInfo.name}`; // Add title
+                  copyButton.onclick = () => {
+                      const textToCopy = linkInfo.isPlaceholder ? linkInfo.id : linkInfo.url;
+                      const textarea = document.createElement('textarea');
+                      textarea.value = textToCopy;
+                      textarea.style.position = 'fixed';
+                      document.body.appendChild(textarea);
+                      textarea.select();
+                      try {
+                          const successful = document.execCommand('copy');
+                          if (successful) {
+                              copyButton.textContent = 'Copied!';
+                              setTimeout(() => {
+                                  copyButton.textContent = linkInfo.isPlaceholder ? 'Copy ID' : 'Copy Link';
+                              }, 1500);
+                          } else { console.error('Copy command failed'); }
+                      } catch (err) { console.error('Failed to copy:', err); }
+                      finally { document.body.removeChild(textarea); }
+                  };
+                  buttonGroup.appendChild(copyButton);
+
+                  // Export TS Button & Add to batch list
+                  if (linkInfo.tsFilename && linkInfo.tsContent) {
+                      const exportButton = document.createElement('button');
+                      exportButton.className = 'export-ts-button';
+                      exportButton.textContent = 'Export TS';
+                      exportButton.title = `Export TS Interface for ${linkInfo.name} (${linkInfo.tsFilename})`; // Add title
+                      exportButton.onclick = () => {
+                          try {
+                              downloadFile(linkInfo.tsFilename, linkInfo.tsContent);
+                              exportButton.textContent = 'Exported!';
+                              setTimeout(() => {
+                                  exportButton.textContent = 'Export TS';
+                              }, 1500);
+                          } catch(err) {
+                              console.error("Failed to trigger download:", err);
+                              exportButton.textContent = 'Error';
+                              setTimeout(() => {
+                                  exportButton.textContent = 'Export TS';
+                              }, 2000);
+                          }
+                      };
+                      buttonGroup.appendChild(exportButton);
+
+                      // Add to the list for batch export
+                      exportableTsItems.push({
+                          filename: linkInfo.tsFilename,
+                          content: linkInfo.tsContent
+                      });
                   }
-                }, '*');
+
+                  // --- Add Single Export URL Button ---
+                  if (linkInfo.url && !linkInfo.isPlaceholder) {
+                      // Generate sanitized filename (consistent with batch export and script)
+                      const linkFilenameBase = linkInfo.name
+                          .replace(/❖\s*/, '')
+                          .replace(/\s+/g, '-')
+                          .toLowerCase()
+                          .replace(/[^a-z0-9-]/g, '')
+                          .replace(/^-+|-+$/g, '');
+                      const linkFilename = `${linkFilenameBase || 'component'}.url`;
+
+                      const exportUrlButton = document.createElement('button');
+                      exportUrlButton.className = 'export-ts-button'; // Use same style as TS export
+                      exportUrlButton.textContent = 'Export URL';
+                      exportUrlButton.title = `Export Link File for ${linkInfo.name} (${linkFilename})`;
+                      exportUrlButton.onclick = () => {
+                           try {
+                              downloadFile(linkFilename, linkInfo.url, 'text/plain'); // Download .url file
+                              exportUrlButton.textContent = 'Exported!';
+                              setTimeout(() => {
+                                  exportUrlButton.textContent = 'Export URL';
+                              }, 1500);
+                          } catch(err) {
+                              console.error("Failed to trigger URL download:", err);
+                              exportUrlButton.textContent = 'Error';
+                              setTimeout(() => {
+                                  exportUrlButton.textContent = 'Export URL';
+                              }, 2000);
+                          }
+                      };
+                      buttonGroup.appendChild(exportUrlButton);
+                  }
+                  // --- End Single Export URL Button ---
+
+                  // --- Add to batch link export list ---
+                  if (linkInfo.url && !linkInfo.isPlaceholder) {
+                      // Generate sanitized filename for the link file (should match script logic)
+                      const linkFilenameBase = linkInfo.name
+                          .replace(/❖\s*/, '') // Remove prefix if present
+                          .replace(/\s+/g, '-') // Replace spaces with hyphens
+                          .toLowerCase()
+                          .replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric/non-hyphen
+                          .replace(/^-+|-+$/g, ''); // Trim leading/trailing hyphens
+                      const linkFilename = `${linkFilenameBase || 'component'}.url`;
+
+                      exportableLinkItems.push({
+                          filename: linkFilename,
+                          content: linkInfo.url // Content is just the URL
+                      });
+                  }
+                  // --- End add to batch link export ---
+
+                  listItem.appendChild(buttonGroup);
+                  linksList.appendChild(listItem);
+              }); // end forEach loop
+
+              // Enable batch export buttons if items are available
+              if (exportableTsItems.length > 0) {
+                  batchExportButton.disabled = false;
+                  batchExportButton.textContent = `Batch Export TS (${exportableTsItems.length})`;
+              } else {
+                  batchExportButton.textContent = 'Batch Export TS';
               }
+
+              if (exportableLinkItems.length > 0) {
+                  batchExportLinksButton.disabled = false;
+                  batchExportLinksButton.textContent = `Batch Export Links (${exportableLinkItems.length})`;
+              } else {
+                  batchExportLinksButton.textContent = 'Batch Export Links';
+              }
+
+              // Enable Copy Link Data button if valid links are present - REMOVED
+              /*
+              const hasValidLinks = currentLinksData.some(link => link.url && !link.isPlaceholder);
+              copyLinkDataButton.disabled = !hasValidLinks;
+              if (hasValidLinks) {
+                  const validLinkCount = currentLinksData.filter(link => link.url && !link.isPlaceholder).length;
+                   copyLinkDataButton.textContent = `Copy Link Data for Script (${validLinkCount})`;
+              } else {
+                  copyLinkDataButton.textContent = 'Copy Link Data for Script';
+              }
+              */
+          }
+          showDialog('links-dialog');
+        }
+
+        // Handle playground state update
+        if (data && data.type === 'playground-state') {
+          const exists = data.exists;
+          const icon = exists ? '✖' : '▶';
+          const title = exists ? 'Remove Playground Frame' : 'Create Playground Frame';
+          document.getElementById('create-playground-button-components').textContent = icon;
+          document.getElementById('create-playground-button-components').title = title;
+          document.getElementById('create-playground-button-icons').textContent = icon;
+          document.getElementById('create-playground-button-icons').title = title;
+        }
+
+        // Handle create variant button click
+        document.getElementById('create-variant').onclick = () => {
+          if (!currentComponentData) return;
+
+          if (!currentComponentData.instanceId) {
+            // Only collect and send properties if we're creating a new instance
+            const properties = {};
+            // Get all variants (dropdowns)
+            const selects = document.querySelectorAll('.property-select');
+            selects.forEach(select => {
+              properties[select.dataset.property] = select.value;
             });
 
-            propertyGroup.appendChild(input);
-          }
-          else if (definition.type === 'INSTANCE_SWAP') {
-            // Skip instance swap properties as they're not supported in the dialog
-            return; // Skip this property group entirely
+            // Get text inputs and textareas
+            const textInputs = document.querySelectorAll('.property-input[data-type="TEXT"], .property-textarea');
+            textInputs.forEach(input => {
+              properties[input.dataset.property] = input.value;
+            });
+
+            // Get number inputs
+            const numberInputs = document.querySelectorAll('.property-input[data-type="NUMBER"]');
+            numberInputs.forEach(input => {
+              properties[input.dataset.property] = parseFloat(input.value);
+            });
+
+            // Get checkboxes (now inside toggle switches)
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+              properties[checkbox.dataset.property] = checkbox.checked;
+            });
+
+            parent.postMessage({
+              pluginMessage: {
+                type: 'create-instance-with-properties',
+                componentId: currentComponentData.id,
+                properties: properties
+              }
+            }, '*');
           }
 
-          variantPropertiesContainer.appendChild(propertyGroup);
+          // Close the dialog - this happens for both create and edit
+          document.getElementById('close-dialog').click();
+          hideDialog('component-properties');
+        };
+
+        // Handle close dialog button click
+        document.getElementById('close-dialog').onclick = () => {
+          const dialog = document.getElementById('component-properties');
+          dialog.classList.remove('visible');
+
+          // Wait for transition to complete before hiding completely
+          setTimeout(() => {
+              dialog.style.display = 'none';
+              document.querySelector('.tab-container').style.display = 'flex';
+          }, 300); // Match the transition duration
+          hideDialog('component-properties');
+        };
+
+        // Handle showing the return dialog
+        if (data && data.type === 'show-return-dialog') {
+          showDialog('return-dialog');
+        }
+
+        // Handle showing the return dialog // UPDATED to handle new dialog type
+        if (data && data.type === 'show-confirm-delete-dialog') { // Check for the new type
+          showDialog('confirm-delete-dialog'); // Show the correct dialog
+        }
+      };
+
+      // Update the renderComponents function
+      function renderComponents(searchTerm = '') {
+        const componentsList = document.getElementById('components-list');
+        componentsList.innerHTML = '';
+        const componentsSearchInput = document.getElementById('components-search-input');
+        searchTerm = searchTerm || componentsSearchInput.value;
+
+        // Filter components based on search term
+        const filteredComponents = componentsData.map(category => {
+          if (!category.isCategory) return category;
+
+          const filteredItems = category.items.filter(component =>
+            component.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+
+          return {
+            ...category,
+            items: filteredItems
+          };
         });
 
-        // Show the dialog with transition
-        document.querySelector('.tab-container').style.display = 'none';
-        const dialog = document.getElementById('component-properties');
-        dialog.style.display = 'flex';
-        void dialog.offsetWidth;
-        dialog.classList.add('visible');
-        showDialog('component-properties');
-      }
-
-      // Handle showing the links dialog
-      if (data && data.type === "show-links-dialog") {
-        currentLinksData = data.links;
-        exportableTsItems = []; // Reset batch export list for this dialog instance
-        exportableLinkItems = []; // Reset batch link export list
-        const linksList = document.getElementById('links-list');
-        const batchExportButton = document.getElementById('batch-export-ts-button');
-        const batchExportLinksButton = document.getElementById('batch-export-links-button'); // Get the new button
-        const copyLinkDataButton = document.getElementById('copy-link-data-button'); // Keep reference for now, though button is removed
-        linksList.innerHTML = ''; // Clear previous content
-        batchExportButton.disabled = true;
-        batchExportLinksButton.disabled = true; // Disable initially
-        // copyLinkDataButton.disabled = true; // No longer needed
-        batchExportButton.textContent = 'Batch Export TS';
-        batchExportLinksButton.textContent = 'Batch Export Links'; // Reset text
-        // copyLinkDataButton.textContent = 'Copy Link Data for Script'; // No longer needed
-
-        if (data.error) {
-            const errorItem = document.createElement('li');
-            errorItem.style.color = 'var(--figma-color-text-danger)';
-            errorItem.style.fontStyle = 'italic';
-            errorItem.style.padding = '8px 0';
-            errorItem.textContent = data.error;
-            linksList.appendChild(errorItem);
-        }
-
-        if (!currentLinksData || currentLinksData.length === 0) {
-            linksList.innerHTML += '<li>No elements selected or links available.</li>';
-        } else {
-            currentLinksData.forEach(linkInfo => {
-                const listItem = document.createElement('li');
-                const linkInfoDiv = document.createElement('div');
-                linkInfoDiv.className = 'link-info';
-
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'link-name';
-                nameSpan.textContent = linkInfo.name || 'Unnamed Element';
-                linkInfoDiv.appendChild(nameSpan);
-
-                if (linkInfo.isPlaceholder) {
-                    const urlInfo = document.createElement('span');
-                    urlInfo.className = 'link-url';
-                    urlInfo.textContent = `Node ID: ${linkInfo.id}`;
-                    urlInfo.style.fontFamily = 'monospace';
-                    linkInfoDiv.appendChild(urlInfo);
-                } else {
-                    const urlLink = document.createElement('a');
-                    urlLink.className = 'link-url';
-                    urlLink.href = linkInfo.url;
-                    urlLink.textContent = linkInfo.url;
-                    urlLink.target = '_blank';
-                    urlLink.title = 'Click to open link in new tab';
-                    linkInfoDiv.appendChild(urlLink);
-                }
-
-                listItem.appendChild(linkInfoDiv); // Ensure link info div is added FIRST
-
-                const buttonGroup = document.createElement('div');
-                buttonGroup.className = 'button-group';
-
-                // Copy Button
-                const copyButton = document.createElement('button');
-                copyButton.className = 'copy-link-button';
-                copyButton.textContent = linkInfo.isPlaceholder ? 'Copy ID' : 'Copy Link';
-                copyButton.title = linkInfo.isPlaceholder ? `Copy Node ID for ${linkInfo.name}` : `Copy Figma Link for ${linkInfo.name}`; // Add title
-                copyButton.onclick = () => {
-                    const textToCopy = linkInfo.isPlaceholder ? linkInfo.id : linkInfo.url;
-                    const textarea = document.createElement('textarea');
-                    textarea.value = textToCopy;
-                    textarea.style.position = 'fixed';
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    try {
-                        const successful = document.execCommand('copy');
-                        if (successful) {
-                            copyButton.textContent = 'Copied!';
-                            setTimeout(() => {
-                                copyButton.textContent = linkInfo.isPlaceholder ? 'Copy ID' : 'Copy Link';
-                            }, 1500);
-                        } else { console.error('Copy command failed'); }
-                    } catch (err) { console.error('Failed to copy:', err); }
-                    finally { document.body.removeChild(textarea); }
-                };
-                buttonGroup.appendChild(copyButton);
-
-                // Export TS Button & Add to batch list
-                if (linkInfo.tsFilename && linkInfo.tsContent) {
-                    const exportButton = document.createElement('button');
-                    exportButton.className = 'export-ts-button';
-                    exportButton.textContent = 'Export TS';
-                    exportButton.title = `Export TS Interface for ${linkInfo.name} (${linkInfo.tsFilename})`; // Add title
-                    exportButton.onclick = () => {
-                        try {
-                            downloadFile(linkInfo.tsFilename, linkInfo.tsContent);
-                            exportButton.textContent = 'Exported!';
-                            setTimeout(() => {
-                                exportButton.textContent = 'Export TS';
-                            }, 1500);
-                        } catch(err) {
-                            console.error("Failed to trigger download:", err);
-                            exportButton.textContent = 'Error';
-                            setTimeout(() => {
-                                exportButton.textContent = 'Export TS';
-                            }, 2000);
-                        }
-                    };
-                    buttonGroup.appendChild(exportButton);
-
-                    // Add to the list for batch export
-                    exportableTsItems.push({
-                        filename: linkInfo.tsFilename,
-                        content: linkInfo.tsContent
-                    });
-                }
-
-                // --- Add Single Export URL Button ---
-                if (linkInfo.url && !linkInfo.isPlaceholder) {
-                    // Generate sanitized filename (consistent with batch export and script)
-                    const linkFilenameBase = linkInfo.name
-                        .replace(/❖\s*/, '')
-                        .replace(/\s+/g, '-')
-                        .toLowerCase()
-                        .replace(/[^a-z0-9-]/g, '')
-                        .replace(/^-+|-+$/g, '');
-                    const linkFilename = `${linkFilenameBase || 'component'}.url`;
-
-                    const exportUrlButton = document.createElement('button');
-                    exportUrlButton.className = 'export-ts-button'; // Use same style as TS export
-                    exportUrlButton.textContent = 'Export URL';
-                    exportUrlButton.title = `Export Link File for ${linkInfo.name} (${linkFilename})`;
-                    exportUrlButton.onclick = () => {
-                         try {
-                            downloadFile(linkFilename, linkInfo.url, 'text/plain'); // Download .url file
-                            exportUrlButton.textContent = 'Exported!';
-                            setTimeout(() => {
-                                exportUrlButton.textContent = 'Export URL';
-                            }, 1500);
-                        } catch(err) {
-                            console.error("Failed to trigger URL download:", err);
-                            exportUrlButton.textContent = 'Error';
-                            setTimeout(() => {
-                                exportUrlButton.textContent = 'Export URL';
-                            }, 2000);
-                        }
-                    };
-                    buttonGroup.appendChild(exportUrlButton);
-                }
-                // --- End Single Export URL Button ---
-
-                // --- Add to batch link export list ---
-                if (linkInfo.url && !linkInfo.isPlaceholder) {
-                    // Generate sanitized filename for the link file (should match script logic)
-                    const linkFilenameBase = linkInfo.name
-                        .replace(/❖\s*/, '') // Remove prefix if present
-                        .replace(/\s+/g, '-') // Replace spaces with hyphens
-                        .toLowerCase()
-                        .replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric/non-hyphen
-                        .replace(/^-+|-+$/g, ''); // Trim leading/trailing hyphens
-                    const linkFilename = `${linkFilenameBase || 'component'}.url`;
-
-                    exportableLinkItems.push({
-                        filename: linkFilename,
-                        content: linkInfo.url // Content is just the URL
-                    });
-                }
-                // --- End add to batch link export ---
-
-                listItem.appendChild(buttonGroup);
-                linksList.appendChild(listItem);
-            }); // end forEach loop
-
-            // Enable batch export buttons if items are available
-            if (exportableTsItems.length > 0) {
-                batchExportButton.disabled = false;
-                batchExportButton.textContent = `Batch Export TS (${exportableTsItems.length})`;
-            } else {
-                batchExportButton.textContent = 'Batch Export TS';
-            }
-
-            if (exportableLinkItems.length > 0) {
-                batchExportLinksButton.disabled = false;
-                batchExportLinksButton.textContent = `Batch Export Links (${exportableLinkItems.length})`;
-            } else {
-                batchExportLinksButton.textContent = 'Batch Export Links';
-            }
-
-            // Enable Copy Link Data button if valid links are present - REMOVED
-            /*
-            const hasValidLinks = currentLinksData.some(link => link.url && !link.isPlaceholder);
-            copyLinkDataButton.disabled = !hasValidLinks;
-            if (hasValidLinks) {
-                const validLinkCount = currentLinksData.filter(link => link.url && !link.isPlaceholder).length;
-                 copyLinkDataButton.textContent = `Copy Link Data for Script (${validLinkCount})`;
-            } else {
-                copyLinkDataButton.textContent = 'Copy Link Data for Script';
-            }
-            */
-        }
-        showDialog('links-dialog');
-      }
-
-      // Handle playground state update
-      if (data && data.type === 'playground-state') {
-        const exists = data.exists;
-        const icon = exists ? '✖' : '▶';
-        const title = exists ? 'Remove Playground Frame' : 'Create Playground Frame';
-        document.getElementById('create-playground-button-components').textContent = icon;
-        document.getElementById('create-playground-button-components').title = title;
-        document.getElementById('create-playground-button-icons').textContent = icon;
-        document.getElementById('create-playground-button-icons').title = title;
-      }
-
-      // Handle create variant button click
-      document.getElementById('create-variant').onclick = () => {
-        if (!currentComponentData) return;
-
-        if (!currentComponentData.instanceId) {
-          // Only collect and send properties if we're creating a new instance
-          const properties = {};
-          // Get all variants (dropdowns)
-          const selects = document.querySelectorAll('.property-select');
-          selects.forEach(select => {
-            properties[select.dataset.property] = select.value;
-          });
-
-          // Get text inputs and textareas
-          const textInputs = document.querySelectorAll('.property-input[data-type="TEXT"], .property-textarea');
-          textInputs.forEach(input => {
-            properties[input.dataset.property] = input.value;
-          });
-
-          // Get number inputs
-          const numberInputs = document.querySelectorAll('.property-input[data-type="NUMBER"]');
-          numberInputs.forEach(input => {
-            properties[input.dataset.property] = parseFloat(input.value);
-          });
-
-          // Get checkboxes (now inside toggle switches)
-          const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-          checkboxes.forEach(checkbox => {
-            properties[checkbox.dataset.property] = checkbox.checked;
-          });
-
-          parent.postMessage({
-            pluginMessage: {
-              type: 'create-instance-with-properties',
-              componentId: currentComponentData.id,
-              properties: properties
-            }
-          }, '*');
-        }
-
-        // Close the dialog - this happens for both create and edit
-        document.getElementById('close-dialog').click();
-        hideDialog('component-properties');
-      };
-
-      // Handle close dialog button click
-      document.getElementById('close-dialog').onclick = () => {
-        const dialog = document.getElementById('component-properties');
-        dialog.classList.remove('visible');
-
-        // Wait for transition to complete before hiding completely
-        setTimeout(() => {
-            dialog.style.display = 'none';
-            document.querySelector('.tab-container').style.display = 'flex';
-        }, 300); // Match the transition duration
-        hideDialog('component-properties');
-      };
-
-      // Handle showing the return dialog
-      if (data && data.type === 'show-return-dialog') {
-        showDialog('return-dialog');
-      }
-
-      // Handle showing the return dialog // UPDATED to handle new dialog type
-      if (data && data.type === 'show-confirm-delete-dialog') { // Check for the new type
-        showDialog('confirm-delete-dialog'); // Show the correct dialog
-      }
-    };
-
-    // Update the renderComponents function
-    function renderComponents(searchTerm = '') {
-      const componentsList = document.getElementById('components-list');
-      componentsList.innerHTML = '';
-      const componentsSearchInput = document.getElementById('components-search-input');
-      searchTerm = searchTerm || componentsSearchInput.value;
-
-      // Filter components based on search term
-      const filteredComponents = componentsData.map(category => {
-        if (!category.isCategory) return category;
-
-        const filteredItems = category.items.filter(component =>
-          component.name.toLowerCase().includes(searchTerm.toLowerCase())
+        // Check if any category has items
+        const hasAnyItems = filteredComponents.some(category =>
+          category.isCategory && category.items.length > 0
         );
 
-        return {
-          ...category,
-          items: filteredItems
-        };
-      });
-
-      // Check if any category has items
-      const hasAnyItems = filteredComponents.some(category =>
-        category.isCategory && category.items.length > 0
-      );
-
-      if (!hasAnyItems) {
-        componentsList.innerHTML = '<li style="color: #666; font-style: italic;">No components found</li>';
-        return;
-      }
-
-      // Get collapsed state from global variable instead of localStorage
-      const collapsedCategories = window.collapsedCategoriesState || {};
-
-      filteredComponents.forEach((category, index) => {
-        if (!category.isCategory) return;
-
-        // Skip empty categories
-        if (category.items.length === 0) return;
-
-        // Create category header
-        const categoryHeader = document.createElement('div');
-        categoryHeader.className = 'category-header';
-
-        // Add last-category class if this is "Other Components"
-        if (category.category === "Other Components") {
-          categoryHeader.classList.add('last-category');
+        if (!hasAnyItems) {
+          componentsList.innerHTML = '<li style="color: #666; font-style: italic;">No components found</li>';
+          return;
         }
 
-        if (collapsedCategories[category.category]) {
-          categoryHeader.classList.add('collapsed');
-        }
+        // Get collapsed state from global variable instead of localStorage
+        const collapsedCategories = window.collapsedCategoriesState || {};
 
-        // Add category title and toggle icon
-        const categoryTitle = document.createElement('span');
-        categoryTitle.textContent = category.category;
+        filteredComponents.forEach((category, index) => {
+          if (!category.isCategory) return;
 
-        // Create toggle icon using SVG
-        const toggleIcon = createSvgIcon('chevron-down.svg', 'category-toggle');
+          // Skip empty categories
+          if (category.items.length === 0) return;
 
-        categoryHeader.appendChild(categoryTitle);
-        categoryHeader.appendChild(toggleIcon);
-        componentsList.appendChild(categoryHeader);
+          // Create category header
+          const categoryHeader = document.createElement('div');
+          categoryHeader.className = 'category-header';
 
-        // Create category section
-        const categorySection = document.createElement('div');
-        categorySection.className = 'category-section';
-        if (collapsedCategories[category.category]) {
-          categorySection.classList.add('collapsed');
+          // Add last-category class if this is "Other Components"
+          if (category.category === "Other Components") {
+            categoryHeader.classList.add('last-category');
+          }
+
+          if (collapsedCategories[category.category]) {
+            categoryHeader.classList.add('collapsed');
+          }
+
+          // Add category title and toggle icon
+          const categoryTitle = document.createElement('span');
+          categoryTitle.textContent = category.category;
+
+          // Create toggle icon using SVG
+          const toggleIcon = createSvgIcon('chevron-down.svg', 'category-toggle');
+
+          categoryHeader.appendChild(categoryTitle);
+          categoryHeader.appendChild(toggleIcon);
+          componentsList.appendChild(categoryHeader);
+
+          // Create category section
+          const categorySection = document.createElement('div');
+          categorySection.className = 'category-section';
+          if (collapsedCategories[category.category]) {
+            categorySection.classList.add('collapsed');
+          } else {
+            categorySection.style.maxHeight = '1000px'; // Set a large enough max-height for expanded state
+          }
+
+          // Add click event for accordion toggle
+          categoryHeader.addEventListener('click', () => {
+            const isCollapsed = categoryHeader.classList.toggle('collapsed');
+            categorySection.classList.toggle('collapsed');
+
+            if (!isCollapsed) {
+              // Expanded - set a height for animation immediately
+              categorySection.style.maxHeight = categorySection.scrollHeight + 'px';
+              // After animation completes, switch to auto height
+              setTimeout(() => {
+                categorySection.style.maxHeight = '1000px';
+              }, 200); // Match the transition duration
+            } else {
+              // Collapsing - set height to 0 immediately (no delay)
+              categorySection.style.maxHeight = '0px';
+            }
+
+            // Save collapsed state via message
+            if (!window.collapsedCategoriesState) window.collapsedCategoriesState = {};
+            window.collapsedCategoriesState[category.category] = isCollapsed;
+
+            // Send updated state to plugin
+            parent.postMessage({
+              pluginMessage: {
+                type: 'save-collapsed-state',
+                collapsedCategories: window.collapsedCategoriesState
+              }
+            }, '*');
+          });
+
+          // Add components to category
+          category.items.forEach(component => {
+            const item = document.createElement('li');
+            item.className = 'component-item';
+
+            // Create container for component name and actions
+            const content = document.createElement('div');
+            content.className = 'component-content';
+
+            // Add click handler to the content div
+            content.onclick = (e) => {
+              if (!e.target.closest('.action-button')) {
+                parent.postMessage({ pluginMessage: { type: 'create-instance', id: component.id } }, '*');
+              }
+            };
+
+            // Create left container for thumbnail/swatch and name
+            const leftContent = document.createElement('div');
+            leftContent.className = 'component-left';
+
+            if (component.thumbnail) {
+              const thumbnail = document.createElement('img');
+              thumbnail.className = 'component-thumbnail';
+              thumbnail.src = `data:image/png;base64,${component.thumbnail}`;
+              thumbnail.alt = component.name;
+              leftContent.appendChild(thumbnail);
+            } else {
+              const colorSwatch = document.createElement('div');
+              colorSwatch.className = 'component-thumbnail icon-swatch';
+              colorSwatch.style.backgroundColor = component.colorHash || '#cccccc';
+              if (component.firstChar) {
+                colorSwatch.textContent = component.firstChar;
+                colorSwatch.style.color = getContrastColor(component.colorHash);
+              }
+              leftContent.appendChild(colorSwatch);
+            }
+
+            const name = document.createElement('span');
+            name.textContent = component.name;
+            name.className = 'component-name';
+            name.style.cursor = 'pointer';
+            leftContent.appendChild(name);
+
+            content.appendChild(leftContent);
+
+            const actions = document.createElement('div');
+            actions.className = 'component-actions';
+
+            const gotoBtn = document.createElement('button');
+            gotoBtn.innerHTML = '→';
+            gotoBtn.title = 'Go to Component';
+            gotoBtn.className = 'action-button';
+            gotoBtn.onclick = (e) => {
+              e.stopPropagation();
+              parent.postMessage({ pluginMessage: { type: 'goto-component', id: component.id } }, '*');
+            };
+
+            actions.appendChild(gotoBtn);
+            content.appendChild(actions);
+            item.appendChild(content);
+            categorySection.appendChild(item);
+          });
+
+          componentsList.appendChild(categorySection);
+        });
+
+        // Update the toggle all button based on collapsed state
+        const allCategoryHeaders = document.querySelectorAll('.category-header');
+        const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+          header.classList.contains('collapsed')
+        );
+
+        // Update the toggle all icon class instead of swapping SVGs
+        const toggleAllIcon = document.getElementById('toggle-all-icon');
+        if (allCollapsed) {
+          toggleAllIcon.classList.add('collapsed');
         } else {
-          categorySection.style.maxHeight = '1000px'; // Set a large enough max-height for expanded state
+          toggleAllIcon.classList.remove('collapsed');
+        }
+      }
+
+      // Icon rendering function
+      function renderIcons(searchTerm = '') {
+        const iconsList = document.getElementById('icons-list');
+        iconsList.className = 'icon-grid';
+        iconsList.innerHTML = '';
+        const iconsSearchInput = document.getElementById('icons-search-input');
+        searchTerm = searchTerm || iconsSearchInput.value;
+
+        const filteredIcons = iconsData.filter(icon =>
+          icon.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (filteredIcons.length === 0) {
+          iconsList.innerHTML = '<li style="color: #666; font-style: italic;">No icons found</li>';
+          return;
         }
 
-        // Add click event for accordion toggle
-        categoryHeader.addEventListener('click', () => {
-          const isCollapsed = categoryHeader.classList.toggle('collapsed');
-          categorySection.classList.toggle('collapsed');
+        filteredIcons.forEach(icon => {
+          const item = document.createElement('div');
+          item.className = 'icon-item';
 
-          if (!isCollapsed) {
-            // Expanded - set a height for animation immediately
-            categorySection.style.maxHeight = categorySection.scrollHeight + 'px';
-            // After animation completes, switch to auto height
-            setTimeout(() => {
-              categorySection.style.maxHeight = '1000px';
-            }, 200); // Match the transition duration
-          } else {
-            // Collapsing - set height to 0 immediately (no delay)
-            categorySection.style.maxHeight = '0px';
-          }
-
-          // Save collapsed state via message
-          if (!window.collapsedCategoriesState) window.collapsedCategoriesState = {};
-          window.collapsedCategoriesState[category.category] = isCollapsed;
-
-          // Send updated state to plugin
-          parent.postMessage({
-            pluginMessage: {
-              type: 'save-collapsed-state',
-              collapsedCategories: window.collapsedCategoriesState
-            }
-          }, '*');
-        });
-
-        // Add components to category
-        category.items.forEach(component => {
-          const item = document.createElement('li');
-          item.className = 'component-item';
-
-          // Create container for component name and actions
           const content = document.createElement('div');
-          content.className = 'component-content';
+          content.className = 'icon-content';
 
-          // Add click handler to the content div
-          content.onclick = (e) => {
-            if (!e.target.closest('.action-button')) {
-              parent.postMessage({ pluginMessage: { type: 'create-instance', id: component.id } }, '*');
-            }
-          };
-
-          // Create left container for thumbnail/swatch and name
-          const leftContent = document.createElement('div');
-          leftContent.className = 'component-left';
-
-          if (component.thumbnail) {
+          if (icon.thumbnail) {
+            // Use actual thumbnail
             const thumbnail = document.createElement('img');
-            thumbnail.className = 'component-thumbnail';
-            thumbnail.src = `data:image/png;base64,${component.thumbnail}`;
-            thumbnail.alt = component.name;
-            leftContent.appendChild(thumbnail);
+            thumbnail.className = 'component-thumbnail-icon';
+            thumbnail.src = `data:image/png;base64,${icon.thumbnail}`;
+            thumbnail.alt = icon.name;
+
+            // Add error handling to the thumbnail image
+            thumbnail.onerror = function() {
+              // Replace with a fallback when image fails to load
+              const parent = this.parentNode;
+              parent.removeChild(this);
+
+              // Create fallback color swatch instead
+              const colorSwatch = document.createElement('div');
+              colorSwatch.className = 'component-thumbnail icon-swatch';
+              colorSwatch.style.backgroundColor = icon.colorHash || '#cccccc';
+              if (icon.firstChar) {
+                colorSwatch.textContent = icon.firstChar;
+                colorSwatch.style.color = getContrastColor(icon.colorHash);
+              }
+              parent.prepend(colorSwatch);
+            };
+
+            content.appendChild(thumbnail);
           } else {
-            const colorSwatch = document.createElement('div');
-            colorSwatch.className = 'component-thumbnail icon-swatch';
-            colorSwatch.style.backgroundColor = component.colorHash || '#cccccc';
-            if (component.firstChar) {
-              colorSwatch.textContent = component.firstChar;
-              colorSwatch.style.color = getContrastColor(component.colorHash);
-            }
-            leftContent.appendChild(colorSwatch);
-          }
-
-          const name = document.createElement('span');
-          name.textContent = component.name;
-          name.className = 'component-name';
-          name.style.cursor = 'pointer';
-          leftContent.appendChild(name);
-
-          content.appendChild(leftContent);
-
-          const actions = document.createElement('div');
-          actions.className = 'component-actions';
-
-          const gotoBtn = document.createElement('button');
-          gotoBtn.innerHTML = '→';
-          gotoBtn.title = 'Go to Component';
-          gotoBtn.className = 'action-button';
-          gotoBtn.onclick = (e) => {
-            e.stopPropagation();
-            parent.postMessage({ pluginMessage: { type: 'goto-component', id: component.id } }, '*');
-          };
-
-          actions.appendChild(gotoBtn);
-          content.appendChild(actions);
-          item.appendChild(content);
-          categorySection.appendChild(item);
-        });
-
-        componentsList.appendChild(categorySection);
-      });
-
-      // Update the toggle all button based on collapsed state
-      const allCategoryHeaders = document.querySelectorAll('.category-header');
-      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
-        header.classList.contains('collapsed')
-      );
-
-      // Update the toggle all icon class instead of swapping SVGs
-      const toggleAllIcon = document.getElementById('toggle-all-icon');
-      if (allCollapsed) {
-        toggleAllIcon.classList.add('collapsed');
-      } else {
-        toggleAllIcon.classList.remove('collapsed');
-      }
-    }
-
-    // Icon rendering function
-    function renderIcons(searchTerm = '') {
-      const iconsList = document.getElementById('icons-list');
-      iconsList.className = 'icon-grid';
-      iconsList.innerHTML = '';
-      const iconsSearchInput = document.getElementById('icons-search-input');
-      searchTerm = searchTerm || iconsSearchInput.value;
-
-      const filteredIcons = iconsData.filter(icon =>
-        icon.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
-      if (filteredIcons.length === 0) {
-        iconsList.innerHTML = '<li style="color: #666; font-style: italic;">No icons found</li>';
-        return;
-      }
-
-      filteredIcons.forEach(icon => {
-        const item = document.createElement('div');
-        item.className = 'icon-item';
-
-        const content = document.createElement('div');
-        content.className = 'icon-content';
-
-        if (icon.thumbnail) {
-          // Use actual thumbnail
-          const thumbnail = document.createElement('img');
-          thumbnail.className = 'component-thumbnail-icon';
-          thumbnail.src = `data:image/png;base64,${icon.thumbnail}`;
-          thumbnail.alt = icon.name;
-
-          // Add error handling to the thumbnail image
-          thumbnail.onerror = function() {
-            // Replace with a fallback when image fails to load
-            const parent = this.parentNode;
-            parent.removeChild(this);
-
-            // Create fallback color swatch instead
+            // Fallback to color swatch with first letter
             const colorSwatch = document.createElement('div');
             colorSwatch.className = 'component-thumbnail icon-swatch';
             colorSwatch.style.backgroundColor = icon.colorHash || '#cccccc';
@@ -2208,479 +2222,467 @@
               colorSwatch.textContent = icon.firstChar;
               colorSwatch.style.color = getContrastColor(icon.colorHash);
             }
-            parent.prepend(colorSwatch);
+            content.appendChild(colorSwatch);
+          }
+
+          // Icon name
+          const name = document.createElement('span');
+          name.textContent = icon.name;
+          name.className = 'icon-name';
+          content.appendChild(name);
+
+          // Add click handler to the whole item
+          item.onclick = (e) => {
+              parent.postMessage({ pluginMessage: { type: 'create-instance', id: icon.id } }, '*');
           };
 
-          content.appendChild(thumbnail);
-        } else {
-          // Fallback to color swatch with first letter
-          const colorSwatch = document.createElement('div');
-          colorSwatch.className = 'component-thumbnail icon-swatch';
-          colorSwatch.style.backgroundColor = icon.colorHash || '#cccccc';
-          if (icon.firstChar) {
-            colorSwatch.textContent = icon.firstChar;
-            colorSwatch.style.color = getContrastColor(icon.colorHash);
-          }
-          content.appendChild(colorSwatch);
-        }
+          item.appendChild(content);
+          iconsList.appendChild(item);
+        });
+      }
 
-        // Icon name
-        const name = document.createElement('span');
-        name.textContent = icon.name;
-        name.className = 'icon-name';
-        content.appendChild(name);
+      // Function to determine text color based on background color
+      function getContrastColor(hexColor) {
+        // Remove the # if it's there
+        hexColor = hexColor.replace('#', '');
 
-        // Add click handler to the whole item
-        item.onclick = (e) => {
-            parent.postMessage({ pluginMessage: { type: 'create-instance', id: icon.id } }, '*');
-        };
+        // Convert to RGB
+        const r = parseInt(hexColor.substr(0, 2), 16);
+        const g = parseInt(hexColor.substr(2, 2), 16);
+        const b = parseInt(hexColor.substr(4, 2), 16);
 
-        item.appendChild(content);
-        iconsList.appendChild(item);
-      });
-    }
+        // Calculate brightness (YIQ formula)
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
-    // Function to determine text color based on background color
-    function getContrastColor(hexColor) {
-      // Remove the # if it's there
-      hexColor = hexColor.replace('#', '');
+        // Return white for dark colors, black for light colors
+        return brightness > 128 ? '#000000' : '#ffffff';
+      }
 
-      // Convert to RGB
-      const r = parseInt(hexColor.substr(0, 2), 16);
-      const g = parseInt(hexColor.substr(2, 2), 16);
-      const b = parseInt(hexColor.substr(4, 2), 16);
-
-      // Calculate brightness (YIQ formula)
-      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-      // Return white for dark colors, black for light colors
-      return brightness > 128 ? '#000000' : '#ffffff';
-    }
-
-    // Add debounce function
-    function debounce(func, wait) {
-      let timeout;
-      return function executedFunction(...args) {
-        const later = () => {
+      // Add debounce function
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
           clearTimeout(timeout);
-          func(...args);
+          timeout = setTimeout(later, wait);
         };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-      };
-    }
-
-    // Add search functionality for components with debounce
-    document.getElementById('components-search-input').addEventListener('input', debounce((e) => {
-      renderComponents(e.target.value);
-      // Show/hide clear button based on input value
-      document.getElementById('components-search-clear').classList.toggle('visible', e.target.value.length > 0);
-    }, 300));
-
-    // Add search functionality for icons with debounce
-    document.getElementById('icons-search-input').addEventListener('input', debounce((e) => {
-      renderIcons(e.target.value);
-      // Show/hide clear button based on input value
-      document.getElementById('icons-search-clear').classList.toggle('visible', e.target.value.length > 0);
-    }, 300));
-
-    // Add functionality to clear buttons
-    document.getElementById('components-search-clear').addEventListener('click', () => {
-      const searchInput = document.getElementById('components-search-input');
-      searchInput.value = '';
-      searchInput.focus();
-      renderComponents('');
-      document.getElementById('components-search-clear').classList.remove('visible');
-    });
-
-    document.getElementById('icons-search-clear').addEventListener('click', () => {
-      const searchInput = document.getElementById('icons-search-input');
-      searchInput.value = '';
-      searchInput.focus();
-      renderIcons('');
-      document.getElementById('icons-search-clear').classList.remove('visible');
-    });
-
-    // Initialize clear buttons visibility on page load
-    window.addEventListener('DOMContentLoaded', () => {
-      const toggleAllIcon = document.getElementById('toggle-all-icon');
-      toggleAllIcon.innerHTML = ''; // Clear any existing content first
-      toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
-
-      // Check if search inputs have values and show clear buttons accordingly
-      document.getElementById('components-search-clear').classList.toggle(
-        'visible',
-        document.getElementById('components-search-input').value.length > 0
-      );
-
-      document.getElementById('icons-search-clear').classList.toggle(
-        'visible',
-        document.getElementById('icons-search-input').value.length > 0
-      );
-    });
-
-    // Add event listener for documentation button
-    document.getElementById('docs-button').addEventListener('click', () => {
-      // Open documentation in a new tab
-      window.open('http://moelle.bplaced.net/index.html', '_blank');
-    });
-
-    // Add export functionality to status messages
-    document.getElementById('status-message').addEventListener('click', () => {
-      if (componentsData.length === 0) return;
-
-      // Format the data as a simple JSON structure
-      const exportData = componentsData.map(component => ({
-        id: component.id,
-        name: component.name
-      }));
-
-      // Create a fallback copy method using execCommand
-      const textToCopy = JSON.stringify(exportData, null, 2);
-      const textarea = document.createElement('textarea');
-      textarea.value = textToCopy;
-      textarea.style.position = 'fixed';  // Avoid scrolling to bottom
-      document.body.appendChild(textarea);
-      textarea.select();
-
-      try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-          const originalText = document.getElementById('status-message').textContent;
-          document.getElementById('status-message').textContent = "✓ Components data copied to clipboard!";
-          setTimeout(() => {
-            document.getElementById('status-message').textContent = originalText;
-          }, 2000);
-        } else {
-          console.error('Copy command was unsuccessful');
-        }
-      } catch (err) {
-        console.error('Failed to copy: ', err);
-      } finally {
-        document.body.removeChild(textarea);
       }
-    });
 
-    document.getElementById('icons-status-message').addEventListener('click', () => {
-      if (iconsData.length === 0) return;
+      // Add search functionality for components with debounce
+      document.getElementById('components-search-input').addEventListener('input', debounce((e) => {
+        renderComponents(e.target.value);
+        // Show/hide clear button based on input value
+        document.getElementById('components-search-clear').classList.toggle('visible', e.target.value.length > 0);
+      }, 300));
 
-      // Format the data as a simple JSON structure
-      const exportData = iconsData.map(icon => ({
-        id: icon.id,
-        name: icon.name
-      }));
+      // Add search functionality for icons with debounce
+      document.getElementById('icons-search-input').addEventListener('input', debounce((e) => {
+        renderIcons(e.target.value);
+        // Show/hide clear button based on input value
+        document.getElementById('icons-search-clear').classList.toggle('visible', e.target.value.length > 0);
+      }, 300));
 
-      // Create a fallback copy method using execCommand
-      const textToCopy = JSON.stringify(exportData, null, 2);
-      const textarea = document.createElement('textarea');
-      textarea.value = textToCopy;
-      textarea.style.position = 'fixed';  // Avoid scrolling to bottom
-      document.body.appendChild(textarea);
-      textarea.select();
+      // Add functionality to clear buttons
+      document.getElementById('components-search-clear').addEventListener('click', () => {
+        const searchInput = document.getElementById('components-search-input');
+        searchInput.value = '';
+        searchInput.focus();
+        renderComponents('');
+        document.getElementById('components-search-clear').classList.remove('visible');
+      });
 
-      try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-          const originalText = document.getElementById('icons-status-message').textContent;
-          document.getElementById('icons-status-message').textContent = "✓ Icons data copied to clipboard!";
-          setTimeout(() => {
-            document.getElementById('icons-status-message').textContent = originalText;
-          }, 2000);
-        } else {
-          console.error('Copy command was unsuccessful');
-        }
-      } catch (err) {
-        console.error('Failed to copy: ', err);
-      } finally {
-        document.body.removeChild(textarea);
-      }
-    });
+      document.getElementById('icons-search-clear').addEventListener('click', () => {
+        const searchInput = document.getElementById('icons-search-input');
+        searchInput.value = '';
+        searchInput.focus();
+        renderIcons('');
+        document.getElementById('icons-search-clear').classList.remove('visible');
+      });
 
-    // Update the size-toggle event listener
-    document.getElementById('size-toggle').addEventListener('click', () => {
-      const isExpanded = document.body.classList.toggle('expanded-ui');
-      document.getElementById('size-toggle').classList.toggle('size-toggle-expanded');
+      // Initialize clear buttons visibility on page load
+      window.addEventListener('DOMContentLoaded', () => {
+        const toggleAllIcon = document.getElementById('toggle-all-icon');
+        toggleAllIcon.innerHTML = ''; // Clear any existing content first
+        toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
 
-      // Toggle the compact-mode class (remove when expanded, add when compact)
-      document.body.classList.toggle('compact-mode', !isExpanded);
+        // Check if search inputs have values and show clear buttons accordingly
+        document.getElementById('components-search-clear').classList.toggle(
+          'visible',
+          document.getElementById('components-search-input').value.length > 0
+        );
 
-      // Send message to plugin to resize the UI
-      parent.postMessage({
-        pluginMessage: {
-          type: 'resize',
-          size: isExpanded ? 'expanded' : 'compact'
-        }
-      }, '*');
-    });
+        document.getElementById('icons-search-clear').classList.toggle(
+          'visible',
+          document.getElementById('icons-search-input').value.length > 0
+        );
+      });
 
-    // Add code to set the initial state when the plugin loads
-    window.addEventListener('load', () => {
-      // Default to compact mode when plugin loads
-      document.body.classList.add('compact-mode');
-    });
+      // Add event listener for documentation button
+      document.getElementById('docs-button').addEventListener('click', () => {
+        // Open documentation in a new tab
+        window.open('http://moelle.bplaced.net/index.html', '_blank');
+      });
 
-    // Add toggle all categories functionality
-    document.getElementById('toggle-all-categories').addEventListener('click', () => {
-      const allCategoryHeaders = document.querySelectorAll('.category-header');
-      const allCategorySections = document.querySelectorAll('.category-section');
+      // Add export functionality to status messages
+      document.getElementById('status-message').addEventListener('click', () => {
+        if (componentsData.length === 0) return;
 
-      // Check if all categories are collapsed
-      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
-        header.classList.contains('collapsed')
-      );
+        // Format the data as a simple JSON structure
+        const exportData = componentsData.map(component => ({
+          id: component.id,
+          name: component.name
+        }));
 
-      // Toggle based on current state
-      const collapsedCategories = {};
+        // Create a fallback copy method using execCommand
+        const textToCopy = JSON.stringify(exportData, null, 2);
+        const textarea = document.createElement('textarea');
+        textarea.value = textToCopy;
+        textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+        document.body.appendChild(textarea);
+        textarea.select();
 
-      allCategoryHeaders.forEach((header, index) => {
-        const section = allCategorySections[index];
-
-        if (allCollapsed) {
-          // Expand all
-          header.classList.remove('collapsed');
-          section.classList.remove('collapsed');
-          section.style.maxHeight = '1000px';
-          collapsedCategories[header.querySelector('span').textContent] = false;
-        } else {
-          // Collapse all
-          header.classList.add('collapsed');
-          section.classList.add('collapsed');
-          section.style.maxHeight = '0px';
-          collapsedCategories[header.querySelector('span').textContent] = true;
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) {
+            const originalText = document.getElementById('status-message').textContent;
+            document.getElementById('status-message').textContent = "✓ Components data copied to clipboard!";
+            setTimeout(() => {
+              document.getElementById('status-message').textContent = originalText;
+            }, 2000);
+          } else {
+            console.error('Copy command was unsuccessful');
+          }
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        } finally {
+          document.body.removeChild(textarea);
         }
       });
 
-      // Update the toggle all icon class after modifying all categories
-      updateToggleAllIcon();
+      document.getElementById('icons-status-message').addEventListener('click', () => {
+        if (iconsData.length === 0) return;
 
-      // Save state to global variable
-      window.collapsedCategoriesState = collapsedCategories;
+        // Format the data as a simple JSON structure
+        const exportData = iconsData.map(icon => ({
+          id: icon.id,
+          name: icon.name
+        }));
 
-      // Send updated state to plugin
-      parent.postMessage({
-        pluginMessage: {
-          type: 'save-collapsed-state',
-          collapsedCategories: window.collapsedCategoriesState
+        // Create a fallback copy method using execCommand
+        const textToCopy = JSON.stringify(exportData, null, 2);
+        const textarea = document.createElement('textarea');
+        textarea.value = textToCopy;
+        textarea.style.position = 'fixed';  // Avoid scrolling to bottom
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) {
+            const originalText = document.getElementById('icons-status-message').textContent;
+            document.getElementById('icons-status-message').textContent = "✓ Icons data copied to clipboard!";
+            setTimeout(() => {
+              document.getElementById('icons-status-message').textContent = originalText;
+            }, 2000);
+          } else {
+            console.error('Copy command was unsuccessful');
+          }
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        } finally {
+          document.body.removeChild(textarea);
         }
-      }, '*');
-    });
+      });
 
-    // Initialize the toggle all icon on page load to use just chevron-down
-    window.addEventListener('DOMContentLoaded', () => {
-      const toggleAllIcon = document.getElementById('toggle-all-icon');
-      toggleAllIcon.innerHTML = ''; // Clear any existing content first
-      toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
-    });
+      // Update the size-toggle event listener
+      document.getElementById('size-toggle').addEventListener('click', () => {
+        const isExpanded = document.body.classList.toggle('expanded-ui');
+        document.getElementById('size-toggle').classList.toggle('size-toggle-expanded');
 
-    // Helper function to show/hide dialogs
-    function showDialog(dialogId) {
-        document.querySelector('.tab-container').style.display = 'none';
-        const dialog = document.getElementById(dialogId);
-        dialog.style.display = 'flex';
-        // Delay adding the visible class slightly to ensure the transition works
-        setTimeout(() => dialog.classList.add('visible'), 10);
-    }
+        // Toggle the compact-mode class (remove when expanded, add when compact)
+        document.body.classList.toggle('compact-mode', !isExpanded);
 
-    function hideDialog(dialogId) {
-        const dialog = document.getElementById(dialogId);
-        dialog.classList.remove('visible');
-        // Wait for transition before hiding and showing tabs
-        setTimeout(() => {
-            dialog.style.display = 'none';
-            document.querySelector('.tab-container').style.display = 'flex';
-        }, 200); // Match CSS transition duration
-    }
+        // Send message to plugin to resize the UI
+        parent.postMessage({
+          pluginMessage: {
+            type: 'resize',
+            size: isExpanded ? 'expanded' : 'compact'
+          }
+        }, '*');
+      });
 
-    // Setup "Get Links" buttons
-    document.getElementById('get-links-button-components').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'get-selected-links' } }, '*');
-    });
-    document.getElementById('get-links-button-icons').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'get-selected-links' } }, '*');
-    });
+      // Add code to set the initial state when the plugin loads
+      window.addEventListener('load', () => {
+        // Default to compact mode when plugin loads
+        document.body.classList.add('compact-mode');
+      });
 
-    // Setup "Create Playground" buttons
-    document.getElementById('create-playground-button-components').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'create-playground' } }, '*');
-    });
-    document.getElementById('create-playground-button-icons').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'create-playground' } }, '*');
-    });
+      // Add toggle all categories functionality
+      document.getElementById('toggle-all-categories').addEventListener('click', () => {
+        const allCategoryHeaders = document.querySelectorAll('.category-header');
+        const allCategorySections = document.querySelectorAll('.category-section');
 
-    // Setup close button for links dialog
-    document.getElementById('close-links-dialog').addEventListener('click', () => {
-      hideDialog('links-dialog');
-    });
+        // Check if all categories are collapsed
+        const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+          header.classList.contains('collapsed')
+        );
 
-    // Add keyboard support for Escape key to clear search
-    document.getElementById('components-search-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        document.getElementById('components-search-clear').click();
+        // Toggle based on current state
+        const collapsedCategories = {};
+
+        allCategoryHeaders.forEach((header, index) => {
+          const section = allCategorySections[index];
+
+          if (allCollapsed) {
+            // Expand all
+            header.classList.remove('collapsed');
+            section.classList.remove('collapsed');
+            section.style.maxHeight = '1000px';
+            collapsedCategories[header.querySelector('span').textContent] = false;
+          } else {
+            // Collapse all
+            header.classList.add('collapsed');
+            section.classList.add('collapsed');
+            section.style.maxHeight = '0px';
+            collapsedCategories[header.querySelector('span').textContent] = true;
+          }
+        });
+
+        // Update the toggle all icon class after modifying all categories
+        updateToggleAllIcon();
+
+        // Save state to global variable
+        window.collapsedCategoriesState = collapsedCategories;
+
+        // Send updated state to plugin
+        parent.postMessage({
+          pluginMessage: {
+            type: 'save-collapsed-state',
+            collapsedCategories: window.collapsedCategoriesState
+          }
+        }, '*');
+      });
+
+      // Initialize the toggle all icon on page load to use just chevron-down
+      window.addEventListener('DOMContentLoaded', () => {
+        const toggleAllIcon = document.getElementById('toggle-all-icon');
+        toggleAllIcon.innerHTML = ''; // Clear any existing content first
+        toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
+      });
+
+      // Helper function to show/hide dialogs
+      function showDialog(dialogId) {
+          document.querySelector('.tab-container').style.display = 'none';
+          const dialog = document.getElementById(dialogId);
+          dialog.style.display = 'flex';
+          // Delay adding the visible class slightly to ensure the transition works
+          setTimeout(() => dialog.classList.add('visible'), 10);
       }
-    });
 
-    document.getElementById('icons-search-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        document.getElementById('icons-search-clear').click();
+      function hideDialog(dialogId) {
+          const dialog = document.getElementById(dialogId);
+          dialog.classList.remove('visible');
+          // Wait for transition before hiding and showing tabs
+          setTimeout(() => {
+              dialog.style.display = 'none';
+              document.querySelector('.tab-container').style.display = 'flex';
+          }, 200); // Match CSS transition duration
       }
-    });
 
-    // Add event listeners for the return dialog buttons
-    document.getElementById('return-dialog-goback').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'go-back' } }, '*');
-      hideDialog('return-dialog');
-    });
+      // Setup "Get Links" buttons
+      document.getElementById('get-links-button-components').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'get-selected-links' } }, '*');
+      });
+      document.getElementById('get-links-button-icons').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'get-selected-links' } }, '*');
+      });
 
-    document.getElementById('return-dialog-stay').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
-      hideDialog('return-dialog');
-    });
+      // Setup "Create Playground" buttons
+      document.getElementById('create-playground-button-components').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'create-playground' } }, '*');
+      });
+      document.getElementById('create-playground-button-icons').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'create-playground' } }, '*');
+      });
 
-    // --- New event listeners for the confirmation dialog --- // NEW
-    document.getElementById('confirm-delete-goback').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'go-back' } }, '*');
-      hideDialog('confirm-delete-dialog');
-    });
+      // Setup close button for links dialog
+      document.getElementById('close-links-dialog').addEventListener('click', () => {
+        hideDialog('links-dialog');
+      });
 
-    document.getElementById('confirm-delete-stay').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
-      hideDialog('confirm-delete-dialog');
-    });
+      // Add keyboard support for Escape key to clear search
+      document.getElementById('components-search-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          document.getElementById('components-search-clear').click();
+        }
+      });
 
-    // Use the X button in the header for cancel
-    document.getElementById('confirm-delete-cancel-x').addEventListener('click', () => {
+      document.getElementById('icons-search-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          document.getElementById('icons-search-clear').click();
+        }
+      });
+
+      // Add event listeners for the return dialog buttons
+      document.getElementById('return-dialog-goback').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'go-back' } }, '*');
+        hideDialog('return-dialog');
+      });
+
+      document.getElementById('return-dialog-stay').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
+        hideDialog('return-dialog');
+      });
+
+      // --- New event listeners for the confirmation dialog --- // NEW
+      document.getElementById('confirm-delete-goback').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'go-back' } }, '*');
         hideDialog('confirm-delete-dialog');
-    });
-    // --- End new event listeners ---
+      });
 
-    // Function to trigger file download
-    function downloadFile(filename, content, mimeType = 'text/typescript') {
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
+      document.getElementById('confirm-delete-stay').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
+        hideDialog('confirm-delete-dialog');
+      });
 
-    // Add click handler for the batch export button
-    document.getElementById('batch-export-ts-button').addEventListener('click', () => {
-        const button = document.getElementById('batch-export-ts-button');
-        const originalText = button.textContent;
+      // Use the X button in the header for cancel
+      document.getElementById('confirm-delete-cancel-x').addEventListener('click', () => {
+          hideDialog('confirm-delete-dialog');
+      });
+      // --- End new event listeners ---
 
-        if (exportableTsItems.length === 0) {
-            console.warn("No items to batch export.");
-            return;
-        }
+      // Function to trigger file download
+      function downloadFile(filename, content, mimeType = 'text/typescript') {
+          const blob = new Blob([content], { type: mimeType });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+      }
 
-        if (typeof JSZip === 'undefined') {
-            console.error("JSZip library is not loaded.");
-            button.textContent = 'Error: JSZip missing';
-             setTimeout(() => { button.textContent = originalText; button.disabled = true; }, 3000);
-            return;
-        }
+      // Add click handler for the batch export button
+      document.getElementById('batch-export-ts-button').addEventListener('click', () => {
+          const button = document.getElementById('batch-export-ts-button');
+          const originalText = button.textContent;
 
-        button.disabled = true;
-        button.textContent = 'Zipping...';
+          if (exportableTsItems.length === 0) {
+              console.warn("No items to batch export.");
+              return;
+          }
 
-        try {
-            const zip = new JSZip();
-            exportableTsItems.forEach(item => {
-                // Add file to zip. Handle potential duplicate filenames if necessary (e.g., by adding prefix/suffix)
-                // For now, assuming filenames are unique enough or overwriting is acceptable.
-                zip.file(item.filename, item.content);
-            });
+          if (typeof JSZip === 'undefined') {
+              console.error("JSZip library is not loaded.");
+              button.textContent = 'Error: JSZip missing';
+               setTimeout(() => { button.textContent = originalText; button.disabled = true; }, 3000);
+              return;
+          }
 
-            zip.generateAsync({ type: "blob" })
-                .then(function(content) {
-                    // Trigger download
-                    downloadFile("Figma_TS_Exports.zip", content, "application/zip");
-                    button.textContent = 'Exported!';
-                    setTimeout(() => {
-                        button.textContent = originalText; // Restore original text (with count)
-                        button.disabled = false;
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error("Error generating zip file:", err);
-                    button.textContent = 'Error Zipping';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false; // Re-enable even on error
-                    }, 3000);
-                });
+          button.disabled = true;
+          button.textContent = 'Zipping...';
 
-        } catch (error) {
-             console.error("Error during zipping process:", error);
-             button.textContent = 'Error';
-             setTimeout(() => {
-                button.textContent = originalText;
-                button.disabled = false;
-             }, 3000);
-        }
-    });
+          try {
+              const zip = new JSZip();
+              exportableTsItems.forEach(item => {
+                  // Add file to zip. Handle potential duplicate filenames if necessary (e.g., by adding prefix/suffix)
+                  // For now, assuming filenames are unique enough or overwriting is acceptable.
+                  zip.file(item.filename, item.content);
+              });
 
-    // --- Add click handler for the Batch Export Links button ---
-    document.getElementById('batch-export-links-button').addEventListener('click', () => {
-        const button = document.getElementById('batch-export-links-button');
-        const originalText = button.textContent;
+              zip.generateAsync({ type: "blob" })
+                  .then(function(content) {
+                      // Trigger download
+                      downloadFile("Figma_TS_Exports.zip", content, "application/zip");
+                      button.textContent = 'Exported!';
+                      setTimeout(() => {
+                          button.textContent = originalText; // Restore original text (with count)
+                          button.disabled = false;
+                      }, 2000);
+                  })
+                  .catch(err => {
+                      console.error("Error generating zip file:", err);
+                      button.textContent = 'Error Zipping';
+                      setTimeout(() => {
+                          button.textContent = originalText;
+                          button.disabled = false; // Re-enable even on error
+                      }, 3000);
+                  });
 
-        if (exportableLinkItems.length === 0) {
-            console.warn("No link items to batch export.");
-            return;
-        }
+          } catch (error) {
+               console.error("Error during zipping process:", error);
+               button.textContent = 'Error';
+               setTimeout(() => {
+                  button.textContent = originalText;
+                  button.disabled = false;
+               }, 3000);
+          }
+      });
 
-        if (typeof JSZip === 'undefined') {
-            console.error("JSZip library is not loaded.");
-            button.textContent = 'Error: JSZip missing';
-             setTimeout(() => { button.textContent = originalText; button.disabled = true; }, 3000);
-            return;
-        }
+      // --- Add click handler for the Batch Export Links button ---
+      document.getElementById('batch-export-links-button').addEventListener('click', () => {
+          const button = document.getElementById('batch-export-links-button');
+          const originalText = button.textContent;
 
-        button.disabled = true;
-        button.textContent = 'Zipping Links...';
+          if (exportableLinkItems.length === 0) {
+              console.warn("No link items to batch export.");
+              return;
+          }
 
-        try {
-            const zip = new JSZip();
-            exportableLinkItems.forEach(item => {
-                zip.file(item.filename, item.content); // filename includes .url extension
-            });
+          if (typeof JSZip === 'undefined') {
+              console.error("JSZip library is not loaded.");
+              button.textContent = 'Error: JSZip missing';
+               setTimeout(() => { button.textContent = originalText; button.disabled = true; }, 3000);
+              return;
+          }
 
-            zip.generateAsync({ type: "blob" })
-                .then(function(content) {
-                    // Trigger download
-                    downloadFile("Figma_Links.zip", content, "application/zip");
-                    button.textContent = 'Links Exported!';
-                    setTimeout(() => {
-                        button.textContent = originalText; // Restore original text (with count)
-                        button.disabled = false;
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error("Error generating link zip file:", err);
-                    button.textContent = 'Error Zipping';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false; // Re-enable even on error
-                    }, 3000);
-                });
+          button.disabled = true;
+          button.textContent = 'Zipping Links...';
 
-        } catch (error) {
-             console.error("Error during link zipping process:", error);
-             button.textContent = 'Error';
-             setTimeout(() => {
-                button.textContent = originalText;
-                button.disabled = false;
-             }, 3000);
-        }
-    });
-    // --- End Batch Export Links handler ---
+          try {
+              const zip = new JSZip();
+              exportableLinkItems.forEach(item => {
+                  zip.file(item.filename, item.content); // filename includes .url extension
+              });
 
+              zip.generateAsync({ type: "blob" })
+                  .then(function(content) {
+                      // Trigger download
+                      downloadFile("Figma_Links.zip", content, "application/zip");
+                      button.textContent = 'Links Exported!';
+                      setTimeout(() => {
+                          button.textContent = originalText; // Restore original text (with count)
+                          button.disabled = false;
+                      }, 2000);
+                  })
+                  .catch(err => {
+                      console.error("Error generating link zip file:", err);
+                      button.textContent = 'Error Zipping';
+                      setTimeout(() => {
+                          button.textContent = originalText;
+                          button.disabled = false; // Re-enable even on error
+                      }, 3000);
+                  });
+
+          } catch (error) {
+               console.error("Error during link zipping process:", error);
+               button.textContent = 'Error';
+               setTimeout(() => {
+                  button.textContent = originalText;
+                  button.disabled = false;
+               }, 3000);
+          }
+      });
+      // --- End Batch Export Links handler ---
+
+    }); // End DOMContentLoaded listener
   </script>
 </body>
 
