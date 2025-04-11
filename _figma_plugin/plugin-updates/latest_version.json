@@ -1,7 +1,7 @@
 {
   "latestVersion": "1.1.0",
   "releaseNotes": "Added feature X, fixed bug Y.",
-  "downloadUrl": null, // Or keep your existing link if you want
+  "downloadUrl": null,
   "files": {
     "codeJsUrl": "http://moelle.bplaced.net/_figma_plugin/code.js",
     "uiHtmlUrl": "http://moelle.bplaced.net/_figma_plugin/ui.html",
