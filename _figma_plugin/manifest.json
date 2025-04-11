@@ -12,11 +12,6 @@
   "permissions": ["currentuser"],
   "networkAccess": {
     "allowedDomains": [
-      "https://gg-figma-docs.vercel.app",
-      "https://docs.google.com",
-      "https://raw.githubusercontent.com",
-      "https://github.com/moelle89/GG_figma_docs/",
-      "https://moelle.bplaced.net",
       "https://cdnjs.cloudflare.com"
     ]
   }
