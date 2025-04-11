@@ -1564,3 +1564,96 @@ figma.on('drop', async (event) => {
 
   return false;
 });
+
+const CURRENT_PLUGIN_VERSION = "1.0.0"; // <-- Make sure this is correct
+const UPDATE_CHECK_URL = "https://moelle.bplaced.net/_figma_plugin/plugin-updates/latest_version.json"; // <-- Use your actual URL
+
+async function checkForUpdates() {
+  console.log(`Current plugin version: ${CURRENT_PLUGIN_VERSION}`);
+  try {
+    const response = await fetch(UPDATE_CHECK_URL, { cache: "no-store" }); // Prevent caching
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const latestInfo = await response.json();
+    console.log(`Latest version available: ${latestInfo.latestVersion}`);
+
+    if (isNewerVersion(latestInfo.latestVersion, CURRENT_PLUGIN_VERSION)) {
+      console.log("Update found, attempting to fetch files...");
+
+      if (!latestInfo.files || !latestInfo.files.codeJsUrl || !latestInfo.files.uiHtmlUrl || !latestInfo.files.manifestJsonUrl) {
+         console.error("Update information is missing file URLs.");
+         figma.notify(`Update v${latestInfo.latestVersion} available, but file info is missing. Please check the update server configuration.`);
+         return;
+      }
+
+      try {
+        // Fetch all files concurrently
+        const [codeJsRes, uiHtmlRes, manifestJsonRes] = await Promise.all([
+          fetch(latestInfo.files.codeJsUrl, { cache: "no-store" }),
+          fetch(latestInfo.files.uiHtmlUrl, { cache: "no-store" }),
+          fetch(latestInfo.files.manifestJsonUrl, { cache: "no-store" })
+        ]);
+
+        // Check if all fetches were successful
+        if (!codeJsRes.ok || !uiHtmlRes.ok || !manifestJsonRes.ok) {
+           throw new Error("Failed to download one or more update files.");
+        }
+
+        // Get text content
+        const codeJsContent = await codeJsRes.text();
+        const uiHtmlContent = await uiHtmlRes.text();
+        const manifestJsonContent = await manifestJsonRes.text();
+
+        // Send file content and version info to UI
+        figma.ui.postMessage({
+          type: 'update-available',
+          version: latestInfo.latestVersion,
+          notes: latestInfo.releaseNotes || "No release notes provided.",
+          files: {
+            codeJs: codeJsContent,
+            uiHtml: uiHtmlContent,
+            manifestJson: manifestJsonContent
+          }
+        });
+
+         // Also show a standard notification
+         figma.notify(`Plugin Update Available: v${latestInfo.latestVersion}. Click the banner in the plugin to download.`, { timeout: 10000 });
+
+
+      } catch (fetchError) {
+         console.error("Error fetching update files:", fetchError);
+         figma.notify(`Update v${latestInfo.latestVersion} available, but failed to download files. Please try again later.`, { error: true });
+      }
+
+    } else {
+      console.log("Plugin is up to date.");
+      // Optionally notify the user they are up-to-date if triggered manually
+      // figma.notify("Your plugin is up to date.", { timeout: 3000 });
+    }
+
+  } catch (error) {
+    console.error("Error checking for updates:", error);
+    // Don't show error notification on automatic checks to avoid annoyance
+    // figma.notify("Could not check for updates.", { error: true });
+  }
+}
+
+// --- Helper for basic version comparison (keep this function) ---
+// Returns true if versionA is newer than versionB
+function isNewerVersion(versionA, versionB) {
+    // ... (keep existing implementation)
+    const partsA = versionA.split('.').map(Number);
+    const partsB = versionB.split('.').map(Number);
+    for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+        const partA = partsA[i] || 0;
+        const partB = partsB[i] || 0;
+        if (partA > partB) return true;
+        if (partA < partB) return false;
+    }
+    return false; // Versions are equal
+}
+
+// --- Trigger the check when the plugin starts ---
+// You might want to add a delay or trigger it differently
+setTimeout(checkForUpdates, 2000); // Check 2 seconds after plugin starts

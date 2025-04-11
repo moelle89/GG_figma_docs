@@ -1110,12 +1110,74 @@
        color: var(--figma-color-text-disabled);
        cursor: not-allowed;
     }
+
+    /* Styles for the Update Notification Banner */
+    .update-banner {
+      background-color: var(--figma-color-bg-brand);
+      color: var(--figma-color-text-onbrand);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      position: sticky; /* Keep it visible */
+      top: 0;           /* Stick to the top */
+      z-index: 5;       /* Ensure it's above tabs but below dialogs */
+      border-bottom: 1px solid var(--figma-color-border-brand);
+    }
+
+    .update-banner span {
+      flex-grow: 1;
+      margin-right: 10px;
+    }
+
+    .update-banner button {
+      background-color: var(--figma-color-bg-onbrand); /* Button bg matches text color on brand */
+      color: var(--figma-color-text-brand);           /* Button text matches brand color */
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin-left: 5px;
+    }
+
+    .update-banner button:hover {
+      background-color: var(--figma-color-bg-onbrand-secondary); /* Slightly different hover */
+    }
+
+    .update-banner button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .update-banner button.dismiss-button {
+      background: none;
+      color: var(--figma-color-text-onbrand);
+      padding: 2px 4px;
+      font-size: 14px;
+      line-height: 1;
+      opacity: 0.8;
+    }
+    .update-banner button.dismiss-button:hover {
+       opacity: 1;
+       background-color: rgba(0,0,0,0.1); /* Subtle hover */
+    }
   </style>
   <!-- Add JSZip library from CDN -->
   <!-- REMOVED from here -->
 </head>
 
 <body>
+  <!-- Add this Update Notification Bar -->
+  <div id="update-notification" class="update-banner" style="display: none;">
+    <span id="update-info">Update Available!</span>
+    <button id="download-update-button">Download Update</button>
+    <button id="dismiss-update-button" class="dismiss-button">×</button>
+  </div>
+  <!-- End Update Notification Bar -->
+
   <div class="tab-container">
     <div class="tabs">
       <div class="tab active" data-tab="components-tab">Components</div>
@@ -2444,7 +2506,7 @@
         }
       });
 
-      // Update the toggle all icon class after modifying all categories
+      // Update the toggle all button based on collapsed state
       updateToggleAllIcon();
 
       // Save state to global variable
@@ -2663,7 +2725,6 @@
         }
     });
     // --- End Batch Export Links handler ---
-
   </script>
 </body>
 
