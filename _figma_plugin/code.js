@@ -1311,7 +1311,7 @@ async function createPlaygroundFrame() {
     }
 
     // --- Clone the determined node ---
-    nodeToPlaceInFrame = nodeToClone.clone();
+    nodeToPlaceInFrame = nodeToClone.createInstance();
 
     if (!nodeToPlaceInFrame) {
       figma.notify("Failed to clone the selected element.", { error: true });
