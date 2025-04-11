@@ -1204,17 +1204,21 @@
   </div>
 
   <!-- Add the new return dialog -->
-  <div id="return-dialog"
+  <div id="confirm-delete-dialog" // Renamed ID
       class="dialog"
       role="dialog"
-      aria-labelledby="return-dialog-title"
+      aria-labelledby="confirm-dialog-title" // Updated aria label
       aria-modal="true">
    <div class="dialog-content">
-       <h4 id="return-dialog-title" style="text-align: center; margin-bottom: 8px;">Playground Removed</h4>
-       <p>Return to your previous location on the canvas?</p>
-       <div class="return-dialog-actions">
-           <button id="return-dialog-stay">Stay Here</button>
-           <button id="return-dialog-goback" class="primary">Go Back</button>
+       <div class="dialog-header"> <!-- Added header for title and close button -->
+         <h4 id="confirm-dialog-title" style="margin-bottom: 8px;">Confirm Playground Deletion</h4>
+         <button id="confirm-delete-cancel-x" class="action-button">×</button> <!-- Added X close button -->
+       </div>
+       <p style="font-size: 12px; margin-top: 0; margin-bottom: 16px;">This will delete the playground frame and its content.<br><strong>Copy the content first (Ctrl/Cmd+C) if you made changes you want to keep.</strong></p>
+       <div class="return-dialog-actions"> <!-- Keep class name for styling? Or rename? Kept for now -->
+           <button id="confirm-delete-stay">Delete & Stay Here</button>
+           <button id="confirm-delete-goback" class="primary">Delete & Go Back</button>
+           <!-- Removed Cancel text button, using X button in header -->
        </div>
    </div>
   </div>
@@ -1968,6 +1972,11 @@
       if (data && data.type === 'show-return-dialog') {
         showDialog('return-dialog');
       }
+
+      // Handle showing the return dialog // UPDATED to handle new dialog type
+      if (data && data.type === 'show-confirm-delete-dialog') { // Check for the new type
+        showDialog('confirm-delete-dialog'); // Show the correct dialog
+      }
     };
 
     // Update the renderComponents function
@@ -2528,6 +2537,23 @@
       parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
       hideDialog('return-dialog');
     });
+
+    // --- New event listeners for the confirmation dialog --- // NEW
+    document.getElementById('confirm-delete-goback').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'go-back' } }, '*');
+      hideDialog('confirm-delete-dialog');
+    });
+
+    document.getElementById('confirm-delete-stay').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
+      hideDialog('confirm-delete-dialog');
+    });
+
+    // Use the X button in the header for cancel
+    document.getElementById('confirm-delete-cancel-x').addEventListener('click', () => {
+        hideDialog('confirm-delete-dialog');
+    });
+    // --- End new event listeners ---
 
     // Function to trigger file download
     function downloadFile(filename, content, mimeType = 'text/typescript') {

@@ -960,7 +960,7 @@ figma.ui.onmessage = async msg => {
     await createPlaygroundFrame();
   }
   else if (msg.type === "return-decision") { // Handler for dialog choice
-    await handleReturnDecision(msg.choice);
+    await handleDeleteDecision(msg.choice);
   }
 };
 
@@ -1232,9 +1232,9 @@ async function createPlaygroundFrame() {
     if (existingFrameId) {
       const existingFrame = await figma.getNodeByIdAsync(existingFrameId);
       if (existingFrame && !existingFrame.removed && existingFrame.type === 'FRAME') { // Ensure it's a frame
-        // Frame exists, show dialog instead of immediate deletion
-        figma.ui.postMessage({ type: 'show-return-dialog' });
-        return; // Stop here, wait for user choice via handleReturnDecision
+        // Frame exists, show the new confirmation dialog instead of the old return dialog
+        figma.ui.postMessage({ type: 'show-confirm-delete-dialog' }); // CHANGED message type
+        return; // Stop here, wait for user choice via dialog
       } else {
         // If frame ID exists but frame is gone or not a frame, clear the stored ID and any lingering viewport data
         await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY);
@@ -1358,7 +1358,7 @@ async function createPlaygroundFrame() {
 }
 
 // New function to handle the user's choice from the dialog
-async function handleReturnDecision(choice) {
+async function handleDeleteDecision(choice) {
   const frameId = await figma.clientStorage.getAsync(PLAYGROUND_FRAME_ID_KEY);
   let lastX = null, lastY = null, lastZoom = null;
   let frameRemoved = false; // Flag to track if frame was actually removed
@@ -1376,18 +1376,6 @@ async function handleReturnDecision(choice) {
   if (frameId) {
     const frame = await figma.getNodeByIdAsync(frameId);
     if (frame && !frame.removed && frame.type === 'FRAME') {
-
-      // --- Select content and notify user to copy ---
-      if (frame.children.length > 0) {
-          const contentNode = frame.children[0];
-          figma.currentPage.selection = [contentNode];
-          figma.notify("Playground content selected. Press Ctrl/Cmd+C to copy.", { timeout: 4000 });
-          // Brief pause to allow selection change to register before deletion
-          await new Promise(resolve => setTimeout(resolve, 100));
-      } else {
-          console.log("Playground frame was empty, nothing to select for copying.");
-      }
-      // --- End Select content ---
 
       frame.remove();
       frameRemoved = true; // Mark frame as removed
