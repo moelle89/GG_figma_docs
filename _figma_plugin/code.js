@@ -1265,24 +1265,53 @@ async function createPlaygroundFrame() {
   let nodeName = selectedNode.name || 'Element'; // Use selected node name
 
   try {
-    // --- Clone the selected node directly ---
-    console.log(`Cloning selected node: ${nodeName} (Type: ${selectedNode.type})`);
-    
-    // Handle component sets by only using the default variant
+    // --- Determine what node to clone ---
+    console.log(`Selected node: ${nodeName} (Type: ${selectedNode.type})`);
+
+    let nodeToClone = null;
+
     if (selectedNode.type === 'COMPONENT_SET') {
-      console.log('Selected node is a component set, using default variant');
-      const defaultVariant = selectedNode.defaultVariant;
-      if (defaultVariant) {
-        nodeToPlaceInFrame = defaultVariant.clone();
-        nodeName = defaultVariant.name || 'Default Variant';
+      // Selected the whole set, use its default variant
+      console.log('Selected node is a COMPONENT_SET, using default variant.');
+      nodeToClone = selectedNode.defaultVariant;
+      if (nodeToClone) {
+        nodeName = nodeToClone.name || 'Default Variant'; // Update name if needed
       } else {
-        figma.notify("Could not find default variant for the component set.", { error: true });
+        figma.notify("Could not find default variant for the selected component set.", { error: true });
         return;
       }
+    } else if (selectedNode.type === 'COMPONENT') {
+      // Selected a specific component, check if it's part of a set
+      if (selectedNode.parent && selectedNode.parent.type === 'COMPONENT_SET') {
+        // It's a variant, use the parent set's default variant
+        const parentSet = selectedNode.parent;
+        console.log(`Selected node is a COMPONENT variant (part of ${parentSet.name}), using parent set's default variant.`);
+        nodeToClone = parentSet.defaultVariant;
+        if (nodeToClone) {
+           nodeName = nodeToClone.name || 'Default Variant'; // Update name if needed
+        } else {
+           figma.notify(`Could not find default variant for the parent set '${parentSet.name}'.`, { error: true });
+           return;
+        }
+      } else {
+        // It's a standalone component, use it directly
+        console.log('Selected node is a standalone COMPONENT.');
+        nodeToClone = selectedNode;
+      }
     } else {
-      // For all other node types, clone directly
-      nodeToPlaceInFrame = selectedNode.clone();
+      // For all other node types, use the selection directly
+      console.log('Selected node is not a component or set, using it directly.');
+      nodeToClone = selectedNode;
     }
+
+    // Ensure we have a node to clone
+    if (!nodeToClone) {
+      figma.notify("Could not determine the component to place in the playground.", { error: true });
+      return;
+    }
+
+    // --- Clone the determined node ---
+    nodeToPlaceInFrame = nodeToClone.clone();
 
     if (!nodeToPlaceInFrame) {
       figma.notify("Failed to clone the selected element.", { error: true });
