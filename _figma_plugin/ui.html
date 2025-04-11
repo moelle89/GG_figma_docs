@@ -2553,20 +2553,34 @@
       });
 
       // --- New event listeners for the confirmation dialog --- // NEW
-      document.getElementById('confirm-delete-goback').addEventListener('click', () => {
-        parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'go-back' } }, '*');
-        hideDialog('confirm-delete-dialog');
-      });
+      const confirmDeleteGoBackButton = document.getElementById('confirm-delete-goback');
+      if (confirmDeleteGoBackButton) {
+          confirmDeleteGoBackButton.addEventListener('click', () => {
+              parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'go-back' } }, '*');
+              hideDialog('confirm-delete-dialog');
+          });
+      } else {
+          console.error("Could not find the #confirm-delete-goback button element.");
+      }
 
-      document.getElementById('confirm-delete-stay').addEventListener('click', () => {
-        parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
-        hideDialog('confirm-delete-dialog');
-      });
+      const confirmDeleteStayButton = document.getElementById('confirm-delete-stay');
+      if (confirmDeleteStayButton) {
+          confirmDeleteStayButton.addEventListener('click', () => {
+              parent.postMessage({ pluginMessage: { type: 'return-decision', choice: 'stay' } }, '*');
+              hideDialog('confirm-delete-dialog');
+          });
+      } else {
+          console.error("Could not find the #confirm-delete-stay button element.");
+      }
 
-      // Use the X button in the header for cancel
-      document.getElementById('confirm-delete-cancel-x').addEventListener('click', () => {
-          hideDialog('confirm-delete-dialog');
-      });
+      const confirmDeleteCancelXButton = document.getElementById('confirm-delete-cancel-x');
+      if (confirmDeleteCancelXButton) {
+          confirmDeleteCancelXButton.addEventListener('click', () => {
+              hideDialog('confirm-delete-dialog');
+          });
+      } else {
+          console.error("Could not find the #confirm-delete-cancel-x button element.");
+      }
       // --- End new event listeners ---
 
       // Function to trigger file download
