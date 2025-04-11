@@ -1319,11 +1319,18 @@
       }
 
       // Keep this event listener
-      document.getElementById('clear-icons-cache').addEventListener('click', () => {
-        parent.postMessage({
-          pluginMessage: { type: 'clear-icons-cache' }
-        }, '*');
-      });
+      // document.getElementById('clear-icons-cache').addEventListener('click', () => {
+      // Add an explicit check before adding the listener for clear-icons-cache
+      const clearIconsCacheButton = document.getElementById('clear-icons-cache');
+      if (clearIconsCacheButton) {
+          clearIconsCacheButton.addEventListener('click', () => {
+              parent.postMessage({
+                pluginMessage: { type: 'clear-icons-cache' }
+              }, '*');
+          });
+      } else {
+          console.error("Could not find the #clear-icons-cache button element.");
+      }
 
       tabs.forEach(tab => {
         tab.addEventListener('click', () => {
