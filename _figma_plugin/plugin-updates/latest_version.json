@@ -1,6 +1,6 @@
 {
-  "latestVersion": "1.1.0",
-  "releaseNotes": "Added feature X, fixed bug Y.",
+  "latestVersion": "1.0.0",
+  "releaseNotes": "",
   "downloadUrl": null,
   "files": {
     "codeJsUrl": "https://raw.githubusercontent.com/moelle89/GG_figma_docs/refs/heads/main/_figma_plugin/code.js",
