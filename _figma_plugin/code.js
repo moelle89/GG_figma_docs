@@ -1265,56 +1265,70 @@ async function createPlaygroundFrame() {
   let nodeName = selectedNode.name || 'Element'; // Use selected node name
 
   try {
-    // --- Determine what node to clone ---
+    // --- Determine what node to use and what action to perform ---
     console.log(`Selected node: ${nodeName} (Type: ${selectedNode.type})`);
 
-    let nodeToClone = null;
+    let nodeToUse = null;
+    let actionToPerform = 'clone'; // Default to clone for non-components
 
     if (selectedNode.type === 'COMPONENT_SET') {
-      // Selected the whole set, use its default variant
+      // Selected the whole set, use its default variant for creating an instance
       console.log('Selected node is a COMPONENT_SET, using default variant.');
-      nodeToClone = selectedNode.defaultVariant;
-      if (nodeToClone) {
-        nodeName = nodeToClone.name || 'Default Variant'; // Update name if needed
+      nodeToUse = selectedNode.defaultVariant;
+      if (nodeToUse) {
+        nodeName = nodeToUse.name || 'Default Variant'; // Update name for the frame
+        actionToPerform = 'createInstance';
       } else {
         figma.notify("Could not find default variant for the selected component set.", { error: true });
         return;
       }
     } else if (selectedNode.type === 'COMPONENT') {
-      // Selected a specific component, check if it's part of a set
+      // Selected a specific component node
+      nodeToUse = selectedNode;
+      actionToPerform = 'createInstance'; // Always create instance for components
       if (selectedNode.parent && selectedNode.parent.type === 'COMPONENT_SET') {
-        // It's a variant, use the parent set's default variant
-        const parentSet = selectedNode.parent;
-        console.log(`Selected node is a COMPONENT variant (part of ${parentSet.name}), using parent set's default variant.`);
-        nodeToClone = parentSet.defaultVariant;
-        if (nodeToClone) {
-           nodeName = nodeToClone.name || 'Default Variant'; // Update name if needed
-        } else {
-           figma.notify(`Could not find default variant for the parent set '${parentSet.name}'.`, { error: true });
-           return;
-        }
+        // It's a variant, use its own name for the frame
+        console.log(`Selected node is a COMPONENT variant (part of ${selectedNode.parent.name}).`);
+        nodeName = selectedNode.name; 
       } else {
-        // It's a standalone component, use it directly
+        // It's a standalone component
         console.log('Selected node is a standalone COMPONENT.');
-        nodeToClone = selectedNode;
+        nodeName = selectedNode.name;
       }
     } else {
-      // For all other node types, use the selection directly
-      console.log('Selected node is not a component or set, using it directly.');
-      nodeToClone = selectedNode;
+      // For all other node types (Frame, Group, etc.), use the selection directly and clone
+      console.log('Selected node is not a component or set, using it directly for cloning.');
+      nodeToUse = selectedNode;
+      actionToPerform = 'clone';
     }
 
-    // Ensure we have a node to clone
-    if (!nodeToClone) {
-      figma.notify("Could not determine the component to place in the playground.", { error: true });
+    // Ensure we have a node to use
+    if (!nodeToUse) {
+      figma.notify("Could not determine the node to place in the playground.", { error: true });
       return;
     }
 
-    // --- Clone the determined node ---
-    nodeToPlaceInFrame = nodeToClone.createInstance();
+    // --- Perform the determined action (clone or createInstance) ---
+    console.log(`Action to perform: ${actionToPerform}`);
+    if (actionToPerform === 'createInstance') {
+       if (typeof nodeToUse.createInstance !== 'function') {
+         figma.notify(`Error: Cannot create instance of node type ${nodeToUse.type}.`, { error: true });
+         console.error("Attempted to createInstance on non-component node:", nodeToUse);
+         return;
+       }
+       nodeToPlaceInFrame = nodeToUse.createInstance();
+    } else { // actionToPerform === 'clone'
+       if (typeof nodeToUse.clone !== 'function') {
+         figma.notify(`Error: Cannot clone node type ${nodeToUse.type}.`, { error: true });
+         console.error("Attempted to clone uncloneable node:", nodeToUse);
+         return;
+       }
+       nodeToPlaceInFrame = nodeToUse.clone();
+    }
 
     if (!nodeToPlaceInFrame) {
-      figma.notify("Failed to clone the selected element.", { error: true });
+      const errorMsg = actionToPerform === 'createInstance' ? "Failed to create instance." : "Failed to clone element.";
+      figma.notify(errorMsg, { error: true });
       return;
     }
 
