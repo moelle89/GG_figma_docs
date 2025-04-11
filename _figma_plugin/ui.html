@@ -1260,8 +1260,87 @@
       }
 
       // Handle tab switching
-      const tabs = document.querySelectorAll('.tab');
-      const tabContents = document.querySelectorAll('.tab-content');
+      document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Set up refresh buttons
+        const refreshComponentsButton = document.getElementById('refresh-components');
+        if (refreshComponentsButton) {
+          refreshComponentsButton.addEventListener('click', () => {
+            document.getElementById('status-message').textContent = "Refreshing components...";
+            parent.postMessage({
+              pluginMessage: {
+                type: 'refresh',
+                target: 'components'
+              }
+            }, '*');
+          });
+        } else {
+          console.error("Could not find the #refresh-components button element.");
+        }
+
+        // Add an explicit check before adding the listener
+        const refreshIconsButton = document.getElementById('refresh-icons');
+        if (refreshIconsButton) {
+            refreshIconsButton.addEventListener('click', () => {
+                document.getElementById('icons-status-message').textContent = "Refreshing icons...";
+                parent.postMessage({
+                    pluginMessage: {
+                        type: 'refresh',
+                        target: 'icons'
+                    }
+                }, '*');
+            });
+        } else {
+            console.error("Could not find the #refresh-icons button element.");
+        }
+
+        // Add an explicit check before adding the listener for clear-icons-cache
+        const clearIconsCacheButton = document.getElementById('clear-icons-cache');
+        if (clearIconsCacheButton) {
+            clearIconsCacheButton.addEventListener('click', () => {
+                parent.postMessage({
+                  pluginMessage: { type: 'clear-icons-cache' }
+                }, '*');
+            });
+        } else {
+            console.error("Could not find the #clear-icons-cache button element.");
+        }
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            // Remove active class from all tabs and contents
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+
+            // Set loading state
+            setLoadingState(tabId, true);
+
+            // When switching to components tab, make sure to update the toggle icon state
+            if (tabId === 'components-tab' && componentsData && componentsData.length > 0) {
+              // Schedule this after render to ensure the DOM has category elements
+              setTimeout(() => {
+                updateToggleAllIcon();
+              }, 0);
+            }
+
+            // Notify the plugin about tab change
+            parent.postMessage({
+              pluginMessage: {
+                type: 'tab-change',
+                tab: tabId
+              }
+            }, '*');
+          });
+        });
+      });
+
       let componentsData = [];
       let iconsData = [];
       let currentComponentData = null;
