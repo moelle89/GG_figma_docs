@@ -1164,6 +1164,123 @@
        opacity: 1;
        background-color: rgba(0,0,0,0.1); /* Subtle hover */
     }
+
+    /* --- Prototyping Tab Styles --- */
+    .proto-container {
+        padding: 8px 12px;
+        overflow-y: auto; /* Allow scrolling if content exceeds height */
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    .proto-container h4 {
+       margin-top: 16px;
+       margin-bottom: 8px;
+       border-bottom: 1px solid var(--figma-color-border-strong);
+       padding-bottom: 4px;
+    }
+
+    .proto-container p.instructions {
+       font-size: 11px;
+       color: var(--figma-color-text-secondary);
+       margin-bottom: 12px;
+    }
+
+    .proto-group {
+      margin-bottom: 12px;
+    }
+
+    .proto-group label {
+      display: block;
+      font-size: 11px;
+      color: var(--figma-color-text-secondary);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .proto-select, .proto-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--figma-color-border);
+      border-radius: 6px;
+      background: var(--figma-color-bg);
+      color: var(--figma-color-text);
+      font-size: 12px;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    .proto-select:hover, .proto-input:hover,
+    .proto-select:focus, .proto-input:focus {
+      border-color: var(--figma-color-border-hover);
+      outline: none;
+    }
+
+    .proto-small-input {
+      width: 80px; /* Adjust as needed */
+    }
+
+    /* For delay input next to trigger */
+    .proto-group select + .proto-small-input {
+      margin-left: 8px;
+      width: calc(100% - 90px); /* Simple adjustment, might need refinement */
+      display: inline-block; /* To put it next to the select */
+      vertical-align: middle;
+    }
+
+    /* Inline groups for duration/easing */
+    .proto-inline-group {
+       display: flex;
+       gap: 10px;
+       align-items: flex-end; /* Align bottoms */
+    }
+
+    .proto-subgroup {
+      flex: 1;
+    }
+
+    .proto-subgroup label {
+       white-space: nowrap;
+    }
+
+    .proto-divider {
+       border: none;
+       border-top: 1px solid var(--figma-color-border-strong);
+       margin: 20px 0;
+    }
+
+    .proto-button {
+       display: block;
+       width: 100%;
+       background: var(--figma-color-bg-brand);
+       border: 1px solid var(--figma-color-bg-brand);
+       border-radius: 6px;
+       padding: 8px 16px;
+       cursor: pointer;
+       color: var(--figma-color-text-onbrand);
+       font-weight: 500;
+       font-size: 12px;
+       text-align: center;
+       margin-top: 16px;
+       transition: background-color 0.2s ease;
+    }
+
+    .proto-button:hover {
+       background: var(--figma-color-bg-brand-hover);
+       border-color: var(--figma-color-bg-brand-hover);
+    }
+
+    .proto-button:disabled {
+       background: var(--figma-color-bg-disabled);
+       border-color: var(--figma-color-border-disabled);
+       color: var(--figma-color-text-disabled);
+       cursor: not-allowed;
+    }
+
+    /* Ensure correct height calculation for tab content */
+    #prototyping-tab {
+       height: calc(100% - 50px); /* Adjust based on search/header height if applicable */
+    }
   </style>
   <!-- Add JSZip library from CDN -->
   <!-- REMOVED from here -->
@@ -1182,6 +1299,7 @@
     <div class="tabs">
       <div class="tab active" data-tab="components-tab">Components</div>
       <div class="tab" data-tab="icons-tab">Icons</div>
+      <div class="tab" data-tab="prototyping-tab">Prototyping</div> <!-- Add Prototyping Tab -->
       <button id="docs-button" class="docs-button" title="Open Documentation">🌐</button>
       <button id="size-toggle" class="docs-button" title="Toggle UI Size">⟷</button>
     </div>
@@ -1219,7 +1337,105 @@
       </div>
       <ul id="icons-list"></ul>
     </div>
-  </div>
+
+    <!-- Add Prototyping Tab Content -->
+    <div id="prototyping-tab" class="tab-content">
+        <div class="proto-container">
+            <h4>Create Prototype Interaction</h4>
+            <p class="instructions">Select two elements: source (trigger) first, then target (destination).</p>
+            
+            <div class="proto-group">
+                <label for="proto-preset-select">Select Preset:</label>
+                <select id="proto-preset-select" class="proto-select">
+                    <option value="none">-- Select Preset --</option>
+                    <!-- Presets will be populated by JS -->
+                </select>
+            </div>
+
+            <button id="apply-preset-button" class="proto-button" disabled>Apply Preset Interaction</button>
+            
+            <hr class="proto-divider">
+
+            <h4>Custom Interaction</h4>
+
+            <div class="proto-group">
+                <label for="proto-trigger-select">Trigger:</label>
+                <select id="proto-trigger-select" class="proto-select">
+                    <option value="ON_CLICK">On Click / Tap</option>
+                    <option value="ON_DRAG">On Drag</option>
+                    <option value="WHILE_HOVERING">While Hovering</option>
+                    <option value="WHILE_PRESSING">While Pressing</option>
+                    <option value="KEY_GAMEPAD">Key / Gamepad</option>
+                    <option value="MOUSE_ENTER">Mouse Enter</option>
+                    <option value="MOUSE_LEAVE">Mouse Leave</option>
+                    <option value="MOUSE_DOWN">Mouse Down (Touch Down)</option>
+                    <option value="MOUSE_UP">Mouse Up (Touch Up)</option>
+                    <option value="AFTER_TIMEOUT">After Delay</option>
+                </select>
+                <input type="number" id="proto-trigger-delay" class="proto-input proto-small-input" placeholder="Delay (ms)" value="300" style="display: none;">
+            </div>
+            
+            <div class="proto-group">
+                <label for="proto-action-select">Action:</label>
+                <select id="proto-action-select" class="proto-select">
+                    <option value="NAVIGATE">Navigate To</option>
+                    <option value="CHANGE_TO">Change To</option>
+                    <!-- Add other actions like OVERLAY, SCROLL_TO later if needed -->
+                </select>
+            </div>
+
+            <div id="proto-animation-options">
+              <div class="proto-group">
+                <label for="proto-navigation-select">Animation:</label>
+                <select id="proto-navigation-select" class="proto-select">
+                    <option value="NONE">Instant</option>
+                    <option value="DISSOLVE">Dissolve</option>
+                    <option value="SMART_ANIMATE">Smart Animate</option>
+                    <option value="MOVE_IN">Move In</option>
+                    <option value="MOVE_OUT">Move Out</option>
+                    <option value="PUSH">Push</option>
+                    <option value="SLIDE_IN">Slide In</option>
+                    <option value="SLIDE_OUT">Slide Out</option>
+                </select>
+              </div>
+
+              <div class="proto-group proto-inline-group">
+                <div class="proto-subgroup">
+                    <label for="proto-duration-input">Duration (ms):</label>
+                    <input type="number" id="proto-duration-input" class="proto-input proto-small-input" value="300" min="0" step="50">
+                </div>
+                <div class="proto-subgroup">
+                    <label for="proto-easing-select">Easing:</label>
+                    <select id="proto-easing-select" class="proto-select">
+                        <option value="EASE_IN">Ease In</option>
+                        <option value="EASE_OUT">Ease Out</option>
+                        <option value="EASE_IN_AND_OUT">Ease In and Out</option>
+                        <option value="LINEAR">Linear</option>
+                        <option value="EASE_IN_BACK">Ease In Back</option>
+                        <option value="EASE_OUT_BACK">Ease Out Back</option>
+                        <option value="EASE_IN_AND_OUT_BACK">Ease In and Out Back</option>
+                        <!-- Add custom bezier later if needed -->
+                    </select>
+                </div>
+              </div>
+
+              <div class="proto-group" id="proto-direction-group" style="display: none;">
+                <label for="proto-direction-select">Direction:</label>
+                <select id="proto-direction-select" class="proto-select">
+                    <option value="LEFT">Left</option>
+                    <option value="RIGHT">Right</option>
+                    <option value="TOP">Top</option>
+                    <option value="BOTTOM">Bottom</option>
+                </select>
+              </div>
+            </div> <!-- End animation options -->
+
+            <button id="apply-custom-button" class="proto-button">Apply Custom Interaction</button>
+        </div>
+    </div>
+    <!-- End Prototyping Tab Content -->
+
+  </div> <!-- End tab-container -->
 
   <!-- Add this new section below the existing content in the body -->
   <div id="component-properties"
@@ -2756,7 +2972,253 @@
           iconSearchClear.classList.toggle('visible', iconSearchInput.value.length > 0);
       }
 
+      // --- Prototyping Tab Initialization ---
+      const presetSelect = document.getElementById('proto-preset-select');
+      const applyPresetButton = document.getElementById('apply-preset-button');
+      const triggerSelect = document.getElementById('proto-trigger-select');
+      const triggerDelayInput = document.getElementById('proto-trigger-delay');
+      const actionSelect = document.getElementById('proto-action-select');
+      const animationOptionsDiv = document.getElementById('proto-animation-options');
+      const navigationSelect = document.getElementById('proto-navigation-select');
+      const durationInput = document.getElementById('proto-duration-input');
+      const easingSelect = document.getElementById('proto-easing-select');
+      const directionGroup = document.getElementById('proto-direction-group');
+      const directionSelect = document.getElementById('proto-direction-select');
+      const applyCustomButton = document.getElementById('apply-custom-button');
+      
+      // Listener for Preset selection
+      presetSelect.addEventListener('change', () => {
+          applyPresetButton.disabled = presetSelect.value === 'none';
+      });
+
+      // Listener for Apply Preset button
+      applyPresetButton.addEventListener('click', () => {
+          parent.postMessage({ 
+              pluginMessage: { 
+                  type: 'apply-prototype-interaction', 
+                  params: { presetName: presetSelect.value } 
+              }
+          }, '*');
+      });
+      
+      // Listener for Trigger select (show/hide delay)
+      triggerSelect.addEventListener('change', () => {
+          triggerDelayInput.style.display = triggerSelect.value === 'AFTER_TIMEOUT' ? 'inline-block' : 'none';
+      });
+      
+      // Listener for Action select (show/hide animation options)
+      actionSelect.addEventListener('change', () => {
+          // Assuming NAVIGATE and CHANGE_TO both have animation options for now
+          // You might hide/show based on actionSelect.value if other actions are added
+          animationOptionsDiv.style.display = 'block'; 
+      });
+      
+      // Listener for Navigation select (show/hide direction)
+      navigationSelect.addEventListener('change', () => {
+          const showDirection = ['MOVE_IN', 'MOVE_OUT', 'SLIDE_IN', 'SLIDE_OUT', 'PUSH'].includes(navigationSelect.value);
+          directionGroup.style.display = showDirection ? 'block' : 'none';
+          // Hide all animation details if NONE (Instant)
+          const showAnimationDetails = navigationSelect.value !== 'NONE';
+          durationInput.closest('.proto-inline-group').style.display = showAnimationDetails ? 'flex' : 'none';
+          if (!showAnimationDetails) directionGroup.style.display = 'none'; // Ensure direction is hidden too
+      });
+      
+      // Listener for Apply Custom button
+      applyCustomButton.addEventListener('click', () => {
+          const customSettings = {
+              trigger: { 
+                  type: triggerSelect.value,
+                  // Add delay only if the trigger type is AFTER_TIMEOUT
+                  ...(triggerSelect.value === 'AFTER_TIMEOUT' && { delay: Number(triggerDelayInput.value) / 1000 }) // Convert ms to seconds
+              },
+              actionType: actionSelect.value, // NAVIGATE or CHANGE_TO
+              navigationType: navigationSelect.value,
+              duration: Number(durationInput.value) / 1000, // Convert ms to seconds
+              easingType: easingSelect.value,
+              direction: ['MOVE_IN', 'MOVE_OUT', 'SLIDE_IN', 'SLIDE_OUT', 'PUSH'].includes(navigationSelect.value) ? directionSelect.value : undefined,
+              // preserveScroll: // Add if you add a checkbox for this
+          };
+          parent.postMessage({ 
+              pluginMessage: { 
+                  type: 'apply-prototype-interaction',
+                  params: { customSettings: customSettings }
+              }
+          }, '*');
+      });
+      
+      // Request presets when DOM is ready (if prototyping tab is active or might become active)
+      // We send this on tab change now, but could also do it here if needed.
+      // parent.postMessage({ pluginMessage: { type: 'request-presets' } }, '*');
+
     }); // End of DOMContentLoaded
+
+    // --- Need to define updateToggleAllIcon function --- 
+    function updateToggleAllIcon() {
+      const allCategoryHeaders = document.querySelectorAll('.category-header');
+      if (allCategoryHeaders.length === 0) return; 
+      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+        header.classList.contains('collapsed')
+      );
+      const toggleAllIcon = document.getElementById('toggle-all-icon');
+      // Check if toggleAllIcon exists before modifying
+      if (toggleAllIcon) {
+          toggleAllIcon.classList.toggle('collapsed', allCollapsed);
+      } else {
+          console.warn("toggle-all-icon element not found during update.");
+      }
+    }
+    // --- End updateToggleAllIcon --- 
+
+    // --- Need to define setLoadingState --- 
+    function setLoadingState(tabId, isLoading) {
+      const statusMessage = tabId === 'components-tab' ?
+        document.getElementById('status-message') :
+        document.getElementById('icons-status-message');
+        // Add case for prototyping tab if it gets a status message
+
+      if (!statusMessage) return; // Element might not exist yet
+
+      if (isLoading) {
+        statusMessage.textContent = "Loading...";
+        statusMessage.style.color = "var(--figma-color-text-secondary)";
+      } else {
+        // Logic to set final status text based on data (if applicable)
+      }
+    }
+    // --- End setLoadingState --- 
+
+
+    // --- Event listeners moved from outside DOMContentLoaded --- 
+    document.addEventListener('DOMContentLoaded', () => {
+       // ... (Existing DOMContentLoaded content for banner, icons etc.) ...
+
+       // Add tab switching logic here
+       tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            const activeContent = document.getElementById(tabId);
+            if (activeContent) activeContent.classList.add('active');
+
+            // setLoadingState(tabId, true); // Consider if loading state needed for proto tab
+
+            if (tabId === 'components-tab' && componentsData && componentsData.length > 0) {
+              setTimeout(() => updateToggleAllIcon(), 0);
+            }
+            
+            // Send message to plugin backend about tab change
+            parent.postMessage({ pluginMessage: { type: 'tab-change', tab: tabId } }, '*');
+          });
+       });
+
+       // Setup Refresh Buttons
+       document.getElementById('refresh-components')?.addEventListener('click', () => {
+          document.getElementById('status-message').textContent = "Refreshing components...";
+          parent.postMessage({ pluginMessage: { type: 'refresh', target: 'components' } }, '*');
+       });
+       document.getElementById('refresh-icons')?.addEventListener('click', () => {
+          document.getElementById('icons-status-message').textContent = "Refreshing icons...";
+          parent.postMessage({ pluginMessage: { type: 'refresh', target: 'icons' } }, '*');
+       });
+       document.getElementById('clear-icons-cache')?.addEventListener('click', () => {
+          parent.postMessage({ pluginMessage: { type: 'clear-icons-cache' } }, '*');
+       });
+       
+       // Docs button
+       document.getElementById('docs-button')?.addEventListener('click', () => {
+          window.open('http://moelle.bplaced.net/index.html', '_blank');
+       });
+       
+       // Size toggle
+       document.getElementById('size-toggle')?.addEventListener('click', () => {
+          const isExpanded = document.body.classList.toggle('expanded-ui');
+          document.getElementById('size-toggle')?.classList.toggle('size-toggle-expanded');
+          document.body.classList.toggle('compact-mode', !isExpanded);
+          parent.postMessage({ pluginMessage: { type: 'resize', size: isExpanded ? 'expanded' : 'compact' } }, '*');
+       });
+       
+       // Toggle all categories
+       document.getElementById('toggle-all-categories')?.addEventListener('click', () => {
+            const allCategoryHeaders = document.querySelectorAll('.category-header');
+            const allCategorySections = document.querySelectorAll('.category-section');
+            const allCollapsed = Array.from(allCategoryHeaders).every(header => header.classList.contains('collapsed'));
+            const collapsedCategories = {};
+            allCategoryHeaders.forEach((header, index) => {
+                const section = allCategorySections[index];
+                if (allCollapsed) {
+                  header.classList.remove('collapsed'); section.classList.remove('collapsed'); section.style.maxHeight = '1000px'; collapsedCategories[header.querySelector('span').textContent] = false;
+                } else {
+                  header.classList.add('collapsed'); section.classList.add('collapsed'); section.style.maxHeight = '0px'; collapsedCategories[header.querySelector('span').textContent] = true;
+                }
+            });
+            updateToggleAllIcon();
+            window.collapsedCategoriesState = collapsedCategories;
+            parent.postMessage({ pluginMessage: { type: 'save-collapsed-state', collapsedCategories } }, '*');
+       });
+       
+       // Initial setup (already inside DOMContentLoaded)
+       const toggleAllIcon = document.getElementById('toggle-all-icon');
+       if (toggleAllIcon) {
+         toggleAllIcon.innerHTML = '';
+         toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
+       } else { console.error("Toggle all icon not found on init."); }
+       // ... rest of init logic from original DOMContentLoaded ...
+       
+    }); // End MAIN DOMContentLoaded Listener
+    
+    // Message handler remains outside
+    window.onmessage = (event) => {
+      const data = event.data.pluginMessage;
+      
+      // Handle Presets sent from backend
+      if (data && data.type === 'interaction-presets') {
+          const presetSelect = document.getElementById('proto-preset-select');
+          if (presetSelect) {
+              presetSelect.innerHTML = '<option value="none">-- Select Preset --</option>'; // Clear existing except placeholder
+              for (const key in data.presets) {
+                  if (key === 'none') continue; // Skip placeholder
+                  const option = document.createElement('option');
+                  option.value = key;
+                  option.textContent = data.presets[key].description || key;
+                  presetSelect.appendChild(option);
+              }
+          } else {
+              console.error("Preset select element not found when receiving presets.");
+          }
+      }
+      
+      // --- Handle Update Available --- (copied from previous state)
+      if (data && data.type === 'update-available') {
+        console.log("UI received 'update-available' message:", data); 
+        updateFileData = data.files; // Store the file content
+        const version = data.version;
+        if (updateInfoSpan && downloadUpdateButton && updateBanner) {
+           updateInfoSpan.textContent = `Update v${version} available!`;
+           downloadUpdateButton.disabled = false;
+           downloadUpdateButton.textContent = `Download v${version}`;
+           updateBanner.style.display = 'flex'; // Show the banner
+        } else {
+           console.error("Update banner elements not ready when message received.");
+        }
+      }
+      
+      // ... Rest of the message handlers (components, icons, properties, links, etc.) ...
+      if (data && data.components) { /*...*/ }
+      if (data && data.type === 'collapsed-state') { /*...*/ }
+      if (data && data.icons) { /*...*/ }
+      if (data && data.iconsUpdate) { /*...*/ }
+      if (data && data.status) { /*...*/ }
+      if (data && data.iconsStatus) { /*...*/ }
+      if (data && data.error) { /*...*/ }
+      if (data && data.iconsError) { /*...*/ }
+      if (data && data.type === "show-component-properties") { /*...*/ }
+      if (data && data.type === "show-links-dialog") { /*...*/ }
+      if (data && data.type === 'playground-state') { /*...*/ }
+      if (data && data.type === 'show-return-dialog') { /*...*/ }
+
+    }; // End window.onmessage
 
   </script>
 </body>
