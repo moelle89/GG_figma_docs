@@ -1657,16 +1657,3 @@ function isNewerVersion(versionA, versionB) {
 // --- Trigger the check when the plugin starts ---
 // You might want to add a delay or trigger it differently
 setTimeout(checkForUpdates, 2000); // Check 2 seconds after plugin starts
-
-// Add this helper function
-function updateToggleAllIcon() {
-  const allCategoryHeaders = document.querySelectorAll('.category-header');
-  const allCollapsed = Array.from(allCategoryHeaders).every(header =>
-    header.classList.contains('collapsed')
-  );
-
-  const toggleAllIcon = document.getElementById('toggle-all-icon');
-  if (toggleAllIcon) {
-    toggleAllIcon.classList.toggle('collapsed', allCollapsed);
-  }
-}

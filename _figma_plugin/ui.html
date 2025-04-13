@@ -2570,6 +2570,54 @@
       }
     }
 
+    // Add all tab-related code inside the DOMContentLoaded event
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set up event listeners for tab clicks
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs and tab contents
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+          
+          // Add active class to clicked tab and corresponding content
+          tab.classList.add('active');
+          const targetId = tab.getAttribute('data-tab');
+          const targetContent = document.getElementById(targetId);
+          targetContent.classList.add('active');
+          
+          // Show or hide expand button based on active tab
+          const expandToggle = document.getElementById('expand-toggle');
+          if (expandToggle) {
+            expandToggle.style.display = targetId === 'components-tab' ? 'block' : 'none';
+          }
+          
+          // Clear search fields
+          document.querySelectorAll('.search-input').forEach(input => {
+            input.value = '';
+          });
+          
+          // Clear icon search if switching to icons tab
+          if (targetId === 'icons-tab') {
+            const iconSearch = document.getElementById('icons-search-input');
+            if (iconSearch) {
+              iconSearch.value = '';
+            }
+            if (typeof renderIcons === 'function') {
+              renderIcons();
+            }
+          }
+          
+          // Send message to plugin about tab change
+          parent.postMessage({ 
+            pluginMessage: { 
+              type: 'tab-change', 
+              tab: targetId 
+            } 
+          }, '*');
+        });
+      });
+    });
+
     // Add click handler for the batch export button
     document.getElementById('batch-export-ts-button').addEventListener('click', () => {
         const button = document.getElementById('batch-export-ts-button');
