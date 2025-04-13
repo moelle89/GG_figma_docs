@@ -3,11 +3,13 @@ const fs = require('fs');
 const path = require('path');
 
 // --- Configuration ---
-// Adjust this path relative to your project root where package.json is
+// Adjust these paths relative to your project root
 const versionFilePath = path.join('_figma_plugin', 'plugin-updates', 'latest_version.json');
+const codeJsFilePath = path.join('_figma_plugin', 'code.js');
 // --- End Configuration ---
 
 const absoluteVersionFilePath = path.resolve(versionFilePath);
+const absoluteCodeJsFilePath = path.resolve(codeJsFilePath);
 
 console.log(`Attempting to read version file: ${absoluteVersionFilePath}`);
 
@@ -65,5 +67,33 @@ fs.readFile(absoluteVersionFilePath, 'utf8', (err, data) => {
          process.exit(1);
       }
       console.log(`Successfully updated ${versionFilePath} to version ${newVersion}`);
+
+      // Now update the version in code.js
+      console.log(`Attempting to update version in ${codeJsFilePath}...`);
+      fs.readFile(absoluteCodeJsFilePath, 'utf8', (codeJsErr, codeJsData) => {
+         if (codeJsErr) {
+            console.error(`Error reading file ${absoluteCodeJsFilePath}:`, codeJsErr);
+            process.exit(1);
+         }
+
+         // Replace the version in code.js
+         const versionRegex = /(const CURRENT_PLUGIN_VERSION = ")([0-9]+\.[0-9]+\.[0-9]+)(")/;
+         const updatedCodeJs = codeJsData.replace(versionRegex, `$1${newVersion}$3`);
+
+         // Check if the version was actually replaced
+         if (updatedCodeJs === codeJsData) {
+            console.warn(`Warning: Could not find or replace version in ${codeJsFilePath}`);
+            return;
+         }
+
+         // Write the updated code.js file
+         fs.writeFile(absoluteCodeJsFilePath, updatedCodeJs, 'utf8', (codeJsWriteErr) => {
+            if (codeJsWriteErr) {
+               console.error(`Error writing updated version to ${absoluteCodeJsFilePath}:`, codeJsWriteErr);
+               process.exit(1);
+            }
+            console.log(`Successfully updated version in ${codeJsFilePath} to ${newVersion}`);
+         });
+      });
    });
 });
