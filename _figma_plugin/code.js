@@ -1565,7 +1565,7 @@ figma.on('drop', async (event) => {
   return false;
 });
 
-const CURRENT_PLUGIN_VERSION = "1.0.3"; // <-- Make sure this is correct
+const CURRENT_PLUGIN_VERSION = "1.0.5"; // <-- Make sure this is correct
 const UPDATE_CHECK_URL = "https://raw.githubusercontent.com/moelle89/GG_figma_docs/refs/heads/main/_figma_plugin/plugin-updates/latest_version.json"; // <-- Use your actual URL
 
 async function checkForUpdates() {
