@@ -1581,29 +1581,45 @@ async function checkForUpdates() {
     if (isNewerVersion(latestInfo.latestVersion, CURRENT_PLUGIN_VERSION)) {
       console.log("Update found, attempting to fetch files...");
 
-      if (!latestInfo.files || !latestInfo.files.codeJsUrl || !latestInfo.files.uiHtmlUrl || !latestInfo.files.manifestJsonUrl) {
-         console.error("Update information is missing file URLs.");
-         figma.notify(`Update v${latestInfo.latestVersion} available, but file info is missing. Please check the update server configuration.`);
+      // Check if essential file URLs are present for showing the banner
+      if (!latestInfo.files || !latestInfo.files.codeJsUrl || !latestInfo.files.uiHtmlUrl) {
+         console.error("Update information is missing essential file URLs (code.js, ui.html). Cannot show banner.");
+         figma.notify(`Update v${latestInfo.latestVersion} available, but essential file info is missing. Check update server config.`);
          return;
       }
 
+      // Check separately if manifest URL is missing for the download button (optional for banner)
+      const manifestUrlMissing = !latestInfo.files.manifestJsonUrl;
+      if (manifestUrlMissing) {
+          console.warn("manifest.json URL missing in update info. Download button might not work correctly.");
+      }
+
       try {
-        // Fetch all files concurrently
-        const [codeJsRes, uiHtmlRes, manifestJsonRes] = await Promise.all([
+        // Fetch files concurrently (only fetch manifest if URL exists)
+        const [codeJsRes, uiHtmlRes] = await Promise.all([
           fetch(latestInfo.files.codeJsUrl, { cache: "no-store" }),
-          fetch(latestInfo.files.uiHtmlUrl, { cache: "no-store" }),
-          fetch(latestInfo.files.manifestJsonUrl, { cache: "no-store" })
+          fetch(latestInfo.files.uiHtmlUrl, { cache: "no-store" })
         ]);
 
         // Check if all fetches were successful
-        if (!codeJsRes.ok || !uiHtmlRes.ok || !manifestJsonRes.ok) {
+        if (!codeJsRes.ok || !uiHtmlRes.ok) {
            throw new Error("Failed to download one or more update files.");
+        }
+
+        // Fetch manifest separately only if the URL exists
+        let manifestJsonContent = null;
+        if (!manifestUrlMissing) {
+            const manifestJsonRes = await fetch(latestInfo.files.manifestJsonUrl, { cache: "no-store" });
+            if (manifestJsonRes.ok) {
+                manifestJsonContent = await manifestJsonRes.text();
+            } else {
+                console.warn(`Failed to download manifest.json (status: ${manifestJsonRes.status}), proceeding without it for banner.`);
+            }
         }
 
         // Get text content
         const codeJsContent = await codeJsRes.text();
         const uiHtmlContent = await uiHtmlRes.text();
-        const manifestJsonContent = await manifestJsonRes.text();
 
         // Send file content and version info to UI
         figma.ui.postMessage({
@@ -1613,7 +1629,7 @@ async function checkForUpdates() {
           files: {
             codeJs: codeJsContent,
             uiHtml: uiHtmlContent,
-            manifestJson: manifestJsonContent
+            manifestJson: manifestJsonContent // May be null if download failed or URL missing
           }
         });
 

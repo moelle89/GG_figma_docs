@@ -1336,6 +1336,9 @@
     let downloadUpdateButton = null;
     let dismissUpdateButton = null;
 
+    // Variable to store pending update data if message arrives before DOM is ready
+    let pendingUpdateData = null;
+
     // Handle messages from the plugin (this can stay outside DOMContentLoaded)
     window.onmessage = (event) => {
       const data = event.data.pluginMessage;
@@ -1343,21 +1346,16 @@
       // --- Handle Update Available ---
       if (data && data.type === 'update-available') {
         console.log("UI received 'update-available' message:", data);
-        updateFileData = data.files; // Store the file content
-        const version = data.version;
-
         // Check if elements are ready before updating them
-        if (updateInfoSpan && downloadUpdateButton && updateBanner) {
-           updateInfoSpan.textContent = `Update v${version} available!`;
-           // Optionally add notes: updateInfoSpan.title = data.notes;
-           downloadUpdateButton.disabled = false;
-           downloadUpdateButton.textContent = `Download v${version}`;
-           updateBanner.style.display = 'flex'; // Show the banner
-      } else {
-           console.error("Update banner elements not ready when message received.");
-           // Optionally, store the data and try again in DOMContentLoaded?
+        if (updateBanner && updateInfoSpan && downloadUpdateButton) {
+           console.log("Banner elements ready, applying update info.");
+           applyUpdateInfo(data);
+        } else {
+           console.warn("Update banner elements not ready when message received. Storing data.");
+           // Store the data to apply later when DOM is ready
+           pendingUpdateData = data;
+        }
       }
-    }
 
       // Handle components data (Tab 1)
       if (data && data.components) {
@@ -2810,6 +2808,13 @@
           iconSearchClear.classList.toggle('visible', iconSearchInput.value.length > 0);
       }
 
+      // Check if there was pending update data and apply it now
+      if (pendingUpdateData) {
+          console.log("DOM ready, applying pending update info.");
+          applyUpdateInfo(pendingUpdateData);
+          pendingUpdateData = null; // Clear pending data
+      }
+
     }); // End of DOMContentLoaded
 
     // --- Add click handler for the Batch Export Links button ---
@@ -2868,6 +2873,32 @@
     });
     // --- End Batch Export Links handler ---
 
+    // Function to apply update information to the banner
+    function applyUpdateInfo(updateData) {
+      updateFileData = updateData.files; // Store the file content for download
+      const version = updateData.version;
+      const notes = updateData.notes;
+      
+      if (updateInfoSpan && downloadUpdateButton && updateBanner) {
+        updateInfoSpan.textContent = `Update v${version} available!`;
+        updateInfoSpan.title = notes; // Add notes as a tooltip
+        
+        // Disable download button only if manifestJson is missing
+        downloadUpdateButton.disabled = !updateFileData.manifestJson;
+        downloadUpdateButton.textContent = `Download v${version}`;
+        if (!updateFileData.manifestJson) {
+            downloadUpdateButton.title = "Download disabled: manifest.json URL is missing in update configuration.";
+        } else {
+            downloadUpdateButton.title = ""; // Clear title if download is enabled
+        }
+        
+        updateBanner.style.display = 'flex'; // Show the banner
+      } else {
+        console.error("Attempted to apply update info, but banner elements are still not found.");
+      }
+    }
+
+    // --- Wait for DOM to be ready before accessing elements ---
   </script>
 </body>
 
