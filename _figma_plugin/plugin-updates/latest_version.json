@@ -4,7 +4,6 @@
   "downloadUrl": null,
   "files": {
     "codeJsUrl": "https://raw.githubusercontent.com/moelle89/GG_figma_docs/refs/heads/main/_figma_plugin/code.js",
-    "uiHtmlUrl": "https://raw.githubusercontent.com/moelle89/GG_figma_docs/refs/heads/main/_figma_plugin/ui.html",
-    "manifestJsonUrl": "https://raw.githubusercontent.com/moelle89/GG_figma_docs/refs/heads/main/_figma_plugin/manifest.json"
+    "uiHtmlUrl": "https://raw.githubusercontent.com/moelle89/GG_figma_docs/refs/heads/main/_figma_plugin/ui.html"
   }
 }
