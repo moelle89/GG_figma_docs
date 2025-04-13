@@ -1588,14 +1588,8 @@ async function checkForUpdates() {
          return;
       }
 
-      // Check separately if manifest URL is missing for the download button (optional for banner)
-      const manifestUrlMissing = !latestInfo.files.manifestJsonUrl;
-      if (manifestUrlMissing) {
-          console.warn("manifest.json URL missing in update info. Download button might not work correctly.");
-      }
-
       try {
-        // Fetch files concurrently (only fetch manifest if URL exists)
+        // Fetch only code.js and ui.html
         const [codeJsRes, uiHtmlRes] = await Promise.all([
           fetch(latestInfo.files.codeJsUrl, { cache: "no-store" }),
           fetch(latestInfo.files.uiHtmlUrl, { cache: "no-store" })
@@ -1606,30 +1600,18 @@ async function checkForUpdates() {
            throw new Error("Failed to download one or more update files.");
         }
 
-        // Fetch manifest separately only if the URL exists
-        let manifestJsonContent = null;
-        if (!manifestUrlMissing) {
-            const manifestJsonRes = await fetch(latestInfo.files.manifestJsonUrl, { cache: "no-store" });
-            if (manifestJsonRes.ok) {
-                manifestJsonContent = await manifestJsonRes.text();
-            } else {
-                console.warn(`Failed to download manifest.json (status: ${manifestJsonRes.status}), proceeding without it for banner.`);
-            }
-        }
-
         // Get text content
         const codeJsContent = await codeJsRes.text();
         const uiHtmlContent = await uiHtmlRes.text();
 
-        // Send file content and version info to UI
+        // Send file content and version info to UI (without manifest)
         figma.ui.postMessage({
           type: 'update-available',
           version: latestInfo.latestVersion,
           notes: latestInfo.releaseNotes || "No release notes provided.",
           files: {
             codeJs: codeJsContent,
-            uiHtml: uiHtmlContent,
-            manifestJson: manifestJsonContent // May be null if download failed or URL missing
+            uiHtml: uiHtmlContent
           }
         });
 

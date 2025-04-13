@@ -2715,8 +2715,8 @@
       // --- Add Event Listener for Download Button --- (Move inside DOMContentLoaded)
       if (downloadUpdateButton) {
         downloadUpdateButton.addEventListener('click', () => {
-          if (!updateFileData) {
-              console.error("Update file data is missing.");
+          if (!updateFileData || !updateFileData.codeJs || !updateFileData.uiHtml) {
+              console.error("Update file data is missing essential files (code.js, ui.html).");
               return;
           }
           if (typeof JSZip === 'undefined') {
@@ -2743,7 +2743,8 @@
               const zip = new JSZip();
               zip.file("code.js", updateFileData.codeJs);
               zip.file("ui.html", updateFileData.uiHtml);
-              zip.file("manifest.json", updateFileData.manifestJson);
+              // REMOVED manifest.json from zip
+              // zip.file("manifest.json", updateFileData.manifestJson);
 
               zip.generateAsync({ type: "blob" })
                   .then(function(content) {
@@ -2883,14 +2884,10 @@
         updateInfoSpan.textContent = `Update v${version} available!`;
         updateInfoSpan.title = notes; // Add notes as a tooltip
         
-        // Disable download button only if manifestJson is missing
-        downloadUpdateButton.disabled = !updateFileData.manifestJson;
+        // Always enable the download button since manifest isn't involved
+        downloadUpdateButton.disabled = false;
         downloadUpdateButton.textContent = `Download v${version}`;
-        if (!updateFileData.manifestJson) {
-            downloadUpdateButton.title = "Download disabled: manifest.json URL is missing in update configuration.";
-        } else {
-            downloadUpdateButton.title = ""; // Clear title if download is enabled
-        }
+        downloadUpdateButton.title = ""; // Clear any previous disabled title
         
         updateBanner.style.display = 'flex'; // Show the banner
       } else {
