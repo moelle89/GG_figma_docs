@@ -1355,7 +1355,7 @@ async function createPlaygroundFrame() {
     // Get cloned node dimensions AFTER creation/cloning
     const nodeWidth = nodeToPlaceInFrame.width;
     const nodeHeight = nodeToPlaceInFrame.height;
-    const padding = 100; // Whitespace around the node
+    const padding = 300; // Whitespace around the node
 
     // Calculate dynamic frame size
     const frameWidth = nodeWidth + 2 * padding;
