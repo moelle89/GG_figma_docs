@@ -2538,6 +2538,19 @@
         URL.revokeObjectURL(url);
     }
 
+    // Helper function to update the toggle all icon state
+    function updateToggleAllIcon() {
+      const allCategoryHeaders = document.querySelectorAll('.category-header');
+      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+        header.classList.contains('collapsed')
+      );
+
+      const toggleAllIcon = document.getElementById('toggle-all-icon');
+      if (toggleAllIcon) {
+        toggleAllIcon.classList.toggle('collapsed', allCollapsed);
+      }
+    }
+
     // Add click handler for the batch export button
     document.getElementById('batch-export-ts-button').addEventListener('click', () => {
         const button = document.getElementById('batch-export-ts-button');
