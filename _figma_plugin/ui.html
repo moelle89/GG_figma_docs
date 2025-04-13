@@ -2453,18 +2453,37 @@
       toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
     });
 
+    // Variable to store the element that had focus before a dialog opened
+    let elementFocusedBeforeDialog = null;
+
     // Helper function to show/hide dialogs
     function showDialog(dialogId) {
+        // Store the currently focused element before opening the dialog
+        elementFocusedBeforeDialog = document.activeElement;
+
         document.querySelector('.tab-container').style.display = 'none';
         const dialog = document.getElementById(dialogId);
         dialog.style.display = 'flex';
         // Delay adding the visible class slightly to ensure the transition works
         setTimeout(() => dialog.classList.add('visible'), 10);
+
+        // Optional: Set focus to the first focusable element in the dialog
+        // const firstFocusable = dialog.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        // if (firstFocusable) {
+        //   firstFocusable.focus();
+        // }
     }
 
     function hideDialog(dialogId) {
         const dialog = document.getElementById(dialogId);
         dialog.classList.remove('visible');
+
+        // Restore focus to the element that had it before the dialog opened
+        if (elementFocusedBeforeDialog) {
+            elementFocusedBeforeDialog.focus();
+            elementFocusedBeforeDialog = null; // Clear the stored element
+        }
+
         // Wait for transition before hiding and showing tabs
         setTimeout(() => {
             dialog.style.display = 'none';
