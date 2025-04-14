@@ -227,9 +227,11 @@ const defaultMenuData =       [
 // Use defaultMenuData directly for menu structure
 const menuData = defaultMenuData;
 
-// Send category list to UI - REMOVED FROM HERE
-// const categoryNames = menuData.map(cat => cat.category);
-// figma.ui.postMessage({ type: 'category-list', categories: categoryNames });
+// Send category list to UI, filtering out 'First Steps'
+const categoryNames = menuData
+  .map(cat => cat.category)
+  .filter(name => name !== "First Steps");
+figma.ui.postMessage({ type: 'category-list', categories: categoryNames });
 
 // Use the compact size as default in the showUI call
 figma.showUI(__html__, {
@@ -708,8 +710,12 @@ figma.ui.onmessage = async msg => {
   // --- Add ui-ready handler ---
   else if (msg.type === 'ui-ready') {
     // Now that UI is ready, send initial data and load components
-    const categoryNames = menuData.map(cat => cat.category);
-    figma.ui.postMessage({ type: 'category-list', categories: categoryNames });
+    // Send the *filtered* category list again when UI is ready
+    const categoryNamesFiltered = menuData
+      .map(cat => cat.category)
+      .filter(name => name !== "First Steps");
+    figma.ui.postMessage({ type: 'category-list', categories: categoryNamesFiltered });
+
     loadComponentsFromCurrentFile();
     checkAndSendPlaygroundState();
   }
