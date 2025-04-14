@@ -716,5 +716,15 @@
         "imagePath1": "assets/prop_table/empty.png",
         "imagePath2": "assets/prop_table/empty.png",
         "nestedComponents": []
+    },
+    "figma-plugin": {
+        "name": "Figma Plugin",
+        "description": "",
+        "figmaLink": "",
+        "figmaProto": "",
+        "figmaButtonText": "Figma Plugin",
+        "imagePath1": "assets/prop_table/empty.png",
+        "imagePath2": "assets/prop_table/empty.png",
+        "nestedComponents": []
     }
 }

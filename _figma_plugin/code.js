@@ -5,13 +5,14 @@ const UI_SIZES = {
 };
 
 // Include menuData definition directly in code.js
-const defaultMenuData =     [
+const defaultMenuData =       [
     {
       "category": "First Steps",
       "items": [
         "UI component lib",
+        "Latest Components",
         "Documentation",
-        "Latest Components"
+        "Figma Plugin"
       ]
     },
     {
@@ -206,8 +207,7 @@ const defaultMenuData =     [
       "items": [
         "GG Logo",
         "GG Logo Icon",
-        "GG Logo Mark",
-        "GG Logo 2"
+        "GG Logo Mark"
       ]
     },
     {
