@@ -2891,6 +2891,14 @@
           pendingUpdateData = null; // Clear pending data
       }
 
+      // --- ENSURE NEW DOCS LISTENERS ARE HERE ---
+      const openDocs = () => window.open('http://moelle.bplaced.net/index.html', '_blank');
+      const docsBtnComps = document.getElementById('docs-button-components');
+      const docsBtnIcons = document.getElementById('docs-button-icons');
+      if (docsBtnComps) docsBtnComps.addEventListener('click', openDocs);
+      if (docsBtnIcons) docsBtnIcons.addEventListener('click', openDocs);
+      // --- END DOCS LISTENERS ---
+
     }); // End of DOMContentLoaded
 
     // Add click handler for the batch export button
