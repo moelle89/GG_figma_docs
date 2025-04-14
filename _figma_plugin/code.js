@@ -227,6 +227,10 @@ const defaultMenuData =     [
 // Use defaultMenuData directly for menu structure
 const menuData = defaultMenuData;
 
+// Send category list to UI - REMOVED FROM HERE
+// const categoryNames = menuData.map(cat => cat.category);
+// figma.ui.postMessage({ type: 'category-list', categories: categoryNames });
+
 // Use the compact size as default in the showUI call
 figma.showUI(__html__, {
   width: UI_SIZES.compact.width,
@@ -242,11 +246,11 @@ const cache = {
   icons: null
 };
 
-// Start by loading components from the current file
-setTimeout(() => {
-  loadComponentsFromCurrentFile();
-  checkAndSendPlaygroundState(); // Check initial state
-}, 100);
+// Start by loading components from the current file - REMOVED FROM HERE
+// setTimeout(() => {
+//   loadComponentsFromCurrentFile();
+//   checkAndSendPlaygroundState(); // Check initial state
+// }, 100);
 
 // Check if the user has the Figma API available (Plugin API 37 or later)
 const hasImportSupport = typeof figma.importComponentByKeyAsync === 'function';
@@ -678,6 +682,15 @@ figma.ui.onmessage = async msg => {
   if (msg.type === "close") {
     figma.closePlugin();
   }
+  // --- Add ui-ready handler ---
+  else if (msg.type === 'ui-ready') {
+    // Now that UI is ready, send initial data and load components
+    const categoryNames = menuData.map(cat => cat.category);
+    figma.ui.postMessage({ type: 'category-list', categories: categoryNames });
+    loadComponentsFromCurrentFile();
+    checkAndSendPlaygroundState();
+  }
+  // --- End ui-ready handler ---
   else if (msg.type === "tab-change") {
     currentTab = msg.tab;
     checkAndSendPlaygroundState(); // Check state when tab changes
@@ -962,6 +975,11 @@ figma.ui.onmessage = async msg => {
   else if (msg.type === "return-decision") { // Handler for dialog choice
     await handleReturnDecision(msg.choice);
   }
+  // --- Add navigate-to-category handler ---
+  else if (msg.type === "navigate-to-category") {
+      await navigateToCategory(msg.categoryName);
+  }
+  // --- End navigate-to-category handler ---
 };
 
 // Function to generate a TypeScript interface from component properties
@@ -1655,3 +1673,62 @@ function isNewerVersion(versionA, versionB) {
 // --- Trigger the check when the plugin starts ---
 // You might want to add a delay or trigger it differently
 setTimeout(checkForUpdates, 2000); // Check 2 seconds after plugin starts
+
+// --- Add navigateToCategory function ---
+async function navigateToCategory(categoryName) {
+  try {
+    await figma.loadAllPagesAsync(); // Ensure pages are loaded
+
+    // Find the COMPONENTS page
+    const componentsPage = figma.root.children.find(page => page.name === "COMPONENTS");
+    if (!componentsPage) {
+      figma.notify("Error: 'COMPONENTS' page not found.", { error: true });
+      return;
+    }
+
+    // Switch to the COMPONENTS page if not already current
+    if (figma.currentPage.id !== componentsPage.id) {
+      await figma.setCurrentPageAsync(componentsPage);
+      // Add a small delay to allow the page switch to settle
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Helper function for flexible name matching
+    const normalizeName = (str) => {
+      return str.toLowerCase()
+                .replace(/-/g, ' ') // Replace hyphens with spaces
+                .replace(/\s+/g, ' ') // Collapse multiple spaces
+                .trim();
+    };
+
+    const normalizedCategoryName = normalizeName(categoryName);
+
+    // Find the section/frame matching the category name flexibly
+    const targetNode = figma.currentPage.findOne(node => {
+      if ((node.type === "FRAME" || node.type === "SECTION") && node.name.startsWith('↪ ')) {
+        const baseNodeName = node.name.substring(2); // Get name without prefix
+        const normalizedNodeName = normalizeName(baseNodeName);
+
+        // Check for exact match or match without trailing 's' on node name
+        return normalizedNodeName === normalizedCategoryName ||
+               normalizedNodeName === normalizedCategoryName + 's' ||
+               normalizedCategoryName === normalizedNodeName + 's';
+      }
+      return false;
+    });
+
+    if (targetNode) {
+      figma.viewport.scrollAndZoomIntoView([targetNode]);
+      // Optionally select the node
+      // figma.currentPage.selection = [targetNode];
+      figma.notify(`Navigated to '${categoryName}'.`);
+    } else {
+      // Update error message for flexible search
+      figma.notify(`Warning: Could not find a section for '${categoryName}' (looked for prefix '↪ ' + name/name(s) variations).`, { timeout: 4500 });
+    }
+  } catch (error) {
+    console.error(`Error navigating to category '${categoryName}':`, error);
+    figma.notify(`Error navigating: ${error.message}`, { error: true });
+  }
+}
+// --- End navigateToCategory function ---
