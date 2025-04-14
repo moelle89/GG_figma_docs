@@ -11,5 +11,8 @@
     "repack-plugin": "node scripts/repack-plugin.js"
   },
   "author": "moelle89",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "archiver": "^7.0.1"
+  }
 }
