@@ -2668,14 +2668,6 @@
       parent.postMessage({ pluginMessage: { type: 'get-selected-links' } }, '*');
     });
 
-    // Setup "Create Playground" buttons
-    document.getElementById('create-playground-button-components').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'create-playground' } }, '*');
-    });
-    document.getElementById('create-playground-button-icons').addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'create-playground' } }, '*');
-    });
-
     // Setup close button for links dialog
     document.getElementById('close-links-dialog').addEventListener('click', () => {
       hideDialog('links-dialog');

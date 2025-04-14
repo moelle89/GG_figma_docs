@@ -674,6 +674,9 @@ const LAST_VIEWPORT_X_KEY = 'lastViewportX';
 const LAST_VIEWPORT_Y_KEY = 'lastViewportY';
 const LAST_VIEWPORT_ZOOM_KEY = 'lastViewportZoom';
 
+// Add flag to prevent duplicate creation
+let isCreatingPlayground = false;
+
 // Helper function to check and send playground state
 async function checkAndSendPlaygroundState() {
   try {
@@ -1016,7 +1019,21 @@ figma.ui.onmessage = async msg => {
     getSelectedElementLinks();
   }
   else if (msg.type === "create-playground") {
-    await createPlaygroundFrame();
+    // Check if we're already processing a playground creation - ignore duplicate requests
+    if (isCreatingPlayground) {
+      console.log("Ignoring duplicate playground creation request - already processing");
+      return;
+    }
+    
+    // Set flag and process
+    isCreatingPlayground = true;
+    
+    try {
+      await createPlaygroundFrame();
+    } finally {
+      // Always clear the flag when done, even if there was an error
+      isCreatingPlayground = false;
+    }
   }
   else if (msg.type === "return-decision") { // Handler for dialog choice
     await handleReturnDecision(msg.choice);
