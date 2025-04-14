@@ -3,7 +3,7 @@ const path = require('path');
 const archiver = require('archiver');
 
 const pluginDir = path.join(__dirname, '..', '_figma_plugin');
-const outputZipPath = path.join(__dirname, '..', '_figma_plugin.zip');
+const outputZipPath = path.join(pluginDir, '_figma_plugin.zip');
 const filesToInclude = ['code.js', 'manifest.json', 'ui.html'];
 
 // Ensure the output directory exists (though in this case it's the root)
@@ -64,4 +64,4 @@ filesToInclude.forEach(fileName => {
 
 // Finalize the archive (ie we are done appending files but streams have to finish yet)
 // 'close', 'end' or 'finish' may be fired right after calling this method so register to them beforehand
-archive.finalize(); 
+archive.finalize();
