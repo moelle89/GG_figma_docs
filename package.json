@@ -7,7 +7,8 @@
     "fetch-new-component-data": "node scripts/updateComponents.js && npm run combine-and-generate",
     "combine-and-generate": "node scripts/combine.js && npm run generate-pages",
     "generate-pages": "node scripts/generate-missing-pages.js",
-    "wrap-playgrounds": "node scripts/wrap-playgrounds.js"
+    "wrap-playgrounds": "node scripts/wrap-playgrounds.js",
+    "repack-plugin": "node scripts/repack-plugin.js"
   },
   "author": "moelle89",
   "license": "ISC"
