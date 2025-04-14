@@ -653,30 +653,34 @@ const LAST_VIEWPORT_ZOOM_KEY = 'lastViewportZoom';
 // Helper function to check and send playground state
 async function checkAndSendPlaygroundState() {
   try {
-    // Check for ANY frame named "Playground - *" instead of relying on stored ID
-    const allNodes = figma.currentPage.children;
-    const existingPlaygrounds = allNodes.filter(node =>
-      node.type === 'FRAME' && node.name.startsWith('Playground - ')
-    );
-    let exists = existingPlaygrounds.length > 0;
+    const frameId = await figma.clientStorage.getAsync(PLAYGROUND_FRAME_ID_KEY);
+    let exists = false;
 
-    if (!exists) {
-        // If no playground frame exists, ensure the storage key is also cleared
+    if (frameId) {
+      // Verify the frame actually exists on the current page
+      const frameNode = await figma.getNodeByIdAsync(frameId);
+      if (frameNode && !frameNode.removed && frameNode.parent === figma.currentPage) {
+        exists = true;
+      } else {
+        // Frame ID exists but node doesn't or isn't on current page, clear the stale key
+        console.log("Playground frame ID found in storage, but node not found or not on current page. Clearing key.");
         await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY).catch(()=>{});
-    } else if (existingPlaygrounds.length === 1) {
-        // If exactly one exists, ensure its ID is stored correctly
-        await figma.clientStorage.setAsync(PLAYGROUND_FRAME_ID_KEY, existingPlaygrounds[0].id);
-    } else {
-        // If multiple exist (should be handled by createPlaygroundFrame, but as a fallback),
-        // clear the storage key as it's ambiguous.
-        await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY).catch(()=>{});
+        // Also clear potentially related viewport keys
+        await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
+        await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
+        await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
+        exists = false;
+      }
     }
 
     figma.ui.postMessage({ type: 'playground-state', exists: exists });
   } catch (error) {
     console.error("Error checking playground state:", error);
-    // Assume it doesn't exist in case of error and clear storage
+    // Assume it doesn't exist in case of error and clear storage keys
     await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY).catch(()=>{});
+    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
+    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
+    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
     figma.ui.postMessage({ type: 'playground-state', exists: false });
   }
 }
@@ -967,8 +971,8 @@ figma.ui.onmessage = async msg => {
   else if (msg.type === "create-playground") {
     await createPlaygroundFrame();
   }
-  else if (msg.type === "create-playground") {
-    await createPlaygroundFrame();
+  else if (msg.type === "return-decision") {
+    await handleReturnDecision(msg.choice);
   }
 };
 
@@ -1234,53 +1238,45 @@ function calculateOverallBounds(nodes) {
 
 // Modified function to create/toggle the playground frame
 async function createPlaygroundFrame() {
-  // --- Find and remove ALL existing playground frames ---
   try {
-    const allNodes = figma.currentPage.children;
-    const existingPlaygrounds = allNodes.filter(node =>
-      node.type === 'FRAME' && node.name.startsWith('Playground - ')
-    );
+    // Check if a playground frame ID already exists in storage
+    const existingFrameId = await figma.clientStorage.getAsync(PLAYGROUND_FRAME_ID_KEY);
 
-    if (existingPlaygrounds.length > 0) {
-        console.log(`Found ${existingPlaygrounds.length} existing playground frames. Removing them.`);
-        existingPlaygrounds.forEach(frame => {
-            try {
-                frame.remove();
-            } catch (removeError) {
-                console.warn(`Could not remove existing playground frame ${frame.id}:`, removeError);
-            }
-        });
-        // Clear potentially stale storage keys just in case
-        await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY).catch(()=>{});
-        await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
-        await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
-        await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
-        figma.notify(`Removed ${existingPlaygrounds.length} previous playground frame(s).`);
+    if (existingFrameId) {
+       // Verify the frame still exists before showing the dialog
+       const existingFrameNode = await figma.getNodeByIdAsync(existingFrameId);
+       if (existingFrameNode && !existingFrameNode.removed && existingFrameNode.parent === figma.currentPage) {
+         console.log(`Playground frame ${existingFrameId} already exists. Showing return dialog.`);
+         // Save current viewport before showing the dialog
+         await figma.clientStorage.setAsync(LAST_VIEWPORT_X_KEY, figma.viewport.center.x);
+         await figma.clientStorage.setAsync(LAST_VIEWPORT_Y_KEY, figma.viewport.center.y);
+         await figma.clientStorage.setAsync(LAST_VIEWPORT_ZOOM_KEY, figma.viewport.zoom);
+         // Show the confirmation dialog in the UI
+         figma.ui.postMessage({ type: 'show-return-dialog' });
+         return; // Stop execution, wait for user decision
+       } else {
+          // ID exists but frame doesn't, clear the stale key and proceed
+          console.log("Stale playground frame ID found. Clearing and proceeding with creation.");
+          await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY).catch(()=>{});
+          // Clear potentially related viewport keys
+          await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
+          await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
+          await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
+       }
     }
-  } catch (error) {
-    console.error("Error searching for or removing existing playground frames:", error);
-    // Proceed with creation anyway, but clear storage keys
-    await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY).catch(() => {});
-    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
-    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
-    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
-  }
-  // --- End Removal of Existing Frames ---
 
+    // --- No existing (or stale) frame ID, proceed to create a new one ---
+    const selection = figma.currentPage.selection;
 
-  // --- Proceed to create a new one ---
-  const selection = figma.currentPage.selection;
+    if (selection.length !== 1) {
+      figma.notify("Please select a single element to create a playground.");
+      return;
+    }
 
-  if (selection.length !== 1) {
-    figma.notify("Please select a single element to create a playground.");
-    return;
-  }
+    const selectedNode = selection[0];
+    let nodeToPlaceInFrame = null;
+    let nodeName = selectedNode.name || 'Element'; // Use selected node name
 
-  const selectedNode = selection[0];
-  let nodeToPlaceInFrame = null;
-  let nodeName = selectedNode.name || 'Element'; // Use selected node name
-
-  try {
     // --- Determine what node to use and what action to perform ---
     console.log(`Selected node: ${nodeName} (Type: ${selectedNode.type})`);
 
@@ -1288,37 +1284,31 @@ async function createPlaygroundFrame() {
     let actionToPerform = 'clone'; // Default to clone for non-components
 
     if (selectedNode.type === 'COMPONENT_SET') {
-      // Selected the whole set, use its default variant for creating an instance
       console.log('Selected node is a COMPONENT_SET, using default variant.');
       nodeToUse = selectedNode.defaultVariant;
       if (nodeToUse) {
-        nodeName = nodeToUse.name || 'Default Variant'; // Update name for the frame
+        nodeName = nodeToUse.name || 'Default Variant';
         actionToPerform = 'createInstance';
       } else {
         figma.notify("Could not find default variant for the selected component set.", { error: true });
         return;
       }
     } else if (selectedNode.type === 'COMPONENT') {
-      // Selected a specific component node
       nodeToUse = selectedNode;
-      actionToPerform = 'createInstance'; // Always create instance for components
+      actionToPerform = 'createInstance';
       if (selectedNode.parent && selectedNode.parent.type === 'COMPONENT_SET') {
-        // It's a variant, use its own name for the frame
         console.log(`Selected node is a COMPONENT variant (part of ${selectedNode.parent.name}).`);
         nodeName = selectedNode.name;
       } else {
-        // It's a standalone component
         console.log('Selected node is a standalone COMPONENT.');
         nodeName = selectedNode.name;
       }
     } else {
-      // For all other node types (Frame, Group, etc.), use the selection directly and clone
       console.log('Selected node is not a component or set, using it directly for cloning.');
       nodeToUse = selectedNode;
       actionToPerform = 'clone';
     }
 
-    // Ensure we have a node to use
     if (!nodeToUse) {
       figma.notify("Could not determine the node to place in the playground.", { error: true });
       return;
@@ -1353,64 +1343,108 @@ async function createPlaygroundFrame() {
     frame.name = `Playground - ${nodeName.replace('❖ ', '')}`;
     frame.fills = [{ type: 'SOLID', color: { r: 228 / 255, g: 228 / 255, b: 228 / 255 } }];
 
-    // Get cloned node dimensions AFTER creation/cloning
     const nodeWidth = nodeToPlaceInFrame.width;
     const nodeHeight = nodeToPlaceInFrame.height;
-    const padding = 300; // Whitespace around the node
+    const padding = 300;
 
-    // Calculate dynamic frame size
     const frameWidth = nodeWidth + 2 * padding;
     const frameHeight = nodeHeight + 2 * padding;
     frame.resize(frameWidth, frameHeight);
 
     // --- Node Placement (Centered within Frame) ---
     frame.appendChild(nodeToPlaceInFrame);
-    nodeToPlaceInFrame.x = padding; // Position node using padding
+    nodeToPlaceInFrame.x = padding;
     nodeToPlaceInFrame.y = padding;
 
     // --- Frame Positioning (Avoid Overlap) ---
     const allNodesOnPage = figma.currentPage.children;
-    const otherNodes = allNodesOnPage.filter(n => n.id !== frame.id); // Exclude the frame itself
+    const otherNodes = allNodesOnPage.filter(n => n.id !== frame.id);
     const bounds = calculateOverallBounds(otherNodes);
 
     let frameX, frameY;
-
     if (bounds) {
-      // Position 100px to the right of all existing content
       frameX = bounds.x + bounds.width + 100;
-      frameY = bounds.y; // Align top with the top of existing content bounds
+      frameY = bounds.y;
     } else {
-      // If canvas is empty or no bounds calculable, place near viewport center
       frameX = figma.viewport.center.x - frameWidth / 2;
       frameY = figma.viewport.center.y - frameHeight / 2;
     }
-
     frame.x = frameX;
     frame.y = frameY;
 
     // --- Final Steps ---
-    figma.currentPage.appendChild(frame); // Add to page
+    figma.currentPage.appendChild(frame);
 
     // Store the new frame's ID
     await figma.clientStorage.setAsync(PLAYGROUND_FRAME_ID_KEY, frame.id);
 
     await checkAndSendPlaygroundState(); // Send updated state (true)
 
-    // Select the cloned node inside the frame
     figma.currentPage.selection = [nodeToPlaceInFrame];
-    // Scroll and zoom to the node
     figma.viewport.scrollAndZoomIntoView([nodeToPlaceInFrame]);
     figma.notify(`Created playground frame for '${nodeName.replace('❖ ', '')}'`);
 
   } catch (error) {
     console.error("Error creating playground frame:", error);
-    figma.notify("Error creating playground frame: " + error.message, { error: true });
+    figma.notify("Error creating playground frame: " + (error.message || error), { error: true });
+    // Attempt to clean up potentially created node if frame creation failed midway
     if (nodeToPlaceInFrame && !nodeToPlaceInFrame.removed) {
-        nodeToPlaceInFrame.remove();
+        try { nodeToPlaceInFrame.remove(); } catch (e) { console.warn("Could not clean up node after error:", e)}
     }
     // Clear storage in case of error during creation
     await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY).catch(()=>{});
     await checkAndSendPlaygroundState(); // Ensure state is updated even on error
+  }
+}
+
+// Restore the function to handle the user's choice from the return dialog
+async function handleReturnDecision(choice) {
+  if (choice === 'go-back') {
+    try {
+      // Get the ID of the playground frame to remove
+      const frameId = await figma.clientStorage.getAsync(PLAYGROUND_FRAME_ID_KEY);
+      if (frameId) {
+        const frameNode = await figma.getNodeByIdAsync(frameId);
+        if (frameNode && !frameNode.removed) {
+          frameNode.remove();
+        }
+        await figma.clientStorage.deleteAsync(PLAYGROUND_FRAME_ID_KEY);
+        console.log("Playground frame removed.");
+      }
+
+      // Get the saved viewport state
+      const lastX = await figma.clientStorage.getAsync(LAST_VIEWPORT_X_KEY);
+      const lastY = await figma.clientStorage.getAsync(LAST_VIEWPORT_Y_KEY);
+      const lastZoom = await figma.clientStorage.getAsync(LAST_VIEWPORT_ZOOM_KEY);
+
+      // Restore viewport if coordinates exist
+      if (lastX !== null && lastY !== null && lastZoom !== null) {
+        figma.viewport.center = { x: lastX, y: lastY };
+        figma.viewport.zoom = lastZoom;
+        console.log("Viewport restored.");
+      }
+
+      // Clean up viewport keys
+      await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY);
+      await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY);
+      await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY);
+
+      await checkAndSendPlaygroundState(); // Update UI state
+      figma.notify("Removed playground frame and returned.");
+
+    } catch (error) {
+      console.error("Error handling 'go-back' decision:", error);
+      figma.notify("Error removing playground frame.", { error: true });
+      // Still try to update state
+      await checkAndSendPlaygroundState();
+    }
+  } else if (choice === 'stay') {
+    // User chose to stay, just clear the saved viewport keys
+    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_X_KEY).catch(()=>{});
+    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_Y_KEY).catch(()=>{});
+    await figma.clientStorage.deleteAsync(LAST_VIEWPORT_ZOOM_KEY).catch(()=>{});
+    console.log("User chose to stay in the playground.");
+    figma.notify("Staying in the current playground.");
   }
 }
 
