@@ -2745,6 +2745,37 @@
       // Signal to plugin code that UI is ready
       parent.postMessage({ pluginMessage: { type: 'ui-ready' } }, '*');
 
+      // Add event listeners for refresh buttons
+      document.getElementById('refresh-components').addEventListener('click', () => {
+        console.log("Sending refresh request for components");
+        parent.postMessage({
+          pluginMessage: {
+            type: 'refresh',
+            target: 'components'
+          }
+        }, '*');
+      });
+
+      document.getElementById('refresh-icons').addEventListener('click', () => {
+        console.log("Sending refresh request for icons");
+        parent.postMessage({
+          pluginMessage: {
+            type: 'refresh',
+            target: 'icons'
+          }
+        }, '*');
+      });
+
+      document.getElementById('clear-icons-cache').addEventListener('click', () => {
+        console.log("Sending clear-icons-cache request");
+        parent.postMessage({
+          pluginMessage: {
+            type: 'refresh',
+            target: 'icons'
+          }
+        }, '*');
+      });
+
       // Set up event listeners for tab clicks
       document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {

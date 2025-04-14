@@ -243,7 +243,8 @@ let currentTab = "components-tab";
 // Cache for storing loaded components and icons
 const cache = {
   components: null,
-  icons: null
+  icons: null,
+  navigationSections: null // Add cache for navigation sections
 };
 
 // Start by loading components from the current file - REMOVED FROM HERE
@@ -286,6 +287,12 @@ async function loadComponentsFromCurrentFile() {
         status: `Found ${totalComponents} components.`,
         components: cache.components
       });
+      
+      // Prefetch navigation sections if needed
+      if (!cache.navigationSections) {
+        await prefetchNavigationSections();
+      }
+      
       return;
     }
 
@@ -444,6 +451,9 @@ async function loadComponentsFromCurrentFile() {
     // Store the categorized array instead of the flat array
     cache.components = categorizedComponentsArray;
     await saveToClientStorage('cachedComponents', categorizedComponentsArray);
+
+    // Prefetch navigation sections after loading components
+    await prefetchNavigationSections();
 
     // Show warning if any components failed to load
     if (failedComponents.length > 0) {
@@ -626,24 +636,34 @@ function stringToColor(str) {
 
 // Function to reload and refresh the cache
 async function refreshCache(type) {
+  console.log(`Refreshing cache for type: "${type}"`);
+  
   if (type === 'components') {
+    console.log('Clearing components cache...');
     cache.components = null;
+    cache.navigationSections = null; // Also clear navigation sections cache
     await figma.clientStorage.deleteAsync('cachedComponents');
+    console.log('Loading components from file...');
     loadComponentsFromCurrentFile();
   } else if (type === 'icons') {
+    console.log('Clearing icons cache...');
     cache.icons = null;
     // Clear both full icons and metadata cache if it exists
     await figma.clientStorage.deleteAsync('cachedIcons');
     await figma.clientStorage.deleteAsync('cachedIconsMetadata');
     figma.notify("Icons cache cleared, reloading icons...");
+    console.log('Loading icons from file...');
     loadIconComponentsFromCurrentFile();
   } else {
     // Refresh all
+    console.log('Clearing all caches...');
     cache.components = null;
     cache.icons = null;
+    cache.navigationSections = null; // Also clear navigation sections cache
     await figma.clientStorage.deleteAsync('cachedComponents');
     await figma.clientStorage.deleteAsync('cachedIcons');
     await figma.clientStorage.deleteAsync('cachedIconsMetadata');
+    console.log('Loading all content from file...');
     loadComponentsFromCurrentFile();
     loadIconComponentsFromCurrentFile();
   }
@@ -736,8 +756,16 @@ figma.ui.onmessage = async msg => {
   }
   else if (msg.type === "refresh") {
     // Handle refresh requests
-    refreshCache(msg.target);
-    figma.notify("Refreshing components...");
+    console.log(`Refresh requested with target: "${msg.target}"`);
+    
+    if (!msg.target || (msg.target !== 'components' && msg.target !== 'icons')) {
+      console.warn(`Invalid refresh target: ${msg.target}, defaulting to refresh all`);
+      refreshCache('all');
+      figma.notify("Refreshing all components and icons...");
+    } else {
+      refreshCache(msg.target);
+      figma.notify(`Refreshing ${msg.target}...`);
+    }
   }
   else if (msg.type === "create-instance") {
     try {
@@ -1695,6 +1723,11 @@ setTimeout(checkForUpdates, 2000); // Check 2 seconds after plugin starts
 // --- Add navigateToCategory function ---
 async function navigateToCategory(categoryName) {
   try {
+    // Ensure navigation sections are prefetched
+    if (!cache.navigationSections) {
+      await prefetchNavigationSections();
+    }
+    
     await figma.loadAllPagesAsync(); // Ensure pages are loaded
 
     // Find the COMPONENTS page
@@ -1720,33 +1753,106 @@ async function navigateToCategory(categoryName) {
     };
 
     const normalizedCategoryName = normalizeName(categoryName);
-
-    // Find the section/frame matching the category name flexibly
-    const targetNode = figma.currentPage.findOne(node => {
-      if ((node.type === "FRAME" || node.type === "SECTION") && node.name.startsWith('↪ ')) {
-        const baseNodeName = node.name.substring(2); // Get name without prefix
-        const normalizedNodeName = normalizeName(baseNodeName);
-
-        // Check for exact match or match without trailing 's' on node name
-        return normalizedNodeName === normalizedCategoryName ||
-               normalizedNodeName === normalizedCategoryName + 's' ||
-               normalizedCategoryName === normalizedNodeName + 's';
+    
+    // Use the prefetched cache instead of searching every time
+    let targetNode = null;
+    if (cache.navigationSections && cache.navigationSections.has(normalizedCategoryName)) {
+      targetNode = cache.navigationSections.get(normalizedCategoryName);
+      // Verify the node still exists and hasn't been removed
+      if (targetNode.removed) {
+        console.log(`Node for '${categoryName}' was removed, refreshing cache...`);
+        cache.navigationSections = null;
+        await prefetchNavigationSections();
+        // Try again with fresh cache
+        targetNode = cache.navigationSections && cache.navigationSections.has(normalizedCategoryName) 
+          ? cache.navigationSections.get(normalizedCategoryName) 
+          : null;
       }
-      return false;
-    });
+    }
+    
+    // Fallback to the old search method if not found in cache
+    if (!targetNode) {
+      console.log(`Category '${categoryName}' not found in cache, falling back to search`);
+      targetNode = figma.currentPage.findOne(node => {
+        if ((node.type === "FRAME" || node.type === "SECTION") && node.name.startsWith('↪ ')) {
+          const baseNodeName = node.name.substring(2); // Get name without prefix
+          const normalizedNodeName = normalizeName(baseNodeName);
+
+          // Check for exact match or match without trailing 's' on node name
+          return normalizedNodeName === normalizedCategoryName ||
+                 normalizedNodeName === normalizedCategoryName + 's' ||
+                 normalizedCategoryName === normalizedNodeName + 's';
+        }
+        return false;
+      });
+    }
 
     if (targetNode) {
       figma.viewport.scrollAndZoomIntoView([targetNode]);
-      // Optionally select the node
-      // figma.currentPage.selection = [targetNode];
       figma.notify(`Navigated to '${categoryName}'.`);
     } else {
-      // Update error message for flexible search
-      figma.notify(`Warning: Could not find a section for '${categoryName}' (looked for prefix '↪ ' + name/name(s) variations).`, { timeout: 4500 });
+      figma.notify(`Warning: Could not find a section for '${categoryName}'.`, { timeout: 4500 });
     }
   } catch (error) {
     console.error(`Error navigating to category '${categoryName}':`, error);
     figma.notify(`Error navigating: ${error.message}`, { error: true });
+  }
+}
+
+// Function to prefetch all navigation sections
+async function prefetchNavigationSections() {
+  try {
+    // Check if we already have the cache
+    if (cache.navigationSections) {
+      return;
+    }
+    
+    console.log("Prefetching navigation sections...");
+    await figma.loadAllPagesAsync();
+    
+    // Find the COMPONENTS page
+    const componentsPage = figma.root.children.find(page => page.name === "COMPONENTS");
+    if (!componentsPage) {
+      console.warn("No COMPONENTS page found for prefetching navigation sections");
+      return;
+    }
+    
+    // Helper function for normalizing names for matching
+    const normalizeName = (str) => {
+      return str.toLowerCase()
+                .replace(/-/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+    };
+    
+    // Find all section/frame nodes with the navigation prefix
+    const navigationNodes = componentsPage.findAll(node => 
+      (node.type === "FRAME" || node.type === "SECTION") && node.name.startsWith('↪ ')
+    );
+    
+    // Create a map for quick lookup
+    const sectionMap = new Map();
+    
+    navigationNodes.forEach(node => {
+      const baseNodeName = node.name.substring(2); // Remove the '↪ ' prefix
+      const normalizedName = normalizeName(baseNodeName);
+      
+      // Store with multiple key variations for flexible matching
+      sectionMap.set(normalizedName, node);
+      
+      // Store singular/plural variations
+      if (normalizedName.endsWith('s')) {
+        sectionMap.set(normalizedName.slice(0, -1), node); // Store singular form
+      } else {
+        sectionMap.set(normalizedName + 's', node); // Store plural form
+      }
+    });
+    
+    cache.navigationSections = sectionMap;
+    console.log(`Prefetched ${navigationNodes.length} navigation sections`);
+    
+  } catch (error) {
+    console.error("Error prefetching navigation sections:", error);
   }
 }
 // --- End navigateToCategory function ---
