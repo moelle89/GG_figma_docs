@@ -887,14 +887,32 @@ figma.ui.onmessage = async msg => {
       // Navigate to component in current file
       const node = await figma.getNodeByIdAsync(msg.id);
       if (node) {
-        const componentPage = node.parent.parent;
+        // Find the page by traversing up the node hierarchy
+        let currentNode = node;
+        let componentPage = null;
+        
+        while (currentNode.parent) {
+          if (currentNode.parent.type === "PAGE") {
+            componentPage = currentNode.parent;
+            break;
+          }
+          currentNode = currentNode.parent;
+        }
+        
+        if (!componentPage) {
+          throw new Error("Could not locate the component's page");
+        }
+        
         await figma.setCurrentPageAsync(componentPage);
         figma.viewport.scrollAndZoomIntoView([node]);
         figma.currentPage.selection = [node];
         figma.notify("Navigated to component");
+      } else {
+        throw new Error("Component not found");
       }
     } catch (error) {
-      figma.notify("Error navigating to component: " + error.message, { error: true });
+      console.error("Error navigating to component:", error);
+      figma.notify("Error navigating to component: " + (error.message || "unknown error"), { error: true });
     }
   }
   else if (msg.type === "live-update-property") {
