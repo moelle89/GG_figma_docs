@@ -1237,6 +1237,7 @@
       <div class="tab active" data-tab="components-tab">❖ Comp.</div>
       <div class="tab" data-tab="icons-tab">Icons</div>
       <button id="quick-nav-button" class="docs-button" title="Quick Navigate Categories">☰</button> <!-- Added -->
+      <button id="docs-button" class="docs-button" title="Open Documentation">🌐</button>
       <button id="size-toggle" class="docs-button" title="Toggle UI Size">⟷</button>
     </div>
 
@@ -1244,7 +1245,6 @@
       <div class="status-container">
           <p id="status-message">Loading components...</p>
           <button id="get-links-button-components" class="get-links-button" title="Get Links for Selection">☍</button>
-          <button id="docs-button-components" class="get-links-button" title="Open Documentation">🌐</button> <!-- Moved -->
           <button id="create-playground-button-components" class="get-links-button" title="Create Playground Frame">▶</button>
       </div>
       <div class="search-container">
@@ -1262,7 +1262,6 @@
       <div class="status-container">
           <p id="icons-status-message">Loading icons...</p>
           <button id="get-links-button-icons" class="get-links-button" title="Get Links for Selection">☍</button>
-          <button id="docs-button-icons" class="get-links-button" title="Open Documentation">🌐</button> <!-- Moved -->
           <button id="create-playground-button-icons" class="get-links-button" title="Create Playground Frame">▶</button>
       </div>
       <div class="search-container">
@@ -1285,7 +1284,7 @@
        aria-modal="true">
     <div class="dialog-content">
       <div class="dialog-header">
-        <h4 id="dialog-title">Component Properties</h4> <!-- Added ID for aria-labelledby -->
+        <h4>Component Properties</h4>
         <button id="close-dialog" class="action-button">×</button>
       </div>
       <div class="properties-container">
@@ -1357,7 +1356,7 @@
       </ul>
       <!-- Optional: Add a close button at the bottom if preferred -->
       <!-- <button id="close-quick-nav-dialog-bottom">Close</button> -->
-    </div>
+   </div>
   </div>
 
   <!-- Add JSZip script tag HERE, before the main script block -->
@@ -2891,14 +2890,6 @@
           pendingUpdateData = null; // Clear pending data
       }
 
-      // --- ENSURE NEW DOCS LISTENERS ARE HERE ---
-      const openDocs = () => window.open('http://moelle.bplaced.net/index.html', '_blank');
-      const docsBtnComps = document.getElementById('docs-button-components');
-      const docsBtnIcons = document.getElementById('docs-button-icons');
-      if (docsBtnComps) docsBtnComps.addEventListener('click', openDocs);
-      if (docsBtnIcons) docsBtnIcons.addEventListener('click', openDocs);
-      // --- END DOCS LISTENERS ---
-
     }); // End of DOMContentLoaded
 
     // Add click handler for the batch export button
@@ -2911,11 +2902,6 @@
     // ... existing applyUpdateInfo function ...
 
     // --- Wait for DOM to be ready before accessing elements --- (This comment is redundant)
-
-    // Add event listeners for the NEW documentation buttons
-    const openDocs = () => window.open('http://moelle.bplaced.net/index.html', '_blank');
-    document.getElementById('docs-button-components').addEventListener('click', openDocs);
-    document.getElementById('docs-button-icons').addEventListener('click', openDocs);
   </script>
 </body>
 
