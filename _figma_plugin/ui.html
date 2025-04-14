@@ -2903,6 +2903,11 @@
     // ... existing applyUpdateInfo function ...
 
     // --- Wait for DOM to be ready before accessing elements --- (This comment is redundant)
+
+    // Add event listeners for the NEW documentation buttons
+    const openDocs = () => window.open('http://moelle.bplaced.net/index.html', '_blank');
+    document.getElementById('docs-button-components').addEventListener('click', openDocs);
+    document.getElementById('docs-button-icons').addEventListener('click', openDocs);
   </script>
 </body>
 
