@@ -1,5 +1,5 @@
 [
-    { "category": "First Steps", "items": ["UI component lib", "Documentation", "Latest Components"] },
+    { "category": "First Steps", "items": ["UI component lib", "Latest Components", "Documentation", "Figma Plugin"] },
     { "category": "Button", "items": ["Button", "Button Group", "Button Close", "Button with Icon Only", "Social Button", "Store Badges"] },
     { "category": "Input Fields", "items": ["Input"] },
     { "category": "Checkboxes", "items": ["Checkbox", "Checkbox Label"] },
