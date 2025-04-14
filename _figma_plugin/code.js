@@ -5,7 +5,7 @@ const UI_SIZES = {
 };
 
 // Include menuData definition directly in code.js
-const defaultMenuData =       [
+const defaultMenuData =         [
     {
       "category": "First Steps",
       "items": [
