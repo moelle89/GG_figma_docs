@@ -227,11 +227,22 @@ const defaultMenuData =       [
 // Use defaultMenuData directly for menu structure
 const menuData = defaultMenuData;
 
-// Send category list to UI, filtering out 'First Steps'
-const categoryNames = menuData
-  .map(cat => cat.category)
-  .filter(name => name !== "First Steps");
-figma.ui.postMessage({ type: 'category-list', categories: categoryNames });
+// Cache for storing loaded components and icons
+const cache = {
+  components: null,
+  icons: null,
+  navigationSections: null // Add cache for navigation sections
+};
+
+// Flag to track UI readiness
+let isUiReady = false;
+let pendingUpdateMessage = null; // Store pending update message if UI is not ready
+
+// Send category list to UI, filtering out 'First Steps' - REMOVED THIS PREMATURE CALL
+// const categoryNames = menuData
+//   .map(cat => cat.category)
+//   .filter(name => name !== "First Steps");
+// figma.ui.postMessage({ type: 'category-list', categories: categoryNames });
 
 // Use the compact size as default in the showUI call
 figma.showUI(__html__, {
@@ -241,13 +252,6 @@ figma.showUI(__html__, {
 });
 // ===================================
 let currentTab = "components-tab";
-
-// Cache for storing loaded components and icons
-const cache = {
-  components: null,
-  icons: null,
-  navigationSections: null // Add cache for navigation sections
-};
 
 // Start by loading components from the current file - REMOVED FROM HERE
 // setTimeout(() => {
@@ -709,6 +713,9 @@ figma.ui.onmessage = async msg => {
   }
   // --- Add ui-ready handler ---
   else if (msg.type === 'ui-ready') {
+    isUiReady = true; // Mark UI as ready
+    console.log("UI is ready.");
+
     // Now that UI is ready, send initial data and load components
     // Send the *filtered* category list again when UI is ready
     const categoryNamesFiltered = menuData
@@ -718,6 +725,13 @@ figma.ui.onmessage = async msg => {
 
     loadComponentsFromCurrentFile();
     checkAndSendPlaygroundState();
+
+    // Send any pending update message now that UI is ready
+    if (pendingUpdateMessage) {
+      console.log("Sending pending update message to UI.");
+      figma.ui.postMessage(pendingUpdateMessage);
+      pendingUpdateMessage = null; // Clear the pending message
+    }
   }
   // --- End ui-ready handler ---
   else if (msg.type === "tab-change") {
@@ -1691,8 +1705,8 @@ async function checkForUpdates() {
         const codeJsContent = await codeJsRes.text();
         const uiHtmlContent = await uiHtmlRes.text();
 
-        // Send file content and version info to UI (without manifest)
-        figma.ui.postMessage({
+        // Prepare the message data
+        const updateMessageData = {
           type: 'update-available',
           version: latestInfo.latestVersion,
           notes: latestInfo.releaseNotes || "No release notes provided.",
@@ -1700,7 +1714,16 @@ async function checkForUpdates() {
             codeJs: codeJsContent,
             uiHtml: uiHtmlContent
           }
-        });
+        };
+
+        // Send file content and version info to UI *only if UI is ready*
+        if (isUiReady) {
+          console.log("UI is ready, sending update message directly.");
+          figma.ui.postMessage(updateMessageData);
+        } else {
+          console.log("UI not ready yet, storing update message.");
+          pendingUpdateMessage = updateMessageData; // Store for later
+        }
 
          // Also show a standard notification
          figma.notify(`Plugin Update Available: v${latestInfo.latestVersion}. Click the banner in the plugin to download.`, { timeout: 10000 });
