@@ -2099,16 +2099,6 @@ async function createSectionWithHeader(sectionName) {
       console.warn('Header instance does not have resize method. Header width might not match section width.');
     }
 
-    // Safely append child with robust error handling
-    try {
-      section.appendChild(headerInstance); // Append header first
-      console.log("Header appended to section");
-    } catch (error) {
-      console.error("Error appending header:", error);
-      figma.notify("Error attaching header to section. Try updating your Figma version.", { error: true });
-      return;
-    }
-
     // --- Position Cloned Content ---
     // Iterate through original selection and clone/position each node
     let clonedNodes = []; // Keep track of cloned nodes for potential selection
@@ -2174,8 +2164,41 @@ async function createSectionWithHeader(sectionName) {
 
     console.log(`Cloned ${cloneSuccessCount} nodes successfully, ${cloneFailCount} failed`);
 
+    // Now add the header as the FIRST element in the section (index 0)
+    try {
+      // If we directly appendChild, it will add to the end, so we need to use insertChild at index 0
+      if (typeof section.insertChild === 'function') {
+        // First append the header to the page temporarily if needed
+        if (!headerInstance.parent) {
+          figma.currentPage.appendChild(headerInstance);
+        }
+
+        // Then insert it at the beginning of the section
+        section.insertChild(0, headerInstance);
+
+        // Lock the header to prevent accidental editing
+        if (typeof headerInstance.locked !== 'undefined') {
+          headerInstance.locked = true;
+          console.log("Header locked and inserted at index 0");
+        }
+      } else {
+        // Fallback if insertChild is not available
+        section.appendChild(headerInstance);
+        console.warn("insertChild not available, header may not be first element");
+      }
+    } catch (error) {
+      console.error("Error placing header at first position:", error);
+      // Try a regular append as last resort
+      try {
+        section.appendChild(headerInstance);
+      } catch (appendError) {
+        console.error("Also failed to append header:", appendError);
+        figma.notify("Error attaching header to section", { error: true });
+      }
+    }
+
     // --- Position Section on Canvas ---
-    // Place it below the original content for now
+    // Place it at the original content location
     section.x = selectionBounds.x;
     section.y = selectionBounds.y;
     console.log("Section positioned on canvas at original content location");
