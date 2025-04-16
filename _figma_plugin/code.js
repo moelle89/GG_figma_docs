@@ -2062,7 +2062,7 @@ async function createSectionWithHeader(sectionName) {
       }
     }
 
-    section.name = "Section: " + sectionName;
+    section.name = "↪ " + sectionName;
     section.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }]; // White fill
 
     try {
@@ -2177,8 +2177,8 @@ async function createSectionWithHeader(sectionName) {
     // --- Position Section on Canvas ---
     // Place it below the original content for now
     section.x = selectionBounds.x;
-    section.y = selectionBounds.y + selectionBounds.height + 100;
-    console.log("Section positioned on canvas");
+    section.y = selectionBounds.y;
+    console.log("Section positioned on canvas at original content location");
 
     // --- Final Steps ---
     try {
@@ -2188,6 +2188,21 @@ async function createSectionWithHeader(sectionName) {
       console.error("Error adding section to page:", appendError);
       figma.notify("Error adding section to page: " + appendError.message, { error: true });
       return;
+    }
+
+    // Delete the original content since we've now wrapped it in a section
+    try {
+      console.log("Deleting original content...");
+      selection.forEach(node => {
+        if (!node.removed) {
+          node.remove();
+        }
+      });
+      console.log("Original content deleted");
+    } catch (deleteError) {
+      console.error("Error deleting original content:", deleteError);
+      figma.notify("Warning: Could not delete some original content. You may need to delete it manually.", { timeout: 5000 });
+      // Continue execution - this is not a critical error
     }
 
     // Select and show the section
