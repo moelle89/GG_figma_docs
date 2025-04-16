@@ -1966,6 +1966,8 @@ async function createSectionWithHeader(sectionName) {
       figma.ungroup(group);
     }
 
+    console.log("Selection bounds calculated:", selectionBounds);
+
     // --- Find Header Component ---
     await figma.loadAllPagesAsync();
     const styleguidePage = figma.root.children.find(page => page.name === "STYLEGUIDE");
@@ -2002,6 +2004,8 @@ async function createSectionWithHeader(sectionName) {
         throw new Error("Failed to create instance of Header variant.");
     }
 
+    console.log("Header instance created successfully");
+
     // Set the header's text component property to the section name
     if (headerInstance.componentProperties) {
       // Find the "Main" text property - it might have a suffix like "#xxxx"
@@ -2015,7 +2019,11 @@ async function createSectionWithHeader(sectionName) {
         propertyUpdate[mainTextProp] = sectionName;
         headerInstance.setProperties(propertyUpdate);
         console.log("Set header text to section name:", sectionName);
+      } else {
+        console.warn("Could not find 'Main' text property in header component");
       }
+    } else {
+      console.warn("Header instance has no component properties");
     }
 
     // --- Calculate Dimensions ---
@@ -2030,41 +2038,101 @@ async function createSectionWithHeader(sectionName) {
     const sectionWidth = contentWidth + (2 * horizontalMargin);
     const sectionHeight = headerHeight + spaceBelowHeader + contentHeight + bottomMargin;
 
+    console.log("Section dimensions calculated:", {
+      sectionWidth,
+      sectionHeight,
+      headerHeight,
+      contentWidth,
+      contentHeight
+    });
+
     // --- Create and Configure Section ---
-    const section = figma.createFrame();
+    // Try to use native section if available, otherwise catch and use frame fallback
+    let section;
+    try {
+      section = figma.createSection();
+      console.log("Using native Figma Section");
+    } catch (error) {
+      console.warn("Native sections not supported in this Figma version, using frame fallback:", error);
+      section = figma.createFrame();
+
+      // Add metadata to mark this as a section when using frame fallback
+      if (typeof section.setPluginData === 'function') {
+        section.setPluginData('isSection', 'true');
+      }
+    }
+
     section.name = "Section: " + sectionName;
     section.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }]; // White fill
-    section.resize(sectionWidth, sectionHeight);
+
+    try {
+      section.resize(sectionWidth, sectionHeight);
+      console.log("Section resized successfully");
+    } catch (resizeError) {
+      console.error("Error resizing section:", resizeError);
+      // If resize fails, try to create with a default size
+      section.resizeWithoutConstraints(sectionWidth, sectionHeight);
+    }
+
+    // Apply visual styling (useful for both section and frame)
+    try {
+      section.strokeWeight = 1;
+      section.strokes = [{ type: 'SOLID', color: { r: 0.9, g: 0.9, b: 0.9 } }];
+      section.cornerRadius = 8;
+      console.log("Section styling applied");
+    } catch (styleError) {
+      console.warn("Could not apply some styling to section:", styleError);
+    }
 
     // --- Position Header ---
     headerInstance.x = 0;
     headerInstance.y = 0;
     // Make sure the header spans the full width
     if (headerInstance && typeof headerInstance.resize === 'function') {
-      headerInstance.resize(sectionWidth, headerInstance.height);
+      try {
+        headerInstance.resize(sectionWidth, headerInstance.height);
+        console.log("Header resized to match section width");
+      } catch (headerResizeError) {
+        console.warn("Could not resize header:", headerResizeError);
+      }
     } else {
       console.warn('Header instance does not have resize method. Header width might not match section width.');
     }
 
-    // Check if appendChild is available
-    if (typeof section.appendChild !== 'function') {
-      throw new Error("The created section doesn't support appendChild. Try using a frame instead.");
+    // Safely append child with robust error handling
+    try {
+      section.appendChild(headerInstance); // Append header first
+      console.log("Header appended to section");
+    } catch (error) {
+      console.error("Error appending header:", error);
+      figma.notify("Error attaching header to section. Try updating your Figma version.", { error: true });
+      return;
     }
-
-    section.appendChild(headerInstance); // Append header first
 
     // --- Position Cloned Content ---
     // Iterate through original selection and clone/position each node
     let clonedNodes = []; // Keep track of cloned nodes for potential selection
+    let cloneSuccessCount = 0;
+    let cloneFailCount = 0;
+
     for (const originalNode of selection) {
         if (!originalNode || typeof originalNode.clone !== 'function') {
             console.warn(`Skipping uncloneable node: ${originalNode ? originalNode.id : 'undefined'} (${originalNode ? originalNode.type : 'undefined'})`);
             continue;
         }
-        const clonedNode = originalNode.clone();
-        if (!clonedNode) {
-            console.warn(`Failed to clone node: ${originalNode.id}`);
-            continue;
+
+        let clonedNode;
+        try {
+          clonedNode = originalNode.clone();
+          if (!clonedNode) {
+              console.warn(`Failed to clone node: ${originalNode.id}`);
+              cloneFailCount++;
+              continue;
+          }
+        } catch (cloneError) {
+          console.error(`Error cloning node ${originalNode.id}:`, cloneError);
+          cloneFailCount++;
+          continue;
         }
 
         // Calculate position relative to the section origin
@@ -2076,44 +2144,78 @@ async function createSectionWithHeader(sectionName) {
         clonedNode.x = horizontalMargin + relativeX;
         clonedNode.y = headerHeight + spaceBelowHeader + relativeY;
 
-        // Add check for appendChild function (should already be checked earlier, but being thorough)
-        if (typeof section.appendChild !== 'function') {
-          console.warn("Skipping appendChild for cloned node - section doesn't support this method");
-          continue;
+        try {
+          section.appendChild(clonedNode);
+          clonedNodes.push(clonedNode); // Add to list
+          cloneSuccessCount++;
+        } catch (error) {
+          console.warn(`Error appending cloned node: ${error.message}`);
+          // If appendChild fails, try adding it to the page and then use insertChild
+          try {
+            figma.currentPage.appendChild(clonedNode);
+            if (typeof section.insertChild === 'function') {
+              section.insertChild(section.children.length, clonedNode);
+              clonedNodes.push(clonedNode);
+              cloneSuccessCount++;
+            } else {
+              cloneFailCount++;
+              console.error("insertChild method not available");
+            }
+          } catch (nestedError) {
+            console.error("Fallback insertion also failed:", nestedError);
+            cloneFailCount++;
+            // Clean up orphaned node
+            if (!clonedNode.removed) {
+              clonedNode.remove();
+            }
+          }
         }
-
-        section.appendChild(clonedNode);
-        clonedNodes.push(clonedNode); // Add to list
     }
+
+    console.log(`Cloned ${cloneSuccessCount} nodes successfully, ${cloneFailCount} failed`);
 
     // --- Position Section on Canvas ---
     // Place it below the original content for now
     section.x = selectionBounds.x;
     section.y = selectionBounds.y + selectionBounds.height + 100;
+    console.log("Section positioned on canvas");
 
     // --- Final Steps ---
-    figma.currentPage.appendChild(section);
-
-    // Visually stylize the frame as a section
-    section.strokeWeight = 1;
-    section.strokes = [{ type: 'SOLID', color: { r: 0.9, g: 0.9, b: 0.9 } }];
-    section.cornerRadius = 8;
-
-    // Add metadata to mark this as a section (won't actually convert it)
-    if (typeof section.setPluginData === 'function') {
-      section.setPluginData('isSection', 'true');
+    try {
+      figma.currentPage.appendChild(section);
+      console.log("Section added to page");
+    } catch (appendError) {
+      console.error("Error adding section to page:", appendError);
+      figma.notify("Error adding section to page: " + appendError.message, { error: true });
+      return;
     }
 
     // Select and show the section
-    figma.viewport.scrollAndZoomIntoView([section]);
-    figma.currentPage.selection = clonedNodes.length > 0 ? clonedNodes : [section]; // Select cloned nodes if any, else the section
-    figma.notify(`Section '${sectionName}' created successfully.`);
+    try {
+      figma.viewport.scrollAndZoomIntoView([section]);
+      figma.currentPage.selection = clonedNodes.length > 0 ? clonedNodes : [section]; // Select cloned nodes if any, else the section
+      console.log("Selection and viewport updated");
+    } catch (selectError) {
+      console.warn("Error updating selection or viewport:", selectError);
+    }
+
+    // Determine if we used a native section or frame fallback
+    const isSectionType = section.type === "SECTION";
+    figma.notify(`Section '${sectionName}' created successfully${isSectionType ? "" : " (using frame fallback)"}.`);
+    console.log("Section creation complete");
 
   } catch (error) {
     console.error("Error creating section with header:", error);
-    figma.notify(`Error: ${error.message}`, { error: true });
+    const errorDetails = error.stack ? `\n${error.stack}` : error.message || "Unknown error";
+    console.error("Error details:", errorDetails);
+    figma.notify(`Error: ${error.message || "Unknown error creating section"}`, { error: true });
+
+    // Don't call createSectionWithFrameFallback as we now have inline fallback
   }
 }
+
+// Fallback function is now integrated into the main function above
+// The createSectionWithFrameFallback function can be removed or kept for reference
 // --- Add new function to create section with header --- END ---
 
 // Function to show dialog for section name input
