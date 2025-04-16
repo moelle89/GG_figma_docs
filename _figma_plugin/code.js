@@ -2099,7 +2099,27 @@ async function createSectionWithHeader(sectionName) {
       console.warn('Header instance does not have resize method. Header width might not match section width.');
     }
 
-    // --- Position Cloned Content ---
+    // --- STEP 1: First add ONLY the header to the section ---
+    try {
+      // Add header as the first and only element at this point
+      section.appendChild(headerInstance);
+
+      // Lock the header to prevent accidental editing
+      if (typeof headerInstance.locked !== 'undefined') {
+        headerInstance.locked = true;
+        console.log("Header added as first element and locked");
+      }
+    } catch (headerError) {
+      console.error("Error adding header to section:", headerError);
+      figma.notify("Error adding header to section", { error: true });
+      // Continue anyway to try adding content
+    }
+
+    // Log the section's children at this point - should only be the header
+    console.log("Section children after adding header:",
+      section.children.map((child, i) => `${i}: ${child.name} (${child.type})`));
+
+    // --- STEP 2: Now add content nodes one by one ---
     // Iterate through original selection and clone/position each node
     let clonedNodes = []; // Keep track of cloned nodes for potential selection
     let cloneSuccessCount = 0;
@@ -2162,56 +2182,33 @@ async function createSectionWithHeader(sectionName) {
         }
     }
 
-    console.log(`Cloned ${cloneSuccessCount} nodes successfully, ${cloneFailCount} failed`);
+    console.log(`Cloned ${cloneSuccessCount} content nodes successfully, ${cloneFailCount} failed`);
 
-    // Now add the header as the FIRST element in the section (index 0)
+    // --- STEP 3: Add the header LAST to ensure it appears visually at the top ---
     try {
-      // If we directly appendChild, it will add to the end, so we need to use insertChild at index 0
-      if (typeof section.insertChild === 'function') {
-        // First append the header to the page temporarily if needed
-        if (!headerInstance.parent) {
-          figma.currentPage.appendChild(headerInstance);
-        }
+      section.appendChild(headerInstance);
 
-        // Then insert it at the beginning of the section
-        section.insertChild(0, headerInstance);
-
-        // Lock the header to prevent accidental editing
-        if (typeof headerInstance.locked !== 'undefined') {
-          headerInstance.locked = true;
-          console.log("Header locked and inserted at index 0");
-        }
-      } else {
-        // Fallback if insertChild is not available
-        section.appendChild(headerInstance);
-        console.warn("insertChild not available, header may not be first element");
+      // Lock the header to prevent accidental editing
+      if (typeof headerInstance.locked !== 'undefined') {
+        headerInstance.locked = true;
+        console.log("Header added last (visually first) and locked");
       }
-    } catch (error) {
-      console.error("Error placing header at first position:", error);
-      // Try a regular append as last resort
-      try {
-        section.appendChild(headerInstance);
-      } catch (appendError) {
-        console.error("Also failed to append header:", appendError);
-        figma.notify("Error attaching header to section", { error: true });
-      }
+    } catch (headerError) {
+      console.error("Error adding header to section:", headerError);
+      figma.notify("Error adding header to section", { error: true });
     }
+
+    // Log the final section children to verify header is last programmatically
+    console.log("Final section children (programmatic order, header should be last):");
+    section.children.forEach((child, i) => {
+      console.log(`  Index ${i}: ${child.name} (${child.type})`);
+    });
 
     // --- Position Section on Canvas ---
     // Place it at the original content location
     section.x = selectionBounds.x;
     section.y = selectionBounds.y;
     console.log("Section positioned on canvas at original content location");
-
-    // --- Final Steps ---
-    try {
-      figma.currentPage.appendChild(section);
-      console.log("Section added to page");
-    } catch (appendError) {
-      console.error("Error adding section to page:", appendError);
-      figma.notify("Error adding section to page: " + appendError.message, { error: true });
-      return;
-    }
 
     // Delete the original content since we've now wrapped it in a section
     try {
