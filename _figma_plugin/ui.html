@@ -1081,11 +1081,57 @@
        cursor: not-allowed;
      }
 
-    /* Style for the new copy link data button */
-    #copy-link-data-button {
-       display: block; /* Make it a block element */
-       width: 100%; /* Full width */
-       background: var(--figma-color-bg-secondary); /* Use secondary color */
+    /* Style for the new copy link data button REMOVED */
+    /* ... */
+
+    /* Add styles for the new Wrap Section button */
+    #wrap-section-button {
+       /* Reuse existing styles if applicable, or add new ones */
+       font-size: 14px; /* Example size */
+       /* Inherits .get-links-button styles */
+    }
+
+    /* Add styles for the section name dialog */
+    #section-dialog .dialog-content {
+       height: auto;
+       max-height: 80vh;
+       padding: 16px;
+    }
+
+    #section-dialog label {
+       display: block;
+       font-size: 11px;
+       color: var(--figma-color-text-secondary);
+       margin-bottom: 8px;
+       font-weight: 500;
+    }
+
+    #section-name-input {
+       width: 100%;
+       padding: 8px;
+       border: 1px solid var(--figma-color-border);
+       border-radius: 6px;
+       background: var(--figma-color-bg);
+       color: var(--figma-color-text);
+       font-size: 12px;
+       box-sizing: border-box;
+       margin-bottom: 16px; /* Space below input */
+       transition: all ease .2s;
+    }
+
+    #section-name-input:hover, #section-name-input:focus {
+      border-color: var(--figma-color-border-hover);
+      outline: none;
+    }
+
+    #section-dialog .dialog-actions {
+       display: flex;
+       gap: 10px;
+       justify-content: flex-end; /* Align buttons to the right */
+    }
+
+    #section-dialog .dialog-actions button {
+       background: var(--figma-color-bg-secondary);
        border: 1px solid var(--figma-color-border);
        border-radius: 6px;
        padding: 8px 16px;
@@ -1093,23 +1139,24 @@
        color: var(--figma-color-text);
        font-weight: 500;
        font-size: 12px;
-       text-align: center;
-       margin-top: 8px; /* Space between buttons */
-       margin-bottom: 10px;
        transition: all ease .2s;
     }
 
-    #copy-link-data-button:hover {
-       background: var(--figma-color-bg-hover);
+    #section-dialog .dialog-actions button:hover {
        border-color: var(--figma-color-border-strong);
+       background: var(--figma-color-bg-hover);
     }
 
-    #copy-link-data-button:disabled { /* Apply disabled styles to new button too */
-       background: var(--figma-color-bg-disabled);
-       border-color: var(--figma-color-border-disabled);
-       color: var(--figma-color-text-disabled);
-       cursor: not-allowed;
+    #section-dialog .dialog-actions button.primary {
+       background: var(--figma-color-bg-brand);
+       border-color: var(--figma-color-bg-brand);
+       color: var(--figma-color-text-onbrand);
     }
+     #section-dialog .dialog-actions button.primary:hover {
+       background: var(--figma-color-bg-brand-hover);
+       border-color: var(--figma-color-bg-brand-hover);
+    }
+
 
     /* Styles for the Update Notification Banner */
     .update-banner {
@@ -1245,6 +1292,7 @@
           <p id="status-message">Loading components...</p>
           <button id="get-links-button-components" class="get-links-button" title="Get Links for Selection">☍</button>
           <button id="create-playground-button-components" class="get-links-button" title="Create Playground Frame">▶</button>
+          <button id="wrap-section-button-components" class="get-links-button" title="Wrap Selection in Section">📦</button> <!-- ADDED -->
       </div>
       <div class="search-container">
         <div class="search-input-container">
@@ -1262,6 +1310,7 @@
           <p id="icons-status-message">Loading icons...</p>
           <button id="get-links-button-icons" class="get-links-button" title="Get Links for Selection">☍</button>
           <button id="create-playground-button-icons" class="get-links-button" title="Create Playground Frame">▶</button>
+          <button id="wrap-section-button-icons" class="get-links-button" title="Wrap Selection in Section">📦</button> <!-- ADDED -->
       </div>
       <div class="search-container">
         <div class="search-input-container">
@@ -1358,6 +1407,26 @@
    </div>
   </div>
 
+  <!-- Add the new Section Name dialog -->
+  <div id="section-dialog"
+       class="dialog"
+       role="dialog"
+       aria-labelledby="section-dialog-title"
+       aria-modal="true">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h4 id="section-dialog-title">Create Section</h4>
+        <button id="close-section-dialog" class="action-button">×</button>
+      </div>
+      <label for="section-name-input">Section Name:</label>
+      <input type="text" id="section-name-input" placeholder="Enter section name...">
+      <div class="dialog-actions">
+        <button id="cancel-section-dialog">Cancel</button>
+        <button id="create-section-button" class="primary">Create Section</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Add JSZip script tag HERE, before the main script block -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" referrerpolicy="no-referrer"></script>
   <script>
@@ -1403,6 +1472,7 @@
     let exportableTsItems = []; // Store TS items for batch export
     let exportableLinkItems = []; // Store Link items for batch export
     let categoryList = []; // Store category names
+    let sectionNameInput = null; // ADDED: Declare variable in higher scope
 
     // Declare update banner variables (assign later)
     let updateFileData = null;
@@ -1431,6 +1501,19 @@
            pendingUpdateData = data;
         }
       }
+
+      // --- Handle Section Name Dialog ---
+      if (data && data.type === 'show-section-name-dialog') {
+        // Show the section name dialog when requested by the plugin
+        if (sectionNameInput) { 
+          sectionNameInput.value = ''; // Clear any previous value
+          showDialog('section-dialog');
+          sectionNameInput.focus(); // Focus the input field
+        } else {
+          console.error("#section-name-input reference is null!");
+        }
+      }
+      // --- End Section Name Dialog ---
 
       // Handle components data (Tab 1)
       if (data && data.components) {
@@ -2733,6 +2816,14 @@
     // Add all tab-related code inside the DOMContentLoaded event
     document.addEventListener('DOMContentLoaded', () => {
 
+      // --- Get references to elements needed multiple times --- START ---
+      // Assign to the higher-scoped variable
+      sectionNameInput = document.getElementById('section-name-input');
+      if (!sectionNameInput) {
+        console.error("CRITICAL: #section-name-input element not found on DOMContentLoaded!");
+      }
+      // --- Get references to elements needed multiple times --- END ---
+
       // Signal to plugin code that UI is ready
       parent.postMessage({ pluginMessage: { type: 'ui-ready' } }, '*');
 
@@ -2913,6 +3004,52 @@
       }
 
     }); // End of DOMContentLoaded
+
+    // Setup "Wrap Section" buttons
+    document.getElementById('wrap-section-button-components').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'create-section-prompt' } }, '*');
+    });
+    // Add for icons tab as well
+    document.getElementById('wrap-section-button-icons').addEventListener('click', () => {
+        parent.postMessage({ pluginMessage: { type: 'create-section-prompt' } }, '*');
+    });
+
+    // Setup Section Name Dialog Buttons
+    document.getElementById('create-section-button').addEventListener('click', () => {
+        // Use the pre-fetched reference
+        if (!sectionNameInput) {
+           console.error("Cannot create section: #section-name-input reference is null!");
+           return;
+        }
+        const sectionName = sectionNameInput.value.trim();
+        if (sectionName) {
+            parent.postMessage({ pluginMessage: { type: 'create-section-with-name', sectionName: sectionName } }, '*');
+            hideDialog('section-dialog');
+        } else {
+            // Optionally provide feedback that name is required
+            sectionNameInput.style.borderColor = 'red'; // Example feedback
+            setTimeout(() => sectionNameInput.style.borderColor = '', 1500);
+            console.warn("Section name cannot be empty.");
+        }
+    });
+
+    document.getElementById('section-name-input').addEventListener('keydown', (e) => {
+        // No change needed here, still uses the same ID
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission if wrapped in a form
+            document.getElementById('create-section-button').click();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            document.getElementById('cancel-section-dialog').click();
+        }
+    });
+
+    document.getElementById('cancel-section-dialog').addEventListener('click', () => {
+        hideDialog('section-dialog');
+    });
+    document.getElementById('close-section-dialog').addEventListener('click', () => {
+        hideDialog('section-dialog');
+    });
   </script>
 </body>
 

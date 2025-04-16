@@ -293,12 +293,12 @@ async function loadComponentsFromCurrentFile() {
         status: `Found ${totalComponents} components.`,
         components: cache.components
       });
-      
+
       // Prefetch navigation sections if needed
       if (!cache.navigationSections) {
         await prefetchNavigationSections();
       }
-      
+
       return;
     }
 
@@ -643,7 +643,7 @@ function stringToColor(str) {
 // Function to reload and refresh the cache
 async function refreshCache(type) {
   console.log(`Refreshing cache for type: "${type}"`);
-  
+
   if (type === 'components') {
     console.log('Clearing components cache...');
     cache.components = null;
@@ -780,7 +780,7 @@ figma.ui.onmessage = async msg => {
   else if (msg.type === "refresh") {
     // Handle refresh requests
     console.log(`Refresh requested with target: "${msg.target}"`);
-    
+
     if (!msg.target || (msg.target !== 'components' && msg.target !== 'icons')) {
       console.warn(`Invalid refresh target: ${msg.target}, defaulting to refresh all`);
       refreshCache('all');
@@ -790,6 +790,23 @@ figma.ui.onmessage = async msg => {
       figma.notify(`Refreshing ${msg.target}...`);
     }
   }
+
+  // --- Add create-section-prompt handler ---
+  else if (msg.type === "create-section-prompt") {
+    showSectionNameDialog();
+  }
+  // --- End create-section-prompt handler ---
+
+  else if (msg.type === "create-section-with-name") {
+    // This handler receives the section name from the UI dialog
+    if (msg.sectionName) {
+      await createSectionWithHeader(msg.sectionName);
+    } else {
+      figma.notify("Section creation cancelled", { timeout: 2000 });
+    }
+  }
+  // --- End create-section-with-name handler ---
+
   else if (msg.type === "create-instance") {
     try {
       const node = await figma.getNodeByIdAsync(msg.id);
@@ -941,7 +958,7 @@ figma.ui.onmessage = async msg => {
         // Find the page by traversing up the node hierarchy
         let currentNode = node;
         let componentPage = null;
-        
+
         while (currentNode.parent) {
           if (currentNode.parent.type === "PAGE") {
             componentPage = currentNode.parent;
@@ -949,11 +966,11 @@ figma.ui.onmessage = async msg => {
           }
           currentNode = currentNode.parent;
         }
-        
+
         if (!componentPage) {
           throw new Error("Could not locate the component's page");
         }
-        
+
         await figma.setCurrentPageAsync(componentPage);
         figma.viewport.scrollAndZoomIntoView([node]);
         figma.currentPage.selection = [node];
@@ -1044,10 +1061,10 @@ figma.ui.onmessage = async msg => {
       console.log("Ignoring duplicate playground creation request - already processing");
       return;
     }
-    
+
     // Set flag and process
     isCreatingPlayground = true;
-    
+
     try {
       await createPlaygroundFrame();
     } finally {
@@ -1063,6 +1080,12 @@ figma.ui.onmessage = async msg => {
       await navigateToCategory(msg.categoryName);
   }
   // --- End navigate-to-category handler ---
+
+  // --- Add create-section-with-header handler ---
+  else if (msg.type === 'create-section-with-header') {
+    await createSectionWithHeader(msg.name);
+  }
+  // --- End create-section-with-header handler ---
 };
 
 // Function to generate a TypeScript interface from component properties
@@ -1449,7 +1472,7 @@ async function createPlaygroundFrame() {
     }
 
     // --- Frame Creation & Sizing ---
-    const frame = figma.createFrame();
+    const frame = figma.createRectangle();
     frame.name = `Playground - ${nodeName.replace('❖ ', '')}`;
     frame.fills = [{ type: 'SOLID', color: { r: 228 / 255, g: 228 / 255, b: 228 / 255 } }];
 
@@ -1773,7 +1796,7 @@ async function navigateToCategory(categoryName) {
     if (!cache.navigationSections) {
       await prefetchNavigationSections();
     }
-    
+
     await figma.loadAllPagesAsync(); // Ensure pages are loaded
 
     // Find the COMPONENTS page
@@ -1799,7 +1822,7 @@ async function navigateToCategory(categoryName) {
     };
 
     const normalizedCategoryName = normalizeName(categoryName);
-    
+
     // Use the prefetched cache instead of searching every time
     let targetNode = null;
     if (cache.navigationSections && cache.navigationSections.has(normalizedCategoryName)) {
@@ -1810,12 +1833,12 @@ async function navigateToCategory(categoryName) {
         cache.navigationSections = null;
         await prefetchNavigationSections();
         // Try again with fresh cache
-        targetNode = cache.navigationSections && cache.navigationSections.has(normalizedCategoryName) 
-          ? cache.navigationSections.get(normalizedCategoryName) 
+        targetNode = cache.navigationSections && cache.navigationSections.has(normalizedCategoryName)
+          ? cache.navigationSections.get(normalizedCategoryName)
           : null;
       }
     }
-    
+
     // Fallback to the old search method if not found in cache
     if (!targetNode) {
       console.log(`Category '${categoryName}' not found in cache, falling back to search`);
@@ -1852,17 +1875,17 @@ async function prefetchNavigationSections() {
     if (cache.navigationSections) {
       return;
     }
-    
+
     console.log("Prefetching navigation sections...");
     await figma.loadAllPagesAsync();
-    
+
     // Find the COMPONENTS page
     const componentsPage = figma.root.children.find(page => page.name === "COMPONENTS");
     if (!componentsPage) {
       console.warn("No COMPONENTS page found for prefetching navigation sections");
       return;
     }
-    
+
     // Helper function for normalizing names for matching
     const normalizeName = (str) => {
       return str.toLowerCase()
@@ -1870,22 +1893,22 @@ async function prefetchNavigationSections() {
                 .replace(/\s+/g, ' ')
                 .trim();
     };
-    
+
     // Find all section/frame nodes with the navigation prefix
-    const navigationNodes = componentsPage.findAll(node => 
+    const navigationNodes = componentsPage.findAll(node =>
       (node.type === "FRAME" || node.type === "SECTION") && node.name.startsWith('↪ ')
     );
-    
+
     // Create a map for quick lookup
     const sectionMap = new Map();
-    
+
     navigationNodes.forEach(node => {
       const baseNodeName = node.name.substring(2); // Remove the '↪ ' prefix
       const normalizedName = normalizeName(baseNodeName);
-      
+
       // Store with multiple key variations for flexible matching
       sectionMap.set(normalizedName, node);
-      
+
       // Store singular/plural variations
       if (normalizedName.endsWith('s')) {
         sectionMap.set(normalizedName.slice(0, -1), node); // Store singular form
@@ -1893,12 +1916,217 @@ async function prefetchNavigationSections() {
         sectionMap.set(normalizedName + 's', node); // Store plural form
       }
     });
-    
+
     cache.navigationSections = sectionMap;
     console.log(`Prefetched ${navigationNodes.length} navigation sections`);
-    
+
   } catch (error) {
     console.error("Error prefetching navigation sections:", error);
   }
 }
 // --- End navigateToCategory function ---
+
+// --- Add new function to create section with header --- START ---
+async function createSectionWithHeader(sectionName) {
+  // Define selection and bounds here
+  let selection = null;
+  let selectionBounds = null; // Declare selectionBounds here
+
+  try {
+    selection = figma.currentPage.selection; // Assign selection inside try
+    if (selection.length === 0) {
+      figma.notify("Please select the content you want to wrap in a section.", { error: true });
+      return;
+    }
+
+    // --- Get Selection Bounds and Node(s) ---
+    if (selection.length === 1) {
+      selectionBounds = {
+        x: selection[0].x,
+        y: selection[0].y,
+        width: selection[0].width,
+        height: selection[0].height
+      };
+    } else {
+      // If multiple items are selected, group them temporarily to get bounds
+      const group = figma.group(selection, figma.currentPage);
+      if (!group) {
+          figma.notify("Could not group selected items.", { error: true });
+          return;
+      }
+      // Calculate selectionBounds for group
+      selectionBounds = {
+          x: group.x,
+          y: group.y,
+          width: group.width,
+          height: group.height
+      };
+
+      // Ungroup immediately after getting bounds
+      figma.ungroup(group);
+    }
+
+    // --- Find Header Component ---
+    await figma.loadAllPagesAsync();
+    const styleguidePage = figma.root.children.find(page => page.name === "STYLEGUIDE");
+    if (!styleguidePage) {
+      throw new Error("'STYLEGUIDE' page not found.");
+    }
+    await figma.loadFontAsync({ family: "Inter", style: "Regular" }); // Ensure fonts are loaded
+
+    const headerComponentSet = styleguidePage.findOne(node =>
+      node.type === "COMPONENT_SET" && node.name === "Header"
+    );
+    if (!headerComponentSet) {
+      throw new Error("'Header' Component Set not found on 'STYLEGUIDE' page.");
+    }
+
+    // Find the LOGO ICON variant instead of using the default variant
+    let headerVariant = headerComponentSet.children.find(variant =>
+      variant.name.includes("LOGO ICON")
+    );
+
+    // Fallback to default variant if LOGO ICON variant not found
+    if (!headerVariant) {
+      console.warn("LOGO ICON variant not found, falling back to default variant");
+      headerVariant = headerComponentSet.defaultVariant;
+    }
+
+    if (!headerVariant) {
+      throw new Error("Could not find header variant.");
+    }
+
+    // --- Create Header Instance ---
+    const headerInstance = headerVariant.createInstance();
+    if (!headerInstance) {
+        throw new Error("Failed to create instance of Header variant.");
+    }
+
+    // Set the header's text component property to the section name
+    if (headerInstance.componentProperties) {
+      // Find the "Main" text property - it might have a suffix like "#xxxx"
+      const mainTextProp = Object.keys(headerInstance.componentProperties).find(
+        key => key.startsWith("Main") && headerInstance.componentProperties[key].type === "TEXT"
+      );
+
+      if (mainTextProp && typeof headerInstance.setProperties === 'function') {
+        // Set the header text to the section name
+        const propertyUpdate = {};
+        propertyUpdate[mainTextProp] = sectionName;
+        headerInstance.setProperties(propertyUpdate);
+        console.log("Set header text to section name:", sectionName);
+      }
+    }
+
+    // --- Calculate Dimensions ---
+    // Use selectionBounds variable
+    const contentWidth = selectionBounds.width;
+    const contentHeight = selectionBounds.height;
+    const headerHeight = headerInstance.height; // Get actual height after instance creation
+    const horizontalMargin = 100;
+    const bottomMargin = 100;
+    const spaceBelowHeader = 70;
+
+    const sectionWidth = contentWidth + (2 * horizontalMargin);
+    const sectionHeight = headerHeight + spaceBelowHeader + contentHeight + bottomMargin;
+
+    // --- Create and Configure Section ---
+    const section = figma.createFrame();
+    section.name = "Section: " + sectionName;
+    section.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }]; // White fill
+    section.resize(sectionWidth, sectionHeight);
+
+    // --- Position Header ---
+    headerInstance.x = 0;
+    headerInstance.y = 0;
+    // Make sure the header spans the full width
+    if (headerInstance && typeof headerInstance.resize === 'function') {
+      headerInstance.resize(sectionWidth, headerInstance.height);
+    } else {
+      console.warn('Header instance does not have resize method. Header width might not match section width.');
+    }
+
+    // Check if appendChild is available
+    if (typeof section.appendChild !== 'function') {
+      throw new Error("The created section doesn't support appendChild. Try using a frame instead.");
+    }
+
+    section.appendChild(headerInstance); // Append header first
+
+    // --- Position Cloned Content ---
+    // Iterate through original selection and clone/position each node
+    let clonedNodes = []; // Keep track of cloned nodes for potential selection
+    for (const originalNode of selection) {
+        if (!originalNode || typeof originalNode.clone !== 'function') {
+            console.warn(`Skipping uncloneable node: ${originalNode ? originalNode.id : 'undefined'} (${originalNode ? originalNode.type : 'undefined'})`);
+            continue;
+        }
+        const clonedNode = originalNode.clone();
+        if (!clonedNode) {
+            console.warn(`Failed to clone node: ${originalNode.id}`);
+            continue;
+        }
+
+        // Calculate position relative to the section origin
+        // Original node's top-left corner relative to the overall selection bounds top-left
+        const relativeX = originalNode.x - selectionBounds.x;
+        const relativeY = originalNode.y - selectionBounds.y;
+
+        // Position inside the section, offset by margins and header height
+        clonedNode.x = horizontalMargin + relativeX;
+        clonedNode.y = headerHeight + spaceBelowHeader + relativeY;
+
+        // Add check for appendChild function (should already be checked earlier, but being thorough)
+        if (typeof section.appendChild !== 'function') {
+          console.warn("Skipping appendChild for cloned node - section doesn't support this method");
+          continue;
+        }
+
+        section.appendChild(clonedNode);
+        clonedNodes.push(clonedNode); // Add to list
+    }
+
+    // --- Position Section on Canvas ---
+    // Place it below the original content for now
+    section.x = selectionBounds.x;
+    section.y = selectionBounds.y + selectionBounds.height + 100;
+
+    // --- Final Steps ---
+    figma.currentPage.appendChild(section);
+
+    // Visually stylize the frame as a section
+    section.strokeWeight = 1;
+    section.strokes = [{ type: 'SOLID', color: { r: 0.9, g: 0.9, b: 0.9 } }];
+    section.cornerRadius = 8;
+
+    // Add metadata to mark this as a section (won't actually convert it)
+    if (typeof section.setPluginData === 'function') {
+      section.setPluginData('isSection', 'true');
+    }
+
+    // Select and show the section
+    figma.viewport.scrollAndZoomIntoView([section]);
+    figma.currentPage.selection = clonedNodes.length > 0 ? clonedNodes : [section]; // Select cloned nodes if any, else the section
+    figma.notify(`Section '${sectionName}' created successfully.`);
+
+  } catch (error) {
+    console.error("Error creating section with header:", error);
+    figma.notify(`Error: ${error.message}`, { error: true });
+  }
+}
+// --- Add new function to create section with header --- END ---
+
+// Function to show dialog for section name input
+function showSectionNameDialog() {
+  // Check if content is selected first
+  const selection = figma.currentPage.selection;
+  if (selection.length === 0) {
+    figma.notify("Please select the content you want to wrap in a section.", { error: true });
+    return;
+  }
+
+  // Send message to UI to show dialog
+  figma.ui.postMessage({
+    type: 'show-section-name-dialog'
+  });
+}
