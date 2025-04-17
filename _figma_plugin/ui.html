@@ -1292,7 +1292,9 @@
           <p id="status-message">Loading components...</p>
           <button id="get-links-button-components" class="get-links-button" title="Get Links for Selection">☍</button>
           <button id="create-playground-button-components" class="get-links-button" title="Create Playground Frame">▶</button>
-          <button id="wrap-section-button-components" class="get-links-button" title="Wrap Selection in Section">📦</button> <!-- ADDED -->
+          <button id="wrap-section-button-components" class="get-links-button" title="Wrap Selection in Section">
+            <img src="assets/section.svg" alt="Wrap Section Icon" style="width: 20px; height: 20px; vertical-align: middle;" />
+          </button> <!-- ADDED -->
       </div>
       <div class="search-container">
         <div class="search-input-container">
@@ -1505,7 +1507,7 @@
       // --- Handle Section Name Dialog ---
       if (data && data.type === 'show-section-name-dialog') {
         // Show the section name dialog when requested by the plugin
-        if (sectionNameInput) { 
+        if (sectionNameInput) {
           sectionNameInput.value = ''; // Clear any previous value
           showDialog('section-dialog');
           sectionNameInput.focus(); // Focus the input field
