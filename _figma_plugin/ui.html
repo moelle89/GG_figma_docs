@@ -1052,34 +1052,34 @@
      /* ... rest of styles ... */
 
     /* Style for the batch export button */
-    #batch-export-ts-button, #batch-export-links-button, #export-names-ids-button {
-        display: block; /* Make it a block element */
-        width: 100%; /* Full width */
-        background: var(--figma-color-bg-brand); /* Use brand color for primary action */
-        border: 1px solid var(--figma-color-bg-brand);
-        border-radius: 6px;
-        padding: 8px 16px;
-        cursor: pointer;
-        color: var(--figma-color-text-onbrand); /* Text on brand color */
-        font-weight: 500;
-        font-size: 12px;
-        text-align: center;
-        margin-top: 8px; /* Space between list and this button */
-        margin-bottom: 10px; /* Space between this button and close button */
-        transition: all ease .2s;
-    }
+    #batch-export-ts-button, #batch-export-links-button {
+       display: block; /* Make it a block element */
+       width: 100%; /* Full width */
+       background: var(--figma-color-bg-brand); /* Use brand color for primary action */
+       border: 1px solid var(--figma-color-bg-brand);
+       border-radius: 6px;
+       padding: 8px 16px;
+       cursor: pointer;
+       color: var(--figma-color-text-onbrand); /* Text on brand color */
+       font-weight: 500;
+       font-size: 12px;
+       text-align: center;
+       margin-top: 8px; /* Space between list and this button */
+       margin-bottom: 10px; /* Space between this button and close button */
+       transition: all ease .2s;
+     }
 
-    #batch-export-ts-button:hover, #batch-export-links-button:hover, #export-names-ids-button:hover {
-        background: var(--figma-color-bg-brand-hover);
-        border-color: var(--figma-color-bg-brand-hover);
-    }
+     #batch-export-ts-button:hover, #batch-export-links-button:hover {
+       background: var(--figma-color-bg-brand-hover);
+       border-color: var(--figma-color-bg-brand-hover);
+     }
 
-    #batch-export-ts-button:disabled, #batch-export-links-button:disabled, #export-names-ids-button:disabled {
-        background: var(--figma-color-bg-disabled);
-        border-color: var(--figma-color-border-disabled);
-        color: var(--figma-color-text-disabled);
-        cursor: not-allowed;
-    }
+     #batch-export-ts-button:disabled, #batch-export-links-button:disabled {
+       background: var(--figma-color-bg-disabled);
+       border-color: var(--figma-color-border-disabled);
+       color: var(--figma-color-text-disabled);
+       cursor: not-allowed;
+     }
 
     /* Style for the new copy link data button REMOVED */
     /* ... */
@@ -1372,8 +1372,8 @@
       <button id="batch-export-ts-button" disabled>Batch Export TS</button>
       <!-- Add Batch Export Links Button here -->
       <button id="batch-export-links-button" disabled>Batch Export Links</button>
-      <!-- Add Export Names & IDs Button -->
-      <button id="export-names-ids-button" disabled>Export Names & IDs</button>
+      <!-- Add Copy Link Data Button here REMOVED-->
+      <!-- <button id="copy-link-data-button" disabled>Copy Link Data for Script</button> -->
       <button id="close-links-dialog">Close</button>
     </div>
   </div>
@@ -1439,8 +1439,6 @@
 
   <!-- Add JSZip script tag HERE, before the main script block -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" referrerpolicy="no-referrer"></script>
-  <!-- Add export-names-ids.js script -->
-  <script src="export-names-ids.js"></script>
   <script>
     // Helper function to load SVG icons
     function createSvgIcon(svgPath, className = '') {
@@ -1860,16 +1858,14 @@
         const linksList = document.getElementById('links-list');
         const batchExportButton = document.getElementById('batch-export-ts-button');
         const batchExportLinksButton = document.getElementById('batch-export-links-button'); // Get the new button
-        const exportNamesIdsButton = document.getElementById('export-names-ids-button'); // Get the names-ids button
         const copyLinkDataButton = document.getElementById('copy-link-data-button'); // Keep reference for now, though button is removed
         linksList.innerHTML = ''; // Clear previous content
         batchExportButton.disabled = true;
         batchExportLinksButton.disabled = true; // Disable initially
-        exportNamesIdsButton.disabled = true; // Disable initially
         // copyLinkDataButton.disabled = true; // No longer needed
         batchExportButton.textContent = 'Batch Export TS';
         batchExportLinksButton.textContent = 'Batch Export Links'; // Reset text
-        exportNamesIdsButton.textContent = 'Export Names & IDs'; // Reset text
+        // copyLinkDataButton.textContent = 'Copy Link Data for Script'; // No longer needed
 
         if (data.error) {
           const errorItem = document.createElement('li');
@@ -2040,13 +2036,17 @@
                 batchExportLinksButton.textContent = 'Batch Export Links';
             }
 
-            // Enable Export Names & IDs button if valid elements are present
-            if (currentLinksData && currentLinksData.length > 0) {
-                exportNamesIdsButton.disabled = false;
-                exportNamesIdsButton.textContent = `Export Names & IDs (${currentLinksData.length})`;
+            // Enable Copy Link Data button if valid links are present - REMOVED
+            /*
+            const hasValidLinks = currentLinksData.some(link => link.url && !link.isPlaceholder);
+            copyLinkDataButton.disabled = !hasValidLinks;
+            if (hasValidLinks) {
+                const validLinkCount = currentLinksData.filter(link => link.url && !link.isPlaceholder).length;
+                 copyLinkDataButton.textContent = `Copy Link Data for Script (${validLinkCount})`;
             } else {
-                exportNamesIdsButton.textContent = 'Export Names & IDs';
+                copyLinkDataButton.textContent = 'Copy Link Data for Script';
             }
+            */
         }
         showDialog('links-dialog');
       }
@@ -3060,119 +3060,6 @@
     document.getElementById('close-section-dialog').addEventListener('click', () => {
         hideDialog('section-dialog');
     });
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-    // Add click handler for the batch export links button
-    document.getElementById('batch-export-links-button').addEventListener('click', () => {
-        const button = document.getElementById('batch-export-links-button');
-        const originalText = button.textContent;
-
-        if (exportableLinkItems.length === 0) {
-            console.warn("No links to batch export.");
-            return;
-        }
-
-        if (typeof JSZip === 'undefined') {
-            console.error("JSZip library is not loaded.");
-            button.textContent = 'Error: JSZip missing';
-            setTimeout(() => { button.textContent = originalText; button.disabled = true; }, 3000);
-            return;
-        }
-
-        button.disabled = true;
-        button.textContent = 'Zipping...';
-
-        try {
-            const zip = new JSZip();
-            exportableLinkItems.forEach(item => {
-                // Add file to zip
-                zip.file(item.filename, item.content);
-            });
-
-            zip.generateAsync({ type: "blob" })
-                .then(function(content) {
-                    // Trigger download
-                    downloadFile("Figma_Link_Exports.zip", content, "application/zip");
-                    button.textContent = 'Exported!';
-                    setTimeout(() => {
-                        button.textContent = originalText; // Restore original text (with count)
-                        button.disabled = false;
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error("Error generating zip file:", err);
-                    button.textContent = 'Error Zipping';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false; // Re-enable even on error
-                    }, 3000);
-                });
-
-        } catch (error) {
-             console.error("Error during zipping process:", error);
-             button.textContent = 'Error';
-             setTimeout(() => {
-                button.textContent = originalText;
-                button.disabled = false;
-             }, 3000);
-        }
-    });
-
-    // Add a global click lock to prevent multiple rapid clicks
-    let clickLock = false;
-    const CLICK_LOCK_DURATION = 800; // 800ms lockout after clicking
-
-    // Add click handler for the export names & IDs button
-    document.getElementById('export-names-ids-button').addEventListener('click', () => {
-        const button = document.getElementById('export-names-ids-button');
-        const originalText = button.textContent;
-
-        if (!currentLinksData || currentLinksData.length === 0) {
-            console.warn("No elements to export names and IDs.");
-            return;
-        }
-
-        button.disabled = true;
-        button.textContent = 'Generating...';
-
-        try {
-            // Create the JSON object in the requested format
-            const jsonData = {};
-
-            currentLinksData.forEach(item => {
-                // Extract the ID without the node- prefix if it exists
-                const idValue = item.id.replace(/^node-/, '');
-
-                // Use the name as the key and create an object with id property
-                const name = item.name || 'unnamed';
-                jsonData[name] = { "id": idValue };
-            });
-
-            // Convert to JSON string with 2-space indentation
-            const jsonString = JSON.stringify(jsonData, null, 2);
-
-            // Download the JSON file
-            downloadFile("figma_element_ids.json", jsonString, "application/json");
-
-            button.textContent = 'Exported!';
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.disabled = false;
-            }, 2000);
-        } catch (error) {
-            console.error("Error generating JSON data:", error);
-            button.textContent = 'Error';
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.disabled = false;
-            }, 3000);
-        }
-    });
->>>>>>> 6b17928e5f0a8bb58f193fe7041588d3fc4fb862
-=======
->>>>>>> parent of baf0734 (misc)
   </script>
 </body>
 
