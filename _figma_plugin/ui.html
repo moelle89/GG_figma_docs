@@ -37,13 +37,13 @@
     }
 
     #components-search-input,
-    #icons-search-input {
-      flex-grow: 1;
+    #icons-search-input, #syncfusion-search-input {
+      flex-grow: 0;
       padding: 10px;
       border: 1.5px solid var(--figma-color-border);
       border-radius: 10px;
-      font-size: 12px;
       width: 100%;
+      font-size: 12px;
       box-sizing: border-box;
       background: var(--figma-color-bg);
       color: var(--figma-color-text);
@@ -52,20 +52,24 @@
     }
 
     #components-search-input:hover, #components-search-input:focus,
-    #icons-search-input:hover, #icons-search-input:focus {
+    #icons-search-input:hover, #icons-search-input:focus, #syncfusion-search-input:hover, #syncfusion-search-input:focus {
       border-color: var(--figma-color-border-hover);
       outline: none;
     }
 
     #components-search-input::placeholder,
-    #icons-search-input::placeholder {
+    #icons-search-input::placeholder, #syncfusion-search-input::placeholder {
       color: var(--figma-color-text-tertiary);
+    }
+    #syncfusion-list {
+      padding-inline-start: 0px;
     }
 
     /* Styles for search input container and clear button */
     .search-input-container {
       position: relative;
-      flex-grow: 1;
+      flex-grow: 0;
+      display: flex;
     }
 
     .search-clear-button {
@@ -235,7 +239,7 @@
       font-style: italic;
     }
 
-    #status-message, #icons-status-message {
+    #status-message, #icons-status-message, #syncfusion-status-message {
         margin-top: 18px;
         margin-bottom: 8px;
         font-size: 0.8rem;
@@ -246,7 +250,7 @@
         transition: all ease 0.2s;
     }
     .compact-mode #status-message,
-    .compact-mode #icons-status-message {
+    .compact-mode #icons-status-message, .compact-mode #syncfusion-status-message {
       font-size: 0.6rem;
       font-weight: 500;
       color: var(--figma-color-text-secondary);
@@ -255,7 +259,7 @@
     }
 
     #status-message:hover,
-    #icons-status-message:hover {
+    #icons-status-message:hover, #syncfusion-status-message:hover {
       color: var(--figma-color-text-brand);
     }
 
@@ -297,6 +301,49 @@
       color: var(--figma-color-text);
       border-bottom: 2px solid var(--figma-color-text-brand);
       font-weight: 600;
+    }
+
+    /* Sub-tab styles for Icons */
+    .icons-subtabs {
+      position: relative;
+      z-index: 1;
+      background-color: var(--figma-color-bg-secondary);
+      padding: 0 8px;
+    }
+
+    .subtab {
+      padding: 6px 10px;
+      cursor: pointer;
+      color: var(--figma-color-text-secondary);
+      border-bottom: 2px solid transparent;
+      font-weight: 500;
+      transition: color ease .2s;
+      font-size: 0.9rem;
+    }
+
+    .subtab:hover {
+      color: var(--figma-color-text-primary);
+    }
+
+    .subtab.active {
+      color: var(--figma-color-text);
+      border-bottom: 2px solid var(--figma-color-text-brand);
+      font-weight: 600;
+    }
+
+    .subtab-content {
+      display: none;
+      overflow-y: auto;
+    }
+
+    .subtab-content.active {
+      display: block;
+    }
+
+    /* Compact mode styles for subtabs */
+    .compact-mode .subtab {
+      font-size: 0.8rem;
+      padding: 5px 8px;
     }
 
     .tab-container {
@@ -701,7 +748,7 @@
     }
 
     .compact-mode #components-search-input,
-    .compact-mode #icons-search-input {
+    .compact-mode #icons-search-input, .compact-mode #syncfusion-search-input {
       padding: 8px;
     }
 
@@ -1313,6 +1360,7 @@
     <div id="icons-tab" class="tab-content">
       <div class="status-container">
           <p id="icons-status-message">Loading icons...</p>
+          <p id="syncfusion-status-message" style="display: none;">Loading Syncfusion icons...</p>
           <button id="get-links-button-icons" class="get-links-button" title="Get Links for Selection">☍</button>
           <button id="create-playground-button-icons" class="get-links-button" title="Create Playground Frame">▶</button>
           <button id="wrap-section-button-icons" class="get-links-button" title="Wrap Selection in Section">
@@ -1322,15 +1370,40 @@
             </svg>
           </button> <!-- ADDED -->
       </div>
-      <div class="search-container">
-        <div class="search-input-container">
-          <input type="text" id="icons-search-input" placeholder="Search icons...">
-          <button id="icons-search-clear" class="search-clear-button">×</button>
-        </div>
-        <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
-        <button id="clear-icons-cache" class="refresh-button" title="Clear Icons Cache">🗑️</button>
+
+      <!-- Add sub-tabbar for icons -->
+      <div class="icons-subtabs tabs">
+        <div class="subtab active" data-subtab="ionicons-tab">Ionicons</div>
+        <div class="subtab" data-subtab="syncfusion-tab">Syncfusion</div>
       </div>
-      <ul id="icons-list"></ul>
+
+      <!-- Add sub-content containers -->
+      <div id="ionicons-tab" class="subtab-content active">
+        <div class="search-container">
+          <div class="search-input-container">
+            <input type="text" id="icons-search-input" placeholder="Search icons...">
+            <button id="icons-search-clear" class="search-clear-button">×</button>
+          </div>
+          <button id="refresh-icons" class="refresh-button" title="Refresh icons">↻</button>
+          <button id="clear-icons-cache" class="refresh-button" title="Clear Icons Cache">🗑️</button>
+        </div>
+        <ul id="icons-list"></ul>
+      </div>
+
+      <div id="syncfusion-tab" class="subtab-content">
+        <div class="search-container">
+          <div class="search-input-container">
+            <input type="text" id="syncfusion-search-input" placeholder="Search Syncfusion icons...">
+            <button id="syncfusion-search-clear" class="search-clear-button">×</button>
+          </div>
+          <button id="refresh-syncfusion" class="refresh-button" title="Refresh Syncfusion icons">↻</button>
+          <button id="toggle-all-syncfusion" class="refresh-button" title="Expand/Collapse All"><span id="toggle-all-syncfusion-icon"></span></button>
+        </div>
+        <ul id="syncfusion-list" class="icon-grid">
+          <!-- Will be populated with Syncfusion icons -->
+          <li style="color: #666; font-style: italic; grid-column: span 4; text-align: center; padding: 20px;">No Syncfusion icons available yet.</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -1477,6 +1550,7 @@
     const tabContents = document.querySelectorAll('.tab-content');
     let componentsData = [];
     let iconsData = [];
+    let syncfusionIconsData = [];
     let currentComponentData = null;
     let currentLinksData = null; // Store links data
     let exportableTsItems = []; // Store TS items for batch export
@@ -1550,6 +1624,15 @@
         renderIcons();
       }
 
+      // Handle Syncfusion icons data
+      if (data && data.syncfusionIcons) {
+        syncfusionIconsData = data.syncfusionIcons;
+        if (data.syncfusionCategories) {
+          window.syncfusionCategories = data.syncfusionCategories;
+        }
+        renderSyncfusionIcons();
+      }
+
       // Handle icon updates
       if (data && data.iconsUpdate) {
         // Update specific icons with thumbnails
@@ -1576,6 +1659,14 @@
         document.getElementById('icons-status-message').textContent = data.iconsStatus;
       }
 
+      if (data && data.syncfusionStatus) {
+        // Update the status message in the syncfusion tab
+        const statusElem = document.getElementById('syncfusion-status-message');
+        if (statusElem) {
+          statusElem.textContent = data.syncfusionStatus;
+        }
+      }
+
       // Handle errors
       if (data && data.error) {
         document.getElementById('status-message').textContent = data.error;
@@ -1585,6 +1676,15 @@
       if (data && data.iconsError) {
         document.getElementById('icons-status-message').textContent = data.iconsError;
         document.getElementById('icons-status-message').style.color = '#FF0000';
+      }
+
+      if (data && data.syncfusionError) {
+        // Display error in the syncfusion tab
+        const statusElem = document.getElementById('syncfusion-status-message');
+        if (statusElem) {
+          statusElem.textContent = data.syncfusionError;
+          statusElem.style.color = '#FF0000';
+        }
       }
 
       // Handle showing component properties
@@ -2482,6 +2582,203 @@
       });
     }
 
+    // Function to render Syncfusion icons
+    function renderSyncfusionIcons(searchTerm = '') {
+      const iconsList = document.getElementById('syncfusion-list');
+      iconsList.className = ''; // Remove icon-grid class since we're using categories now
+      iconsList.innerHTML = '';
+      const searchInput = document.getElementById('syncfusion-search-input');
+      searchTerm = searchTerm || searchInput.value;
+
+      if (!syncfusionIconsData || syncfusionIconsData.length === 0) {
+        iconsList.innerHTML = '<li style="color: #666; font-style: italic; padding: 20px;">No Syncfusion icons found</li>';
+        return;
+      }
+
+      // Get categories from data
+      const categories = window.syncfusionCategories || {};
+
+      // If we have no categories but have icons, show a flat list
+      if (Object.keys(categories).length === 0) {
+        iconsList.className = 'icon-grid';
+        const filteredIcons = syncfusionIconsData.filter(icon =>
+          icon.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (filteredIcons.length === 0) {
+          iconsList.innerHTML = '<li style="color: #666; font-style: italic; grid-column: span 4; text-align: center; padding: 20px;">No Syncfusion icons found matching your search</li>';
+          return;
+        }
+
+        renderFlatIconList(filteredIcons, iconsList);
+        return;
+      }
+
+      // With categories, render with headers
+      let hasAnyMatches = false;
+
+      // Get collapsed state from global variable or initialize empty object
+      const collapsedCategories = window.syncfusionCollapsedCategories || {};
+
+      // For each category in our category object
+      Object.values(categories).forEach(category => {
+        // Filter icons in this category
+        const categoryIcons = category.icons.filter(icon =>
+          icon.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        // Skip empty categories after filtering
+        if (categoryIcons.length === 0) {
+          return;
+        }
+
+        hasAnyMatches = true;
+
+        // Create category header
+        const categoryHeader = document.createElement('div');
+        categoryHeader.className = 'category-header';
+
+        if (collapsedCategories[category.name]) {
+          categoryHeader.classList.add('collapsed');
+        }
+
+        // Add category title and toggle icon
+        const categoryTitle = document.createElement('span');
+        categoryTitle.textContent = category.name;
+
+        // Create toggle icon using SVG
+        const toggleIcon = createSvgIcon('chevron-down.svg', 'category-toggle');
+
+        categoryHeader.appendChild(categoryTitle);
+        categoryHeader.appendChild(toggleIcon);
+        iconsList.appendChild(categoryHeader);
+
+        // Create category section
+        const categorySection = document.createElement('div');
+        categorySection.className = 'category-section';
+        if (collapsedCategories[category.name]) {
+          categorySection.classList.add('collapsed');
+        } else {
+          categorySection.style.maxHeight = '1000px'; // Set a large enough max-height for expanded state
+        }
+
+        // Create icon grid within the category
+        const iconGrid = document.createElement('div');
+        iconGrid.className = 'icon-grid';
+
+        // Render icons for this category
+        renderFlatIconList(categoryIcons, iconGrid);
+
+        categorySection.appendChild(iconGrid);
+        iconsList.appendChild(categorySection);
+
+        // Add click event for accordion toggle
+        categoryHeader.addEventListener('click', () => {
+          const isCollapsed = categoryHeader.classList.toggle('collapsed');
+          categorySection.classList.toggle('collapsed');
+
+          if (!isCollapsed) {
+            // Expanded - set a height for animation immediately
+            categorySection.style.maxHeight = categorySection.scrollHeight + 'px';
+            // After animation completes, switch to auto height
+            setTimeout(() => {
+              categorySection.style.maxHeight = '1000px';
+            }, 200); // Match the transition duration
+          } else {
+            // Collapsing - set height to 0 immediately (no delay)
+            categorySection.style.maxHeight = '0px';
+          }
+
+          // Save collapsed state to global variable
+          if (!window.syncfusionCollapsedCategories) {
+            window.syncfusionCollapsedCategories = {};
+          }
+          window.syncfusionCollapsedCategories[category.name] = isCollapsed;
+        });
+      });
+
+      // If no matches found after filtering
+      if (!hasAnyMatches) {
+        iconsList.innerHTML = '<li style="color: #666; font-style: italic; padding: 20px;">No Syncfusion icons found matching your search</li>';
+      }
+    }
+
+    // Helper function to render a flat list of icons
+    function renderFlatIconList(icons, container) {
+      icons.forEach(icon => {
+        const item = document.createElement('div');
+        item.className = 'icon-item';
+
+        const content = document.createElement('div');
+        content.className = 'icon-content';
+
+        if (icon.thumbnail) {
+          // Use actual thumbnail
+          const thumbnail = document.createElement('img');
+          thumbnail.className = 'component-thumbnail-icon';
+          thumbnail.src = `data:image/png;base64,${icon.thumbnail}`;
+          thumbnail.alt = icon.name;
+
+          // Add error handling to the thumbnail image
+          thumbnail.onerror = function() {
+            // Replace with a fallback when image fails to load
+            const parent = this.parentNode;
+            parent.removeChild(this);
+
+            // Create fallback color swatch instead
+            const colorSwatch = document.createElement('div');
+            colorSwatch.className = 'component-thumbnail icon-swatch';
+            colorSwatch.style.backgroundColor = icon.colorHash || '#cccccc';
+            if (icon.firstChar) {
+              colorSwatch.textContent = icon.firstChar;
+              colorSwatch.style.color = getContrastColor(icon.colorHash);
+            }
+            parent.prepend(colorSwatch);
+          };
+
+          content.appendChild(thumbnail);
+        } else {
+          // Fallback to color swatch with first letter
+          const colorSwatch = document.createElement('div');
+          colorSwatch.className = 'component-thumbnail icon-swatch';
+          colorSwatch.style.backgroundColor = icon.colorHash || '#cccccc';
+          if (icon.firstChar) {
+            colorSwatch.textContent = icon.firstChar;
+            colorSwatch.style.color = getContrastColor(icon.colorHash);
+          }
+          content.appendChild(colorSwatch);
+        }
+
+        // Icon name
+        const name = document.createElement('span');
+        name.textContent = icon.name;
+        name.className = 'icon-name';
+        content.appendChild(name);
+
+        // Add click handler with click lock protection
+        item.onclick = (e) => {
+          // Ignore if click lock is active
+          if (clickLock) {
+            return;
+          }
+
+          // Set click lock and create instance
+          clickLock = true;
+          setTimeout(() => { clickLock = false; }, CLICK_LOCK_DURATION);
+
+          // Visual feedback for click
+          item.style.opacity = '0.7';
+          setTimeout(() => { item.style.opacity = '1'; }, 300);
+
+          // Send the create instance message
+          parent.postMessage({ pluginMessage: { type: 'create-instance', id: icon.id } }, '*');
+        };
+
+        item.appendChild(content);
+        container.appendChild(item);
+      });
+    }
+
     // Function to determine text color based on background color
     function getContrastColor(hexColor) {
       // Remove the # if it's there
@@ -2541,6 +2838,31 @@
       searchInput.focus();
       renderIcons('');
       document.getElementById('icons-search-clear').classList.remove('visible');
+    });
+
+    // Add functionality for Syncfusion search clear button
+    document.getElementById('syncfusion-search-clear').addEventListener('click', () => {
+      const searchInput = document.getElementById('syncfusion-search-input');
+      searchInput.value = '';
+      searchInput.focus();
+      renderSyncfusionIcons('');
+      document.getElementById('syncfusion-search-clear').classList.remove('visible');
+    });
+
+    // Add functionality for Syncfusion search input
+    document.getElementById('syncfusion-search-input').addEventListener('input', debounce((e) => {
+      // Call renderSyncfusionIcons with the search term
+      renderSyncfusionIcons(e.target.value);
+      // Toggle the clear button visibility
+      document.getElementById('syncfusion-search-clear').classList.toggle('visible', e.target.value.length > 0);
+    }, 300));
+
+    // Add ESC key handler for Syncfusion search
+    document.getElementById('syncfusion-search-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        document.getElementById('syncfusion-search-clear').click();
+      }
     });
 
     // Initialize clear buttons visibility on page load
@@ -2663,8 +2985,8 @@
 
     // Add toggle all categories functionality
     document.getElementById('toggle-all-categories').addEventListener('click', () => {
-      const allCategoryHeaders = document.querySelectorAll('.category-header');
-      const allCategorySections = document.querySelectorAll('.category-section');
+      const allCategoryHeaders = document.querySelectorAll('#components-list .category-header');
+      const allCategorySections = document.querySelectorAll('#components-list .category-section');
 
       // Check if all categories are collapsed
       const allCollapsed = Array.from(allCategoryHeaders).every(header =>
@@ -2707,11 +3029,57 @@
       }, '*');
     });
 
+    // Add toggle all button functionality for Syncfusion icons
+    document.getElementById('toggle-all-syncfusion').addEventListener('click', () => {
+      const allCategoryHeaders = document.querySelectorAll('#syncfusion-list .category-header');
+      const allCategorySections = document.querySelectorAll('#syncfusion-list .category-section');
+
+      // Check if all categories are collapsed
+      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+        header.classList.contains('collapsed')
+      );
+
+      // Toggle based on current state
+      const collapsedCategories = window.syncfusionCollapsedCategories || {};
+
+      allCategoryHeaders.forEach((header, index) => {
+        const section = allCategorySections[index];
+        const categoryName = header.querySelector('span').textContent;
+
+        if (allCollapsed) {
+          // Expand all
+          header.classList.remove('collapsed');
+          section.classList.remove('collapsed');
+          section.style.maxHeight = '1000px';
+          collapsedCategories[categoryName] = false;
+        } else {
+          // Collapse all
+          header.classList.add('collapsed');
+          section.classList.add('collapsed');
+          section.style.maxHeight = '0px';
+          collapsedCategories[categoryName] = true;
+        }
+      });
+
+      // Update the toggle all syncfusion icon based on collapsed state
+      updateToggleAllSyncfusionIcon();
+
+      // Save state to global variable
+      window.syncfusionCollapsedCategories = collapsedCategories;
+    });
+
     // Initialize the toggle all icon on page load to use just chevron-down
     window.addEventListener('DOMContentLoaded', () => {
       const toggleAllIcon = document.getElementById('toggle-all-icon');
       toggleAllIcon.innerHTML = ''; // Clear any existing content first
       toggleAllIcon.appendChild(createSvgIcon('chevron-down.svg'));
+
+      // Initialize the syncfusion toggle icon
+      const toggleAllSyncfusionIcon = document.getElementById('toggle-all-syncfusion-icon');
+      if (toggleAllSyncfusionIcon) {
+        toggleAllSyncfusionIcon.innerHTML = ''; // Clear any existing content first
+        toggleAllSyncfusionIcon.appendChild(createSvgIcon('chevron-down.svg'));
+      }
     });
 
     // Variable to store the element that had focus before a dialog opened
@@ -2823,6 +3191,19 @@
       }
     }
 
+    // Helper function to update the toggle all syncfusion icon state
+    function updateToggleAllSyncfusionIcon() {
+      const allCategoryHeaders = document.querySelectorAll('#syncfusion-list .category-header');
+      const allCollapsed = Array.from(allCategoryHeaders).every(header =>
+        header.classList.contains('collapsed')
+      );
+
+      const toggleAllIcon = document.getElementById('toggle-all-syncfusion-icon');
+      if (toggleAllIcon) {
+        toggleAllIcon.classList.toggle('collapsed', allCollapsed);
+      }
+    }
+
     // Add all tab-related code inside the DOMContentLoaded event
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -2854,6 +3235,17 @@
           pluginMessage: {
             type: 'refresh',
             target: 'icons'
+          }
+        }, '*');
+      });
+
+      document.getElementById('refresh-syncfusion').addEventListener('click', () => {
+        console.log("Sending refresh request for Syncfusion icons");
+        // Send a message to the plugin to refresh Syncfusion icons
+        parent.postMessage({
+          pluginMessage: {
+            type: 'refresh',
+            target: 'syncfusion'
           }
         }, '*');
       });
@@ -2901,6 +3293,22 @@
             if (typeof renderIcons === 'function') {
               renderIcons();
             }
+
+            // Set correct status message visibility based on active subtab
+            const activeSubtab = document.querySelector('.subtab.active');
+            if (activeSubtab) {
+              const activeSubtabId = activeSubtab.getAttribute('data-subtab');
+              const iconsStatusMessage = document.getElementById('icons-status-message');
+              const syncfusionStatusMessage = document.getElementById('syncfusion-status-message');
+
+              if (activeSubtabId === 'ionicons-tab') {
+                iconsStatusMessage.style.display = '';
+                syncfusionStatusMessage.style.display = 'none';
+              } else if (activeSubtabId === 'syncfusion-tab') {
+                iconsStatusMessage.style.display = 'none';
+                syncfusionStatusMessage.style.display = '';
+              }
+            }
           }
 
           // Send message to plugin about tab change
@@ -2908,6 +3316,60 @@
             pluginMessage: {
               type: 'tab-change',
               tab: targetId
+            }
+          }, '*');
+        });
+      });
+
+      // Set up event listeners for subtab clicks
+      document.querySelectorAll('.subtab').forEach(subtab => {
+        subtab.addEventListener('click', () => {
+          // Remove active class from all subtabs and subtab contents
+          document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.subtab-content').forEach(t => t.classList.remove('active'));
+
+          // Add active class to clicked subtab and corresponding content
+          subtab.classList.add('active');
+          const targetId = subtab.getAttribute('data-subtab');
+          const targetContent = document.getElementById(targetId);
+          targetContent.classList.add('active');
+
+          // Toggle visibility of status messages based on active subtab
+          const iconsStatusMessage = document.getElementById('icons-status-message');
+          const syncfusionStatusMessage = document.getElementById('syncfusion-status-message');
+
+          if (targetId === 'ionicons-tab') {
+            iconsStatusMessage.style.display = '';
+            syncfusionStatusMessage.style.display = 'none';
+          } else if (targetId === 'syncfusion-tab') {
+            iconsStatusMessage.style.display = 'none';
+            syncfusionStatusMessage.style.display = '';
+          }
+
+          // Clear search inputs in the subtab content
+          const searchInput = targetContent.querySelector('input[type="text"]');
+          if (searchInput) {
+            searchInput.value = '';
+          }
+
+          // If switching to Ionicons tab, refresh the icons list
+          if (targetId === 'ionicons-tab' && typeof renderIcons === 'function') {
+            renderIcons();
+          }
+
+          // If switching to Syncfusion tab, update toggle icon
+          if (targetId === 'syncfusion-tab') {
+            // Update the toggle all icon after a small delay to ensure DOM is updated
+            setTimeout(() => {
+              updateToggleAllSyncfusionIcon();
+            }, 100);
+          }
+
+          // Send message to the plugin about subtab change
+          parent.postMessage({
+            pluginMessage: {
+              type: 'subtab-change',
+              subtab: targetId
             }
           }, '*');
         });

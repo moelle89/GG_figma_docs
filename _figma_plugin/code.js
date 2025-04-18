@@ -231,7 +231,9 @@ const menuData = defaultMenuData;
 const cache = {
   components: null,
   icons: null,
-  navigationSections: null // Add cache for navigation sections
+  syncfusionIcons: null,
+  navigationSections: null, // Add cache for navigation sections
+  syncfusionCategories: {}
 };
 
 // Flag to track UI readiness
@@ -624,6 +626,202 @@ async function loadIconComponentsFromCurrentFile() {
   }
 }
 
+// Function to load Syncfusion icons from "_Component Icons" frame
+async function loadSyncfusionIcons() {
+  // First try to load from cache
+  if (cache.syncfusionIcons) {
+    figma.ui.postMessage({
+      syncfusionStatus: `Found ${cache.syncfusionIcons.length} Syncfusion icons.`,
+      syncfusionIcons: cache.syncfusionIcons,
+      syncfusionCategories: cache.syncfusionCategories
+    });
+    return;
+  }
+
+  // Then try to load from client storage
+  const storedIcons = await loadFromClientStorage('cachedSyncfusionIcons');
+  const storedCategories = await loadFromClientStorage('cachedSyncfusionCategories');
+  if (storedIcons && storedCategories) {
+    cache.syncfusionIcons = storedIcons;
+    cache.syncfusionCategories = storedCategories;
+    figma.ui.postMessage({
+      syncfusionStatus: `Found ${storedIcons.length} Syncfusion icons.`,
+      syncfusionIcons: storedIcons,
+      syncfusionCategories: storedCategories
+    });
+    return;
+  }
+
+  // If no cache at all, load everything from scratch
+  console.log("Loading Syncfusion icons from file...");
+  try {
+    figma.ui.postMessage({ syncfusionStatus: "Loading Syncfusion icons..." });
+
+    await figma.loadAllPagesAsync();
+
+    // Look for a page named "COMPONENTS"
+    const componentsPage = figma.root.children.find(page => page.name === "COMPONENTS");
+
+    if (!componentsPage) {
+      figma.ui.postMessage({
+        syncfusionError: "No COMPONENTS page found in the current file.",
+        syncfusionIcons: [],
+        syncfusionCategories: {}
+      });
+      return;
+    }
+
+    await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+
+    // List of frames to look for (category frames)
+    const categoryFrames = [
+      "_Component Icons",
+      "_General UI Icons",
+      "_Date and Time",
+      "_Notification & Alerts",
+      "_Navigation Arrows",
+      "_Device & Connectivity",
+      "_People and Users",
+      "_Communication"
+    ];
+
+    // Create an object to store categories and their icons
+    const categorizedIcons = {};
+    const allIcons = [];
+
+    // Process each category frame
+    for (const frameName of categoryFrames) {
+      const iconFrame = componentsPage.findOne(node =>
+        node.type === "FRAME" && node.name === frameName
+      );
+
+      if (!iconFrame) {
+        console.log(`Frame "${frameName}" not found on the COMPONENTS page.`);
+        continue;
+      }
+
+      // Create category name (remove leading underscore)
+      const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
+
+      // Find all components within the frame
+      const frameIcons = iconFrame.findAll(node =>
+        node.type === "COMPONENT" || node.type === "COMPONENT_SET"
+      );
+
+      if (frameIcons.length === 0) {
+        console.log(`No icon components found in the "${frameName}" frame.`);
+        continue;
+      }
+
+      console.log(`Found ${frameIcons.length} icons in "${frameName}" frame.`);
+
+      // Initialize category in the object
+      categorizedIcons[categoryName] = {
+        name: categoryName,
+        icons: []
+      };
+
+      // Process icons for this category
+      for (let i = 0; i < frameIcons.length; i++) {
+        const component = frameIcons[i];
+        try {
+          // Get the default variant if it's a component set
+          const targetComponent = component.type === "COMPONENT_SET"
+            ? component.defaultVariant
+            : component;
+
+          // Export the component as a PNG
+          const exportSettings = {
+            format: "PNG",
+            constraint: { type: "SCALE", value: 1.5 }
+          };
+
+          const bytes = await targetComponent.exportAsync(exportSettings);
+          const base64Image = figma.base64Encode(bytes);
+
+          const iconData = {
+            id: component.id,
+            name: component.name,
+            thumbnail: base64Image,
+            category: categoryName
+          };
+
+          // Add to category's icons array
+          categorizedIcons[categoryName].icons.push(iconData);
+
+          // Add to all icons array
+          allIcons.push(iconData);
+
+          // Update progress every few icons
+          if (i % 3 === 0 || i === frameIcons.length - 1) {
+            figma.ui.postMessage({
+              syncfusionStatus: `Loading ${categoryName} icons... (${i + 1}/${frameIcons.length})`
+            });
+          }
+
+          // Small delay between batches to prevent memory issues
+          if (i % 3 === 2) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        } catch (error) {
+          console.warn(`Failed to export icon ${component.name} from ${categoryName}:`, error);
+
+          // Create icon data with fallback
+          const iconData = {
+            id: component.id,
+            name: component.name,
+            colorHash: stringToColor(component.name),
+            firstChar: component.name.charAt(0).toUpperCase(),
+            category: categoryName
+          };
+
+          // Add to category's icons array
+          categorizedIcons[categoryName].icons.push(iconData);
+
+          // Add to all icons array
+          allIcons.push(iconData);
+        }
+      }
+    }
+
+    // Check if we found any icons
+    if (allIcons.length === 0) {
+      figma.ui.postMessage({
+        syncfusionError: "No icon components found in any of the specified frames.",
+        syncfusionIcons: [],
+        syncfusionCategories: {}
+      });
+      return;
+    }
+
+    // Store in both cache and client storage
+    cache.syncfusionIcons = allIcons;
+    cache.syncfusionCategories = categorizedIcons;
+
+    // Save to client storage
+    try {
+      await saveToClientStorage('cachedSyncfusionIcons', allIcons);
+      await saveToClientStorage('cachedSyncfusionCategories', categorizedIcons);
+    } catch (error) {
+      console.error("Error saving Syncfusion icons to client storage:", error);
+      figma.notify("Syncfusion icons were loaded but couldn't be cached (storage full)", { timeout: 2000 });
+    }
+
+    figma.ui.postMessage({
+      syncfusionStatus: `Found ${allIcons.length} Syncfusion icons.`,
+      syncfusionIcons: allIcons,
+      syncfusionCategories: categorizedIcons
+    });
+  } catch (error) {
+    console.error("Error loading Syncfusion icon components:", error);
+    figma.ui.postMessage({
+      syncfusionError: "Error loading Syncfusion icons: " + error.message,
+      syncfusionIcons: [],
+      syncfusionCategories: {}
+    });
+  }
+}
+
 // Function to generate a color from a string
 function stringToColor(str) {
   let hash = 0;
@@ -773,6 +971,22 @@ figma.ui.onmessage = async msg => {
       });
     }
   }
+  else if (msg.type === "subtab-change") {
+    const subtab = msg.subtab;
+
+    if (subtab === "syncfusion-tab") {
+      // Load Syncfusion icons if not already cached
+      if (!cache.syncfusionIcons) {
+        loadSyncfusionIcons();
+      } else {
+        // Just re-send the cached data
+        figma.ui.postMessage({
+          syncfusionStatus: `Found ${cache.syncfusionIcons.length} Syncfusion icons.`,
+          syncfusionIcons: cache.syncfusionIcons
+        });
+      }
+    }
+  }
   else if (msg.type === "save-collapsed-state") {
     // Save collapsed state to client storage
     await saveToClientStorage('collapsedCategories', msg.collapsedCategories);
@@ -781,10 +995,17 @@ figma.ui.onmessage = async msg => {
     // Handle refresh requests
     console.log(`Refresh requested with target: "${msg.target}"`);
 
-    if (!msg.target || (msg.target !== 'components' && msg.target !== 'icons')) {
+    if (!msg.target || (msg.target !== 'components' && msg.target !== 'icons' && msg.target !== 'syncfusion')) {
       console.warn(`Invalid refresh target: ${msg.target}, defaulting to refresh all`);
       refreshCache('all');
       figma.notify("Refreshing all components and icons...");
+    } else if (msg.target === 'syncfusion') {
+      console.log('Clearing Syncfusion icons cache...');
+      cache.syncfusionIcons = null;
+      await figma.clientStorage.deleteAsync('cachedSyncfusionIcons');
+      console.log('Loading Syncfusion icons from file...');
+      loadSyncfusionIcons();
+      figma.notify("Refreshing Syncfusion icons...");
     } else {
       refreshCache(msg.target);
       figma.notify(`Refreshing ${msg.target}...`);
