@@ -42,7 +42,6 @@
       padding: 10px;
       border: 1.5px solid var(--figma-color-border);
       border-radius: 10px;
-      width: 100%;
       font-size: 12px;
       box-sizing: border-box;
       background: var(--figma-color-bg);
@@ -63,6 +62,8 @@
     }
     #syncfusion-list {
       padding-inline-start: 0px;
+      margin-block-end: 0px;
+      margin-block-start: 0px;
     }
 
     /* Styles for search input container and clear button */
@@ -240,9 +241,9 @@
     }
 
     #status-message, #icons-status-message, #syncfusion-status-message {
-        margin-top: 18px;
+        margin-top: 14px;
         margin-bottom: 8px;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         font-weight: 500;
         color: var(--figma-color-text-secondary);
         padding: 0px 0px 0px 8px;
@@ -251,8 +252,9 @@
     }
     .compact-mode #status-message,
     .compact-mode #icons-status-message, .compact-mode #syncfusion-status-message {
-      font-size: 0.6rem;
+      font-size: 0.65rem;
       font-weight: 500;
+      margin-bottom: 4px;
       color: var(--figma-color-text-secondary);
       cursor: pointer;
       transition: all ease 0.2s;
@@ -419,7 +421,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 4px;
-      padding: 8px;
+      padding: 0px;
       margin-bottom: 18px;
     }
 
@@ -748,7 +750,12 @@
     }
 
     .compact-mode #components-search-input,
-    .compact-mode #icons-search-input, .compact-mode #syncfusion-search-input {
+    .compact-mode #icons-search-input {
+      width: 100%;
+      padding: 8px;
+    }
+    .compact-mode #syncfusion-search-input {
+      width: 140;
       padding: 8px;
     }
 
@@ -832,6 +839,7 @@
     .category-section {
       margin-bottom: 6px;
       padding: 0 2px;
+      max-height: 1000000px;
       overflow: hidden;
       transition: max-height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -869,14 +877,14 @@
     .status-container {
         display: flex;
         align-items: center;
-        margin-top: 4px;
-        margin-bottom: 0px;
+        margin-top: 8px;
+        margin-bottom: 4px;
         margin-left: 8px;
         margin-right: 8px;
-        gap: 8px;
+        gap: 4px;
     }
     /* Keep original status message styles */
-    #status-message, #icons-status-message {
+    #status-message, #icons-status-message, #syncfusion-status-message {
         margin: 0; /* Remove default margins */
         padding: 0; /* Remove default padding */
         flex-grow: 1; /* Allow status message to take up space */
@@ -1204,6 +1212,9 @@
        border-color: var(--figma-color-bg-brand-hover);
     }
 
+    #toggle-all-syncfusion {
+      width: 42px;
+    }
 
     /* Styles for the Update Notification Banner */
     .update-banner {
@@ -1333,7 +1344,6 @@
       <button id="docs-button" class="docs-button" title="Open Documentation">🌐</button>
       <button id="size-toggle" class="docs-button" title="Toggle UI Size">⟷</button>
     </div>
-
     <div id="components-tab" class="tab-content active">
       <div class="status-container">
           <p id="status-message">Loading components...</p>
@@ -1358,9 +1368,14 @@
     </div>
 
     <div id="icons-tab" class="tab-content">
+      <!-- Add sub-tabbar for icons -->
+      <div class="icons-subtabs tabs">
+        <div class="subtab active" data-subtab="ionicons-tab">Ionicons</div>
+        <div class="subtab" data-subtab="syncfusion-tab">Syncfusion</div>
+      </div>
       <div class="status-container">
           <p id="icons-status-message">Loading icons...</p>
-          <p id="syncfusion-status-message" style="display: none;">Loading Syncfusion icons...</p>
+          <p id="syncfusion-status-message" style="display: none;">Loading icons...</p>
           <button id="get-links-button-icons" class="get-links-button" title="Get Links for Selection">☍</button>
           <button id="create-playground-button-icons" class="get-links-button" title="Create Playground Frame">▶</button>
           <button id="wrap-section-button-icons" class="get-links-button" title="Wrap Selection in Section">
@@ -1370,13 +1385,6 @@
             </svg>
           </button> <!-- ADDED -->
       </div>
-
-      <!-- Add sub-tabbar for icons -->
-      <div class="icons-subtabs tabs">
-        <div class="subtab active" data-subtab="ionicons-tab">Ionicons</div>
-        <div class="subtab" data-subtab="syncfusion-tab">Syncfusion</div>
-      </div>
-
       <!-- Add sub-content containers -->
       <div id="ionicons-tab" class="subtab-content active">
         <div class="search-container">

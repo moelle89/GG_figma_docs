@@ -631,7 +631,7 @@ async function loadSyncfusionIcons() {
   // First try to load from cache
   if (cache.syncfusionIcons) {
     figma.ui.postMessage({
-      syncfusionStatus: `Found ${cache.syncfusionIcons.length} Syncfusion icons.`,
+      syncfusionStatus: `Found ${cache.syncfusionIcons.length} icons.`,
       syncfusionIcons: cache.syncfusionIcons,
       syncfusionCategories: cache.syncfusionCategories
     });
@@ -645,7 +645,7 @@ async function loadSyncfusionIcons() {
     cache.syncfusionIcons = storedIcons;
     cache.syncfusionCategories = storedCategories;
     figma.ui.postMessage({
-      syncfusionStatus: `Found ${storedIcons.length} Syncfusion icons.`,
+      syncfusionStatus: `Found ${storedIcons.length} icons.`,
       syncfusionIcons: storedIcons,
       syncfusionCategories: storedCategories
     });
@@ -653,9 +653,9 @@ async function loadSyncfusionIcons() {
   }
 
   // If no cache at all, load everything from scratch
-  console.log("Loading Syncfusion icons from file...");
+  console.log("Loading icons from file...");
   try {
-    figma.ui.postMessage({ syncfusionStatus: "Loading Syncfusion icons..." });
+    figma.ui.postMessage({ syncfusionStatus: "Loading icons..." });
 
     await figma.loadAllPagesAsync();
 
@@ -755,7 +755,7 @@ async function loadSyncfusionIcons() {
           // Update progress every few icons
           if (i % 3 === 0 || i === frameIcons.length - 1) {
             figma.ui.postMessage({
-              syncfusionStatus: `Loading ${categoryName} icons... (${i + 1}/${frameIcons.length})`
+              syncfusionStatus: `${categoryName} (${i + 1}/${frameIcons.length})`
             });
           }
 
@@ -804,18 +804,18 @@ async function loadSyncfusionIcons() {
       await saveToClientStorage('cachedSyncfusionCategories', categorizedIcons);
     } catch (error) {
       console.error("Error saving Syncfusion icons to client storage:", error);
-      figma.notify("Syncfusion icons were loaded but couldn't be cached (storage full)", { timeout: 2000 });
+      figma.notify("icons were loaded but couldn't be cached (storage full)", { timeout: 2000 });
     }
 
     figma.ui.postMessage({
-      syncfusionStatus: `Found ${allIcons.length} Syncfusion icons.`,
+      syncfusionStatus: `Found ${allIcons.length} icons.`,
       syncfusionIcons: allIcons,
       syncfusionCategories: categorizedIcons
     });
   } catch (error) {
     console.error("Error loading Syncfusion icon components:", error);
     figma.ui.postMessage({
-      syncfusionError: "Error loading Syncfusion icons: " + error.message,
+      syncfusionError: "Error loading icons: " + error.message,
       syncfusionIcons: [],
       syncfusionCategories: {}
     });
@@ -981,7 +981,7 @@ figma.ui.onmessage = async msg => {
       } else {
         // Just re-send the cached data
         figma.ui.postMessage({
-          syncfusionStatus: `Found ${cache.syncfusionIcons.length} Syncfusion icons.`,
+          syncfusionStatus: `Found ${cache.syncfusionIcons.length} icons.`,
           syncfusionIcons: cache.syncfusionIcons
         });
       }
@@ -1000,12 +1000,12 @@ figma.ui.onmessage = async msg => {
       refreshCache('all');
       figma.notify("Refreshing all components and icons...");
     } else if (msg.target === 'syncfusion') {
-      console.log('Clearing Syncfusion icons cache...');
+      console.log('Clearing icons cache...');
       cache.syncfusionIcons = null;
       await figma.clientStorage.deleteAsync('cachedSyncfusionIcons');
-      console.log('Loading Syncfusion icons from file...');
+      console.log('Loading icons from file...');
       loadSyncfusionIcons();
-      figma.notify("Refreshing Syncfusion icons...");
+      figma.notify("Refreshing icons...");
     } else {
       refreshCache(msg.target);
       figma.notify(`Refreshing ${msg.target}...`);
