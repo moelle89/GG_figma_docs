@@ -307,10 +307,9 @@
 
     /* Sub-tab styles for Icons */
     .icons-subtabs {
-      position: sticky; /* Make subtabs sticky */
-      top: 36px;        /* Position below main tabs */
+      position: relative;
       z-index: 1;
-      background-color: var(--figma-color-bg); /* Add background */
+      background-color: var(--figma-color-bg-secondary);
       padding: 0 8px;
     }
 
@@ -1322,48 +1321,6 @@
     #quick-nav-list li button:hover {
       background-color: var(--accent-color-alpha60); /* Keep hover effect */
       border-color: var(--accent-color);
-    }
-
-    /* Apply sticky positioning specifically to the status container within the icons tab */
-    #icons-tab > .status-container {
-        position: sticky;
-        top: 72px; /* Position below main tabs and subtabs */
-        z-index: 1;
-        background-color: var(--figma-color-bg); /* Ensure background covers scrolling content */
-        display: flex;
-        align-items: center;
-        margin-top: 0; /* Remove top margin when sticky */
-        margin-bottom: 0; /* Remove bottom margin when sticky */
-        padding: 4px 8px; /* Add some padding */
-        margin-left: 0;
-        margin-right: 0;
-        gap: 4px;
-        border-bottom: 1px solid var(--figma-color-border); /* Add separator */
-    }
-
-    /* Adjust search container within subtabs to be sticky */
-    .subtab-content > .search-container {
-      position: sticky;
-      top: 104px; /* Position below main tabs, subtabs, and status */
-      z-index: 1;
-      background: var(--figma-color-bg);
-      padding: 8px 4px;
-      display: flex;
-      gap: 8px;
-      border-bottom: 1px solid var(--figma-color-border); /* Add separator */
-    }
-
-    /* Adjustments for compact mode sticky positions */
-    .compact-mode .icons-subtabs {
-      top: 36px; /* Adjust if main tabs height changes in compact mode */
-    }
-    .compact-mode #icons-tab > .status-container {
-      top: 68px; /* Adjust based on compact subtab height */
-      padding: 2px 8px;
-    }
-    .compact-mode .subtab-content > .search-container {
-      top: 94px; /* Adjust based on compact status height */
-      padding: 6px 2px;
     }
   </style>
   <!-- Add JSZip library from CDN -->
@@ -3573,48 +3530,6 @@
     document.getElementById('close-section-dialog').addEventListener('click', () => {
         hideDialog('section-dialog');
     });
-
-    /* Apply sticky positioning specifically to the status container within the icons tab */
-    #icons-tab > .status-container {
-        position: sticky;
-        top: 72px; /* Position below main tabs and subtabs */
-        z-index: 1;
-        background-color: var(--figma-color-bg); /* Ensure background covers scrolling content */
-        display: flex;
-        align-items: center;
-        margin-top: 0; /* Remove top margin when sticky */
-        margin-bottom: 0; /* Remove bottom margin when sticky */
-        padding: 4px 8px; /* Add some padding */
-        margin-left: 0;
-        margin-right: 0;
-        gap: 4px;
-        border-bottom: 1px solid var(--figma-color-border); /* Add separator */
-    }
-
-    /* Adjust search container within subtabs to be sticky */
-    .subtab-content > .search-container {
-      position: sticky;
-      top: 104px; /* Position below main tabs, subtabs, and status */
-      z-index: 1;
-      background: var(--figma-color-bg);
-      padding: 8px 4px;
-      display: flex;
-      gap: 8px;
-      border-bottom: 1px solid var(--figma-color-border); /* Add separator */
-    }
-
-    /* Adjustments for compact mode sticky positions */
-    .compact-mode .icons-subtabs {
-      top: 36px; /* Adjust if main tabs height changes in compact mode */
-    }
-    .compact-mode #icons-tab > .status-container {
-      top: 68px; /* Adjust based on compact subtab height */
-      padding: 2px 8px;
-    }
-    .compact-mode .subtab-content > .search-container {
-      top: 94px; /* Adjust based on compact status height */
-      padding: 6px 2px;
-    }
   </script>
 </body>
 
