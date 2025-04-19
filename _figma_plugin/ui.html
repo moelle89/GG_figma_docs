@@ -26,259 +26,11 @@
       color: var(--figma-color-text);
     }
 
-    .search-container {
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      background: var(--figma-color-bg);
-      padding: 8px 4px;
-      display: flex;
-      gap: 8px;
-    }
-
-    #components-search-input,
-    #icons-search-input, #syncfusion-search-input {
-      flex-grow: 0;
-      padding: 10px;
-      border: 1.5px solid var(--figma-color-border);
-      border-radius: 10px;
-      font-size: 12px;
-      box-sizing: border-box;
-      background: var(--figma-color-bg);
-      color: var(--figma-color-text);
-      outline: none;
-      transition: all ease .2s;
-    }
-
-    #components-search-input:hover, #components-search-input:focus,
-    #icons-search-input:hover, #icons-search-input:focus, #syncfusion-search-input:hover, #syncfusion-search-input:focus {
-      border-color: var(--figma-color-border-hover);
-      outline: none;
-    }
-
-    #components-search-input::placeholder,
-    #icons-search-input::placeholder, #syncfusion-search-input::placeholder {
-      color: var(--figma-color-text-tertiary);
-    }
-    #syncfusion-list {
-      padding-inline-start: 0px;
-      margin-block-end: 0px;
-      margin-block-start: 0px;
-    }
-
-    /* Styles for search input container and clear button */
-    .search-input-container {
-      position: relative;
-      flex-grow: 0;
-      display: flex;
-    }
-
-    .search-clear-button {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--figma-color-text-tertiary);
-      font-size: 14px;
-      padding: 0;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.2s ease, background-color 0.2s ease;
-    }
-
-    .search-clear-button:hover {
-      background-color: var(--figma-color-bg-hover);
-      color: var(--figma-color-text);
-    }
-
-    .search-input-container:hover .search-clear-button,
-    .search-clear-button.visible {
-      opacity: 1;
-    }
-
-    .refresh-button {
-      background: var(--figma-color-bg-secondary);
-      border: 1px solid var(--figma-color-border);
-      border-radius: 10px;
-      padding: 6px 12px;
-      cursor: pointer;
-      color: var(--figma-color-text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all ease .2s;
-    }
-
-    .refresh-button:hover {
-      background: var(--figma-color-bg-brand);
-      color: white;
-    }
-
-    #components-list,
-    #icons-list {
-      list-style: none;
-      padding: 0;
-      margin-top: 0;
-    }
-
-    /* Style the scrollbar for webkit browsers (Chrome, Safari, etc.) */
-    #components-list::-webkit-scrollbar,
-    #icons-list::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    #components-list::-webkit-scrollbar-track,
-    #icons-list::-webkit-scrollbar-track {
-      background: var(--figma-color-bg);
-    }
-
-    #components-list::-webkit-scrollbar-thumb,
-    #icons-list::-webkit-scrollbar-thumb {
-      background: var(--figma-color-border);
-      border-radius: 4px;
-    }
-
-    #components-list::-webkit-scrollbar-thumb:hover,
-    #icons-list::-webkit-scrollbar-thumb:hover {
-      background: var(--figma-color-text-tertiary);
-    }
-
-    /* Hide scrollbar for Firefox */
-    #components-list,
-    #icons-list {
-      scrollbar-width: thin;
-      scrollbar-color: var(--figma-color-border) transparent;
-    }
-
-    .component-item {
-      margin: 5px;
-    }
-
-    .component-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 2px 0;
-        border-radius: 4px;
-        width: 100%;
-        transition: background-color 0.2s;
-        cursor: pointer;
-    }
-
-    .component-content:hover {
-        border-radius: 6px;
-        background-color: var(--figma-color-bg-hover);
-    }
-
-    /* Add these new styles */
-    .component-left {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
-  .component-thumbnail {
-      width: 30px;
-      height: 30px;
-      object-fit: contain;
-      padding: 8px;
-      border-radius: 6px;
-      background: hsla(0, 0%, 70%, 0.25);
-  }
-
-	.component-thumbnail-icon {
-		width: 24px;
-		height: 24px;
-		object-fit: contain;
-		padding: 6px;
-		border-radius: 8px;
-		background: white;
-	}
-
-    .component-name {
-      flex-grow: 1;
-      font-size: .8rem;
-      font-weight: 600;
-    }
-
-    .component-actions {
-      display: flex;
-      gap: 0px;
-      margin-right: 6px;
-    }
-
-    .action-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-      color: var(--figma-color-text-secondary);
-    }
-    #close-dialog {
-      margin-top: 10px;
-      scale: 2;
-    }
-
-    .action-button:hover {
-      background-color: var(--figma-color-bg-hover);
-      color: var(--figma-color-text);
-    }
-
-    /* Style for the "No components found" message */
-    .component-item li {
-      color: var(--figma-color-text-tertiary);
-      font-style: italic;
-    }
-
-    #status-message, #icons-status-message, #syncfusion-status-message {
-        margin-top: 14px;
-        margin-bottom: 8px;
-        font-size: 0.7rem;
-        font-weight: 500;
-        color: var(--figma-color-text-secondary);
-        padding: 0px 0px 0px 8px;
-        cursor: pointer;
-        transition: all ease 0.2s;
-    }
-    .compact-mode #status-message,
-    .compact-mode #icons-status-message, .compact-mode #syncfusion-status-message {
-      font-size: 0.65rem;
-      font-weight: 500;
-      margin-bottom: 4px;
-      color: var(--figma-color-text-secondary);
-      cursor: pointer;
-      transition: all ease 0.2s;
-    }
-
-    #status-message:hover,
-    #icons-status-message:hover, #syncfusion-status-message:hover {
-      color: var(--figma-color-text-brand);
-    }
-
-    /* Radio button styles */
-    .source-selector {
-      margin-bottom: 16px;
-    }
-
-    .source-option {
-      margin-right: 12px;
-    }
-
     /* Tab styles */
     .tabs {
       position: sticky;
       top: 0;
-      z-index: 2;
+      z-index: 10;
       display: flex;
       border-bottom: 1px solid var(--figma-color-border);
       background-color: var(--figma-color-bg);
@@ -307,8 +59,9 @@
 
     /* Sub-tab styles for Icons */
     .icons-subtabs {
-      position: relative;
-      z-index: 1;
+      position: sticky;
+      top: 41px; /* Height of main tabs */
+      z-index: 9;
       background-color: var(--figma-color-bg-secondary);
       padding: 0 8px;
     }
@@ -348,17 +101,21 @@
       padding: 5px 8px;
     }
 
+    /* Tab container to hold everything */
     .tab-container {
       height: calc(100vh - 20px); /* Adjust for body padding */
       display: flex;
       flex-direction: column;
+      overflow: hidden; /* Prevent container from scrolling */
     }
 
+    /* Make the tab content scrollable */
     .tab-content {
       display: none;
       height: 100%;
       overflow-y: auto;
       position: relative;
+      padding-bottom: 20px; /* Add some padding at the bottom */
     }
 
     .tab-content.active {
@@ -873,21 +630,47 @@
       transform: rotate(0deg);
     }
 
-    /* Container for status message and link button */
+    /* Status container with status message */
     .status-container {
-        display: flex;
-        align-items: center;
-        margin-top: 8px;
-        margin-bottom: 4px;
-        margin-left: 8px;
-        margin-right: 8px;
-        gap: 4px;
+      position: sticky;
+      top: 78px; /* Height of main tabs + subtabs */
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      margin-left: 8px;
+      margin-right: 8px;
+      gap: 4px;
+      background-color: var(--figma-color-bg);
+      padding: 4px 0;
     }
-    /* Keep original status message styles */
+
+    /* Status message styles */
     #status-message, #icons-status-message, #syncfusion-status-message {
-        margin: 0; /* Remove default margins */
-        padding: 0; /* Remove default padding */
-        flex-grow: 1; /* Allow status message to take up space */
+      margin-top: 14px;
+      margin-bottom: 8px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--figma-color-text-secondary);
+      padding: 0px 0px 0px 8px;
+      cursor: pointer;
+      transition: all ease 0.2s;
+    }
+
+    .compact-mode #status-message,
+    .compact-mode #icons-status-message, .compact-mode #syncfusion-status-message {
+      font-size: 0.65rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--figma-color-text-secondary);
+      cursor: pointer;
+      transition: all ease 0.2s;
+    }
+
+    #status-message:hover,
+    #icons-status-message:hover, #syncfusion-status-message:hover {
+      color: var(--figma-color-text-brand);
     }
 
     /* Style for the new link button */
@@ -1321,6 +1104,42 @@
     #quick-nav-list li button:hover {
       background-color: var(--accent-color-alpha60); /* Keep hover effect */
       border-color: var(--accent-color);
+    }
+
+    /* Search container */
+    .search-container {
+      position: sticky;
+      top: 114px; /* Height of main tabs + subtabs + status container */
+      z-index: 7;
+      background: var(--figma-color-bg);
+      padding: 8px 4px;
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Make the tab content scrollable */
+    .tab-content {
+      display: none;
+      height: 100%;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Adjust for compact mode */
+    .compact-mode .icons-subtabs {
+      top: 33px; /* Reduced height for compact tabs */
+    }
+
+    .compact-mode .status-container {
+      top: 66px; /* Adjusted for compact mode */
+    }
+
+    .compact-mode .search-container {
+      top: 98px; /* Adjusted for compact mode */
     }
   </style>
   <!-- Add JSZip library from CDN -->
