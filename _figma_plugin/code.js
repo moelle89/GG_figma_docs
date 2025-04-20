@@ -633,7 +633,8 @@ async function loadSyncfusionIcons() {
     figma.ui.postMessage({
       syncfusionStatus: `Found ${cache.syncfusionIcons.length} icons.`,
       syncfusionIcons: cache.syncfusionIcons,
-      syncfusionCategories: cache.syncfusionCategories
+      syncfusionCategories: cache.syncfusionCategories,
+      collapsedSyncfusionCategories: await getCollapsedSyncfusionCategoriesState()
     });
     return;
   }
@@ -647,7 +648,8 @@ async function loadSyncfusionIcons() {
     figma.ui.postMessage({
       syncfusionStatus: `Found ${storedIcons.length} icons.`,
       syncfusionIcons: storedIcons,
-      syncfusionCategories: storedCategories
+      syncfusionCategories: storedCategories,
+      collapsedSyncfusionCategories: await getCollapsedSyncfusionCategoriesState()
     });
     return;
   }
@@ -688,9 +690,16 @@ async function loadSyncfusionIcons() {
     // Create an object to store categories and their icons
     const categorizedIcons = {};
     const allIcons = [];
+    // Initialize collapsed state for categories
+    const collapsedCategories = {};
+    
+    // Only process the first two categories initially
+    const initialCategoriesToLoad = 2;
+    const categoriesToLoad = categoryFrames.slice(0, initialCategoriesToLoad);
+    const categoriesToCollapse = categoryFrames.slice(initialCategoriesToLoad);
 
-    // Process each category frame
-    for (const frameName of categoryFrames) {
+    // Process initial categories
+    for (const frameName of categoriesToLoad) {
       const iconFrame = componentsPage.findOne(node =>
         node.type === "FRAME" && node.name === frameName
       );
@@ -702,6 +711,7 @@ async function loadSyncfusionIcons() {
 
       // Create category name (remove leading underscore)
       const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
+      collapsedCategories[categoryName] = false; // Not collapsed
 
       // Find all components within the frame
       const frameIcons = iconFrame.findAll(node =>
@@ -730,7 +740,7 @@ async function loadSyncfusionIcons() {
             ? component.defaultVariant
             : component;
 
-          // Export the component as a PNG
+          // Export the component as a JPG
           const exportSettings = {
             format: "JPG",
             constraint: { type: "SCALE", value: 1 }
@@ -784,14 +794,19 @@ async function loadSyncfusionIcons() {
       }
     }
 
-    // Check if we found any icons
-    if (allIcons.length === 0) {
-      figma.ui.postMessage({
-        syncfusionError: "No icon components found in any of the specified frames.",
-        syncfusionIcons: [],
-        syncfusionCategories: {}
-      });
-      return;
+    // Initialize placeholder empty categories for the collapsed sections
+    for (const frameName of categoriesToCollapse) {
+      // Create category name (remove leading underscore)
+      const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
+      // Mark these categories as collapsed
+      collapsedCategories[categoryName] = true;
+      
+      // Add empty placeholder for the category
+      categorizedIcons[categoryName] = {
+        name: categoryName,
+        icons: [], // Empty array - will be loaded on demand
+        isPlaceholder: true // Flag to indicate this needs to be loaded
+      };
     }
 
     // Store in both cache and client storage
@@ -802,15 +817,17 @@ async function loadSyncfusionIcons() {
     try {
       await saveToClientStorage('cachedSyncfusionIcons', allIcons);
       await saveToClientStorage('cachedSyncfusionCategories', categorizedIcons);
+      await saveToClientStorage('collapsedSyncfusionCategories', collapsedCategories);
     } catch (error) {
-      console.error("Error saving Syncfusion icons to client storage:", error);
+      console.error("Error saving icons to client storage:", error);
       figma.notify("icons were loaded but couldn't be cached (storage full)", { timeout: 2000 });
     }
 
     figma.ui.postMessage({
       syncfusionStatus: `Found ${allIcons.length} icons.`,
       syncfusionIcons: allIcons,
-      syncfusionCategories: categorizedIcons
+      syncfusionCategories: categorizedIcons,
+      collapsedSyncfusionCategories: collapsedCategories
     });
   } catch (error) {
     console.error("Error loading Syncfusion icon components:", error);
@@ -818,6 +835,186 @@ async function loadSyncfusionIcons() {
       syncfusionError: "Error loading icons: " + error.message,
       syncfusionIcons: [],
       syncfusionCategories: {}
+    });
+  }
+}
+
+// Helper function to get collapsed state for Syncfusion categories
+async function getCollapsedSyncfusionCategoriesState() {
+  const collapsedState = await loadFromClientStorage('collapsedSyncfusionCategories');
+  if (collapsedState) {
+    return collapsedState;
+  }
+  
+  // Default state if none is stored - keep all categories except first two collapsed
+  const categoryFrames = [
+    "_Component Icons",
+    "_General UI Icons",
+    "_Date and Time",
+    "_Notification & Alerts",
+    "_Navigation Arrows",
+    "_Device & Connectivity",
+    "_People and Users",
+    "_Communication"
+  ];
+  
+  const defaultState = {};
+  categoryFrames.forEach((frame, index) => {
+    const categoryName = frame.startsWith('_') ? frame.substring(1) : frame;
+    defaultState[categoryName] = index >= 2; // First two are expanded, rest collapsed
+  });
+  
+  return defaultState;
+}
+
+// Add new function to load a specific category's icons
+async function loadSyncfusionCategory(categoryName) {
+  console.log(`Loading icons for category: ${categoryName}`);
+  try {
+    figma.ui.postMessage({ syncfusionStatus: `Loading ${categoryName} icons...` });
+    
+    // Check if we have a cached version of the categories
+    if (!cache.syncfusionCategories || !cache.syncfusionCategories[categoryName]) {
+      throw new Error(`Category ${categoryName} not found in cache`);
+    }
+    
+    // If the category already has icons, just return them
+    if (cache.syncfusionCategories[categoryName].icons.length > 0 && 
+        !cache.syncfusionCategories[categoryName].isPlaceholder) {
+      figma.ui.postMessage({
+        categoryLoaded: true,
+        categoryName: categoryName,
+        icons: cache.syncfusionCategories[categoryName].icons
+      });
+      return;
+    }
+    
+    await figma.loadAllPagesAsync();
+    
+    // Look for a page named "COMPONENTS"
+    const componentsPage = figma.root.children.find(page => page.name === "COMPONENTS");
+    if (!componentsPage) {
+      throw new Error("No COMPONENTS page found in the current file.");
+    }
+    
+    await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+    
+    // Find the frame with the corresponding name
+    const frameName = `_${categoryName}`;
+    const iconFrame = componentsPage.findOne(node =>
+      node.type === "FRAME" && node.name === frameName
+    );
+    
+    if (!iconFrame) {
+      throw new Error(`Frame "${frameName}" not found on the COMPONENTS page.`);
+    }
+    
+    // Find all components within the frame
+    const frameIcons = iconFrame.findAll(node =>
+      node.type === "COMPONENT" || node.type === "COMPONENT_SET"
+    );
+    
+    if (frameIcons.length === 0) {
+      throw new Error(`No icon components found in the "${frameName}" frame.`);
+    }
+    
+    // Process icons for this category
+    const categoryIcons = [];
+    
+    for (let i = 0; i < frameIcons.length; i++) {
+      const component = frameIcons[i];
+      try {
+        // Get the default variant if it's a component set
+        const targetComponent = component.type === "COMPONENT_SET"
+          ? component.defaultVariant
+          : component;
+          
+        // Export the component
+        const exportSettings = {
+          format: "JPG",
+          constraint: { type: "SCALE", value: 1 }
+        };
+        
+        const bytes = await targetComponent.exportAsync(exportSettings);
+        const base64Image = figma.base64Encode(bytes);
+        
+        const iconData = {
+          id: component.id,
+          name: component.name,
+          thumbnail: base64Image,
+          category: categoryName
+        };
+        
+        // Add to category icons
+        categoryIcons.push(iconData);
+        
+        // Add to all icons in the global cache
+        if (cache.syncfusionIcons) {
+          cache.syncfusionIcons.push(iconData);
+        }
+        
+        // Update progress
+        if (i % 3 === 0 || i === frameIcons.length - 1) {
+          figma.ui.postMessage({
+            syncfusionStatus: `${categoryName} (${i + 1}/${frameIcons.length})`
+          });
+        }
+        
+        // Small delay between batches
+        if (i % 3 === 2) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      } catch (error) {
+        console.warn(`Failed to export icon ${component.name} from ${categoryName}:`, error);
+        
+        // Create icon data with fallback
+        const iconData = {
+          id: component.id,
+          name: component.name,
+          colorHash: stringToColor(component.name),
+          firstChar: component.name.charAt(0).toUpperCase(),
+          category: categoryName
+        };
+        
+        categoryIcons.push(iconData);
+        if (cache.syncfusionIcons) {
+          cache.syncfusionIcons.push(iconData);
+        }
+      }
+    }
+    
+    // Update the category in cache
+    if (cache.syncfusionCategories) {
+      cache.syncfusionCategories[categoryName] = {
+        name: categoryName,
+        icons: categoryIcons,
+        isPlaceholder: false
+      };
+      
+      // Update client storage
+      try {
+        await saveToClientStorage('cachedSyncfusionCategories', cache.syncfusionCategories);
+        await saveToClientStorage('cachedSyncfusionIcons', cache.syncfusionIcons);
+      } catch (storageError) {
+        console.error("Error updating client storage with new category data:", storageError);
+      }
+    }
+    
+    // Notify UI that category is loaded
+    figma.ui.postMessage({
+      categoryLoaded: true,
+      categoryName: categoryName,
+      icons: categoryIcons
+    });
+    
+    console.log(`Loaded ${categoryIcons.length} icons for category ${categoryName}`);
+    
+  } catch (error) {
+    console.error(`Error loading category ${categoryName}:`, error);
+    figma.ui.postMessage({
+      categoryError: true,
+      categoryName: categoryName,
+      error: error.message
     });
   }
 }
@@ -982,10 +1179,33 @@ figma.ui.onmessage = async msg => {
         // Just re-send the cached data
         figma.ui.postMessage({
           syncfusionStatus: `Found ${cache.syncfusionIcons.length} icons.`,
-          syncfusionIcons: cache.syncfusionIcons
+          syncfusionIcons: cache.syncfusionIcons,
+          syncfusionCategories: cache.syncfusionCategories,
+          collapsedSyncfusionCategories: await getCollapsedSyncfusionCategoriesState()
         });
       }
     }
+  }
+  // Handler for expanding a Syncfusion category that was collapsed
+  else if (msg.type === "expand-syncfusion-category") {
+    const categoryName = msg.categoryName;
+    
+    // Update the collapsed state
+    const collapsedState = await loadFromClientStorage('collapsedSyncfusionCategories') || {};
+    collapsedState[categoryName] = false;
+    await saveToClientStorage('collapsedSyncfusionCategories', collapsedState);
+    
+    // Check if we need to load this category
+    if (cache.syncfusionCategories && 
+        cache.syncfusionCategories[categoryName] && 
+        cache.syncfusionCategories[categoryName].isPlaceholder) {
+      // This is a placeholder category that needs loading
+      await loadSyncfusionCategory(categoryName);
+    }
+  }
+  // Handler for saving Syncfusion categories collapsed state
+  else if (msg.type === "save-syncfusion-collapsed-state") {
+    await saveToClientStorage('collapsedSyncfusionCategories', msg.collapsedCategories);
   }
   else if (msg.type === "save-collapsed-state") {
     // Save collapsed state to client storage
@@ -1003,6 +1223,8 @@ figma.ui.onmessage = async msg => {
       console.log('Clearing icons cache...');
       cache.syncfusionIcons = null;
       await figma.clientStorage.deleteAsync('cachedSyncfusionIcons');
+      await figma.clientStorage.deleteAsync('cachedSyncfusionCategories');
+      await figma.clientStorage.deleteAsync('collapsedSyncfusionCategories');
       console.log('Loading icons from file...');
       loadSyncfusionIcons();
       figma.notify("Refreshing icons...");
