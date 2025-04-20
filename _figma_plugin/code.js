@@ -675,10 +675,10 @@ async function loadSyncfusionIcons() {
 
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
 
-    // List of frames to look for (category frames)
+    // List of frames to look for (category frames) - reordering to put General UI Icons first
     const categoryFrames = [
-      "_Component Icons",
       "_General UI Icons",
+      "_Component Icons",
       "_Date and Time",
       "_Notification & Alerts",
       "_Navigation Arrows",
@@ -693,8 +693,8 @@ async function loadSyncfusionIcons() {
     // Initialize collapsed state for categories
     const collapsedCategories = {};
     
-    // Only process the first two categories initially
-    const initialCategoriesToLoad = 2;
+    // Only process the first category initially
+    const initialCategoriesToLoad = 1;
     const categoriesToLoad = categoryFrames.slice(0, initialCategoriesToLoad);
     const categoriesToCollapse = categoryFrames.slice(initialCategoriesToLoad);
 
@@ -846,10 +846,10 @@ async function getCollapsedSyncfusionCategoriesState() {
     return collapsedState;
   }
   
-  // Default state if none is stored - keep all categories except first two collapsed
+  // Default state if none is stored - keep all categories except the first collapsed
   const categoryFrames = [
-    "_Component Icons",
     "_General UI Icons",
+    "_Component Icons",
     "_Date and Time",
     "_Notification & Alerts",
     "_Navigation Arrows",
@@ -861,7 +861,7 @@ async function getCollapsedSyncfusionCategoriesState() {
   const defaultState = {};
   categoryFrames.forEach((frame, index) => {
     const categoryName = frame.startsWith('_') ? frame.substring(1) : frame;
-    defaultState[categoryName] = index >= 2; // First two are expanded, rest collapsed
+    defaultState[categoryName] = index >= 1; // Only first category expanded, rest collapsed
   });
   
   return defaultState;
