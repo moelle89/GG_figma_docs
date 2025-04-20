@@ -675,10 +675,10 @@ async function loadSyncfusionIcons() {
 
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
 
-    // List of frames to look for (category frames) - reordering to put General UI Icons first
+    // List of frames to look for (category frames)
     const categoryFrames = [
-      "_General UI Icons",
       "_Component Icons",
+      "_General UI Icons",
       "_Date and Time",
       "_Notification & Alerts",
       "_Navigation Arrows",
@@ -693,11 +693,13 @@ async function loadSyncfusionIcons() {
     // Initialize collapsed state for categories
     const collapsedCategories = {};
     
-    // Only process the first category initially
-    const initialCategoriesToLoad = 1;
+    // Only process the first two categories initially
+    const initialCategoriesToLoad = 2;
+    const categoriesToLoad = categoryFrames.slice(0, initialCategoriesToLoad);
+    const categoriesToCollapse = categoryFrames.slice(initialCategoriesToLoad);
 
-    // Process ALL category frames to find and create the structure first
-    for (const frameName of categoryFrames) {
+    // Process initial categories
+    for (const frameName of categoriesToLoad) {
       const iconFrame = componentsPage.findOne(node =>
         node.type === "FRAME" && node.name === frameName
       );
@@ -709,26 +711,9 @@ async function loadSyncfusionIcons() {
 
       // Create category name (remove leading underscore)
       const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
-      
-      // Get the index of this category in the list
-      const categoryIndex = categoryFrames.indexOf(frameName);
-      
-      // Set collapsed state - only expand the first category
-      collapsedCategories[categoryName] = categoryIndex >= initialCategoriesToLoad;
-      
-      // Initialize the category in our object - we'll fill with icons if it's in the first category
-      categorizedIcons[categoryName] = {
-        name: categoryName,
-        icons: [],
-        isPlaceholder: categoryIndex >= initialCategoriesToLoad // Mark as placeholder if not in first category
-      };
-      
-      // Skip loading icons for collapsed categories
-      if (categoryIndex >= initialCategoriesToLoad) {
-        continue;
-      }
+      collapsedCategories[categoryName] = false; // Not collapsed
 
-      // Find all components within the frame for non-placeholder categories
+      // Find all components within the frame
       const frameIcons = iconFrame.findAll(node =>
         node.type === "COMPONENT" || node.type === "COMPONENT_SET"
       );
@@ -739,6 +724,12 @@ async function loadSyncfusionIcons() {
       }
 
       console.log(`Found ${frameIcons.length} icons in "${frameName}" frame.`);
+
+      // Initialize category in the object
+      categorizedIcons[categoryName] = {
+        name: categoryName,
+        icons: []
+      };
 
       // Process icons for this category
       for (let i = 0; i < frameIcons.length; i++) {
@@ -803,6 +794,21 @@ async function loadSyncfusionIcons() {
       }
     }
 
+    // Initialize placeholder empty categories for the collapsed sections
+    for (const frameName of categoriesToCollapse) {
+      // Create category name (remove leading underscore)
+      const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
+      // Mark these categories as collapsed
+      collapsedCategories[categoryName] = true;
+      
+      // Add empty placeholder for the category
+      categorizedIcons[categoryName] = {
+        name: categoryName,
+        icons: [], // Empty array - will be loaded on demand
+        isPlaceholder: true // Flag to indicate this needs to be loaded
+      };
+    }
+
     // Store in both cache and client storage
     cache.syncfusionIcons = allIcons;
     cache.syncfusionCategories = categorizedIcons;
@@ -840,10 +846,10 @@ async function getCollapsedSyncfusionCategoriesState() {
     return collapsedState;
   }
   
-  // Default state if none is stored - keep all categories except the first collapsed
+  // Default state if none is stored - keep all categories except first two collapsed
   const categoryFrames = [
-    "_General UI Icons",
     "_Component Icons",
+    "_General UI Icons",
     "_Date and Time",
     "_Notification & Alerts",
     "_Navigation Arrows",
@@ -855,7 +861,7 @@ async function getCollapsedSyncfusionCategoriesState() {
   const defaultState = {};
   categoryFrames.forEach((frame, index) => {
     const categoryName = frame.startsWith('_') ? frame.substring(1) : frame;
-    defaultState[categoryName] = index >= 1; // Only first category expanded, rest collapsed
+    defaultState[categoryName] = index >= 2; // First two are expanded, rest collapsed
   });
   
   return defaultState;
