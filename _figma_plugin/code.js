@@ -695,11 +695,9 @@ async function loadSyncfusionIcons() {
     
     // Only process the first category initially
     const initialCategoriesToLoad = 1;
-    const categoriesToLoad = categoryFrames.slice(0, initialCategoriesToLoad);
-    const categoriesToCollapse = categoryFrames.slice(initialCategoriesToLoad);
 
-    // Process initial categories
-    for (const frameName of categoriesToLoad) {
+    // Process ALL category frames to find and create the structure first
+    for (const frameName of categoryFrames) {
       const iconFrame = componentsPage.findOne(node =>
         node.type === "FRAME" && node.name === frameName
       );
@@ -711,9 +709,26 @@ async function loadSyncfusionIcons() {
 
       // Create category name (remove leading underscore)
       const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
-      collapsedCategories[categoryName] = false; // Not collapsed
+      
+      // Get the index of this category in the list
+      const categoryIndex = categoryFrames.indexOf(frameName);
+      
+      // Set collapsed state - only expand the first category
+      collapsedCategories[categoryName] = categoryIndex >= initialCategoriesToLoad;
+      
+      // Initialize the category in our object - we'll fill with icons if it's in the first category
+      categorizedIcons[categoryName] = {
+        name: categoryName,
+        icons: [],
+        isPlaceholder: categoryIndex >= initialCategoriesToLoad // Mark as placeholder if not in first category
+      };
+      
+      // Skip loading icons for collapsed categories
+      if (categoryIndex >= initialCategoriesToLoad) {
+        continue;
+      }
 
-      // Find all components within the frame
+      // Find all components within the frame for non-placeholder categories
       const frameIcons = iconFrame.findAll(node =>
         node.type === "COMPONENT" || node.type === "COMPONENT_SET"
       );
@@ -724,12 +739,6 @@ async function loadSyncfusionIcons() {
       }
 
       console.log(`Found ${frameIcons.length} icons in "${frameName}" frame.`);
-
-      // Initialize category in the object
-      categorizedIcons[categoryName] = {
-        name: categoryName,
-        icons: []
-      };
 
       // Process icons for this category
       for (let i = 0; i < frameIcons.length; i++) {
@@ -792,21 +801,6 @@ async function loadSyncfusionIcons() {
           allIcons.push(iconData);
         }
       }
-    }
-
-    // Initialize placeholder empty categories for the collapsed sections
-    for (const frameName of categoriesToCollapse) {
-      // Create category name (remove leading underscore)
-      const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
-      // Mark these categories as collapsed
-      collapsedCategories[categoryName] = true;
-      
-      // Add empty placeholder for the category
-      categorizedIcons[categoryName] = {
-        name: categoryName,
-        icons: [], // Empty array - will be loaded on demand
-        isPlaceholder: true // Flag to indicate this needs to be loaded
-      };
     }
 
     // Store in both cache and client storage
