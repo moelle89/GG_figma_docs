@@ -367,7 +367,7 @@ async function loadComponentsFromCurrentFile() {
         // Export the component as a PNG
         const exportSettings = {
           format: "PNG",
-          constraint: { type: "SCALE", value: 1.5 }
+          constraint: { type: "SCALE", value: 1.0 }
         };
 
         const bytes = await targetComponent.exportAsync(exportSettings);
@@ -732,8 +732,8 @@ async function loadSyncfusionIcons() {
 
           // Export the component as a PNG
           const exportSettings = {
-            format: "PNG",
-            constraint: { type: "SCALE", value: 1.5 }
+            format: "JPG",
+            constraint: { type: "SCALE", value: 1 }
           };
 
           const bytes = await targetComponent.exportAsync(exportSettings);
