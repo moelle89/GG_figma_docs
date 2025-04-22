@@ -695,9 +695,13 @@ async function loadSyncfusionIcons() {
     
     // Only process the General UI Icons category initially
     const initialCategory = "_General UI Icons";
-    const categoriesToCollapse = categoryFrames.filter(name => name !== initialCategory);
+    // Always include Component Icons category in the UI but keep it collapsed
+    const visibleCollapsedCategories = ["_Component Icons"];
+    const hiddenCategories = categoryFrames.filter(name => 
+      name !== initialCategory && !visibleCollapsedCategories.includes(name)
+    );
 
-    // Process initial category
+    // Process initial category (General UI Icons) - loaded and expanded
     const iconFrame = componentsPage.findOne(node =>
       node.type === "FRAME" && node.name === initialCategory
     );
@@ -789,11 +793,11 @@ async function loadSyncfusionIcons() {
       }
     }
 
-    // Initialize placeholder empty categories for the collapsed sections
-    for (const frameName of categoriesToCollapse) {
+    // Add visible but collapsed Component Icons category
+    for (const frameName of visibleCollapsedCategories) {
       // Create category name (remove leading underscore)
       const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
-      // Mark these categories as collapsed
+      // Mark as collapsed
       collapsedCategories[categoryName] = true;
       
       // Add empty placeholder for the category
@@ -802,12 +806,25 @@ async function loadSyncfusionIcons() {
         icons: [], // Empty array - will be loaded on demand
         isPlaceholder: true // Flag to indicate this needs to be loaded
       };
+      
+      console.log(`Added ${categoryName} as visible but collapsed category`);
     }
 
-    // Store in both cache and client storage
-    cache.syncfusionIcons = allIcons;
-    cache.syncfusionCategories = categorizedIcons;
+    // Don't send hidden categories to the UI
+    // We'll only send the visible categories initially - hidden ones will be loaded on demand if needed
+    
+    // Create a filtered categories object that only includes the visible categories
+    const visibleCategorizedIcons = {};
+    Object.keys(categorizedIcons).forEach(categoryName => {
+      if (categoryName === "General UI Icons" || categoryName === "Component Icons") {
+        visibleCategorizedIcons[categoryName] = categorizedIcons[categoryName];
+      }
+    });
 
+    // Store all categories in cache for later access, but only send visible ones to UI
+    cache.syncfusionIcons = allIcons;
+    cache.syncfusionCategories = categorizedIcons; // Store all categories in cache
+    
     // Save to client storage
     try {
       await saveToClientStorage('cachedSyncfusionIcons', allIcons);
@@ -821,7 +838,7 @@ async function loadSyncfusionIcons() {
     figma.ui.postMessage({
       syncfusionStatus: `Found ${allIcons.length} icons.`,
       syncfusionIcons: allIcons,
-      syncfusionCategories: categorizedIcons,
+      syncfusionCategories: visibleCategorizedIcons, // Only send visible categories to UI
       collapsedSyncfusionCategories: collapsedCategories
     });
   } catch (error) {
@@ -853,10 +870,14 @@ async function getCollapsedSyncfusionCategoriesState() {
     "_Communication"
   ];
   
+  // Define which categories should be visible initially (both Component Icons and General UI Icons)
+  const visibleCategories = ["_Component Icons", "_General UI Icons"];
+  
   const defaultState = {};
   categoryFrames.forEach((frame) => {
     const categoryName = frame.startsWith('_') ? frame.substring(1) : frame;
-    // Only General UI Icons is expanded by default
+    
+    // Only General UI Icons is expanded by default, all others are collapsed
     defaultState[categoryName] = (frame !== "_General UI Icons");
   });
   
@@ -1192,11 +1213,21 @@ figma.ui.onmessage = async msg => {
     await saveToClientStorage('collapsedSyncfusionCategories', collapsedState);
     
     // Check if we need to load this category
-    if (cache.syncfusionCategories && 
+    const needsLoading = cache.syncfusionCategories && 
         cache.syncfusionCategories[categoryName] && 
-        cache.syncfusionCategories[categoryName].isPlaceholder) {
-      // This is a placeholder category that needs loading
+        (cache.syncfusionCategories[categoryName].isPlaceholder || 
+         cache.syncfusionCategories[categoryName].icons.length === 0);
+    
+    if (needsLoading) {
+      // This is a placeholder category or has no icons, load it now
       await loadSyncfusionCategory(categoryName);
+    } else {
+      // Category already loaded, just inform UI it can show it now
+      figma.ui.postMessage({
+        categoryLoaded: true,
+        categoryName: categoryName,
+        icons: cache.syncfusionCategories[categoryName].icons
+      });
     }
   }
   // Handler for saving Syncfusion categories collapsed state
