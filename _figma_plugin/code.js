@@ -1915,7 +1915,7 @@ async function createPlaygroundFrame() {
     }
 
     // --- Frame Creation & Sizing ---
-    const frame = figma.createRectangle();
+    const frame = figma.createFrame();
     frame.name = `Playground - ${nodeName.replace('❖ ', '')}`;
     frame.fills = [{ type: 'SOLID', color: { r: 228 / 255, g: 228 / 255, b: 228 / 255 } }];
 
