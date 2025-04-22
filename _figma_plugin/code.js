@@ -693,24 +693,20 @@ async function loadSyncfusionIcons() {
     // Initialize collapsed state for categories
     const collapsedCategories = {};
     
-    // Only process the first two categories initially
-    const initialCategoriesToLoad = 2;
-    const categoriesToLoad = categoryFrames.slice(0, initialCategoriesToLoad);
-    const categoriesToCollapse = categoryFrames.slice(initialCategoriesToLoad);
+    // Only process the General UI Icons category initially
+    const initialCategory = "_General UI Icons";
+    const categoriesToCollapse = categoryFrames.filter(name => name !== initialCategory);
 
-    // Process initial categories
-    for (const frameName of categoriesToLoad) {
-      const iconFrame = componentsPage.findOne(node =>
-        node.type === "FRAME" && node.name === frameName
-      );
+    // Process initial category
+    const iconFrame = componentsPage.findOne(node =>
+      node.type === "FRAME" && node.name === initialCategory
+    );
 
-      if (!iconFrame) {
-        console.log(`Frame "${frameName}" not found on the COMPONENTS page.`);
-        continue;
-      }
-
+    if (!iconFrame) {
+      console.log(`Frame "${initialCategory}" not found on the COMPONENTS page.`);
+    } else {
       // Create category name (remove leading underscore)
-      const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
+      const categoryName = initialCategory.startsWith('_') ? initialCategory.substring(1) : initialCategory;
       collapsedCategories[categoryName] = false; // Not collapsed
 
       // Find all components within the frame
@@ -719,77 +715,76 @@ async function loadSyncfusionIcons() {
       );
 
       if (frameIcons.length === 0) {
-        console.log(`No icon components found in the "${frameName}" frame.`);
-        continue;
-      }
+        console.log(`No icon components found in the "${initialCategory}" frame.`);
+      } else {
+        console.log(`Found ${frameIcons.length} icons in "${initialCategory}" frame.`);
 
-      console.log(`Found ${frameIcons.length} icons in "${frameName}" frame.`);
+        // Initialize category in the object
+        categorizedIcons[categoryName] = {
+          name: categoryName,
+          icons: []
+        };
 
-      // Initialize category in the object
-      categorizedIcons[categoryName] = {
-        name: categoryName,
-        icons: []
-      };
+        // Process icons for this category
+        for (let i = 0; i < frameIcons.length; i++) {
+          const component = frameIcons[i];
+          try {
+            // Get the default variant if it's a component set
+            const targetComponent = component.type === "COMPONENT_SET"
+              ? component.defaultVariant
+              : component;
 
-      // Process icons for this category
-      for (let i = 0; i < frameIcons.length; i++) {
-        const component = frameIcons[i];
-        try {
-          // Get the default variant if it's a component set
-          const targetComponent = component.type === "COMPONENT_SET"
-            ? component.defaultVariant
-            : component;
+            // Export the component as a JPG
+            const exportSettings = {
+              format: "JPG",
+              constraint: { type: "SCALE", value: 1 }
+            };
 
-          // Export the component as a JPG
-          const exportSettings = {
-            format: "JPG",
-            constraint: { type: "SCALE", value: 1 }
-          };
+            const bytes = await targetComponent.exportAsync(exportSettings);
+            const base64Image = figma.base64Encode(bytes);
 
-          const bytes = await targetComponent.exportAsync(exportSettings);
-          const base64Image = figma.base64Encode(bytes);
+            const iconData = {
+              id: component.id,
+              name: component.name,
+              thumbnail: base64Image,
+              category: categoryName
+            };
 
-          const iconData = {
-            id: component.id,
-            name: component.name,
-            thumbnail: base64Image,
-            category: categoryName
-          };
+            // Add to category's icons array
+            categorizedIcons[categoryName].icons.push(iconData);
 
-          // Add to category's icons array
-          categorizedIcons[categoryName].icons.push(iconData);
+            // Add to all icons array
+            allIcons.push(iconData);
 
-          // Add to all icons array
-          allIcons.push(iconData);
+            // Update progress every few icons
+            if (i % 3 === 0 || i === frameIcons.length - 1) {
+              figma.ui.postMessage({
+                syncfusionStatus: `${categoryName} (${i + 1}/${frameIcons.length})`
+              });
+            }
 
-          // Update progress every few icons
-          if (i % 3 === 0 || i === frameIcons.length - 1) {
-            figma.ui.postMessage({
-              syncfusionStatus: `${categoryName} (${i + 1}/${frameIcons.length})`
-            });
+            // Small delay between batches to prevent memory issues
+            if (i % 3 === 2) {
+              await new Promise(resolve => setTimeout(resolve, 100));
+            }
+          } catch (error) {
+            console.warn(`Failed to export icon ${component.name} from ${categoryName}:`, error);
+
+            // Create icon data with fallback
+            const iconData = {
+              id: component.id,
+              name: component.name,
+              colorHash: stringToColor(component.name),
+              firstChar: component.name.charAt(0).toUpperCase(),
+              category: categoryName
+            };
+
+            // Add to category's icons array
+            categorizedIcons[categoryName].icons.push(iconData);
+
+            // Add to all icons array
+            allIcons.push(iconData);
           }
-
-          // Small delay between batches to prevent memory issues
-          if (i % 3 === 2) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-          }
-        } catch (error) {
-          console.warn(`Failed to export icon ${component.name} from ${categoryName}:`, error);
-
-          // Create icon data with fallback
-          const iconData = {
-            id: component.id,
-            name: component.name,
-            colorHash: stringToColor(component.name),
-            firstChar: component.name.charAt(0).toUpperCase(),
-            category: categoryName
-          };
-
-          // Add to category's icons array
-          categorizedIcons[categoryName].icons.push(iconData);
-
-          // Add to all icons array
-          allIcons.push(iconData);
         }
       }
     }
@@ -846,7 +841,7 @@ async function getCollapsedSyncfusionCategoriesState() {
     return collapsedState;
   }
   
-  // Default state if none is stored - keep all categories except first two collapsed
+  // Default state if none is stored - keep all categories except General UI Icons collapsed
   const categoryFrames = [
     "_Component Icons",
     "_General UI Icons",
@@ -859,9 +854,10 @@ async function getCollapsedSyncfusionCategoriesState() {
   ];
   
   const defaultState = {};
-  categoryFrames.forEach((frame, index) => {
+  categoryFrames.forEach((frame) => {
     const categoryName = frame.startsWith('_') ? frame.substring(1) : frame;
-    defaultState[categoryName] = index >= 2; // First two are expanded, rest collapsed
+    // Only General UI Icons is expanded by default
+    defaultState[categoryName] = (frame !== "_General UI Icons");
   });
   
   return defaultState;
