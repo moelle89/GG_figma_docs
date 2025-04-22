@@ -675,158 +675,115 @@ async function loadSyncfusionIcons() {
 
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
 
-    // List of frames to look for (category frames)
-    const categoryFrames = [
-      "_Component Icons",
-      "_General UI Icons",
-      "_Date and Time",
-      "_Notification & Alerts",
-      "_Navigation Arrows",
-      "_Device & Connectivity",
-      "_People and Users",
-      "_Communication"
-    ];
-
-    // Create an object to store categories and their icons
-    const categorizedIcons = {};
-    const allIcons = [];
-    // Initialize collapsed state for categories
-    const collapsedCategories = {};
-
-    // Only process the General UI Icons category initially
-    const initialCategory = "_General UI Icons";
-    // Always include Component Icons category in the UI but keep it collapsed
-    const visibleCollapsedCategories = ["_Component Icons"];
-    const hiddenCategories = categoryFrames.filter(name =>
-      name !== initialCategory && !visibleCollapsedCategories.includes(name)
+    // Create objects to store our results
+    const categorizedIcons = {};   // All categories with their icons
+    const allIcons = [];           // Flat list of all icons
+    const collapsedCategories = {}; // Collapsed state for categories
+    
+    // --- STEP 1: We want to initially show exactly two categories ---
+    // General UI Icons - expanded with icons loaded
+    // Component Icons - collapsed without icons loaded yet
+    
+    // --- STEP 2: Process and load the General UI Icons (expanded) ---
+    const generalUIIconsFrame = componentsPage.findOne(node =>
+      node.type === "FRAME" && node.name === "_General UI Icons"
     );
 
-    // Process initial category (General UI Icons) - loaded and expanded
-    const iconFrame = componentsPage.findOne(node =>
-      node.type === "FRAME" && node.name === initialCategory
-    );
-
-    if (!iconFrame) {
-      console.log(`Frame "${initialCategory}" not found on the COMPONENTS page.`);
-    } else {
-      // Create category name (remove leading underscore)
-      const categoryName = initialCategory.startsWith('_') ? initialCategory.substring(1) : initialCategory;
+    if (generalUIIconsFrame) {
+      // Create the General UI Icons category
+      const categoryName = "General UI Icons";
       collapsedCategories[categoryName] = false; // Not collapsed
+      categorizedIcons[categoryName] = {
+        name: categoryName,
+        icons: [] // Will be populated with icons
+      };
+      
+      console.log(`Processing General UI Icons category`);
 
-      // Find all components within the frame
-      const frameIcons = iconFrame.findAll(node =>
+      // Find all icons in this frame
+      const frameIcons = generalUIIconsFrame.findAll(node =>
         node.type === "COMPONENT" || node.type === "COMPONENT_SET"
       );
 
-      if (frameIcons.length === 0) {
-        console.log(`No icon components found in the "${initialCategory}" frame.`);
-      } else {
-        console.log(`Found ${frameIcons.length} icons in "${initialCategory}" frame.`);
+      // Process each icon in this category
+      for (let i = 0; i < frameIcons.length; i++) {
+        const component = frameIcons[i];
+        try {
+          // Get the default variant if it's a component set
+          const targetComponent = component.type === "COMPONENT_SET"
+            ? component.defaultVariant
+            : component;
 
-        // Initialize category in the object
-        categorizedIcons[categoryName] = {
-          name: categoryName,
-          icons: []
-        };
+          // Export the icon
+          const exportSettings = {
+            format: "JPG",
+            constraint: { type: "SCALE", value: 1 }
+          };
 
+          const bytes = await targetComponent.exportAsync(exportSettings);
+          const base64Image = figma.base64Encode(bytes);
 
-        // Process icons for this category
-        for (let i = 0; i < frameIcons.length; i++) {
-          const component = frameIcons[i];
-          try {
-            // Get the default variant if it's a component set
-            const targetComponent = component.type === "COMPONENT_SET"
-              ? component.defaultVariant
-              : component;
+          const iconData = {
+            id: component.id,
+            name: component.name,
+            thumbnail: base64Image,
+            category: categoryName
+          };
 
-            // Export the component as a JPG
-            const exportSettings = {
-              format: "JPG",
-              constraint: { type: "SCALE", value: 1 }
-            };
+          // Add to the category's icons array
+          categorizedIcons[categoryName].icons.push(iconData);
+          // Add to the flat list of all icons
+          allIcons.push(iconData);
 
-            const bytes = await targetComponent.exportAsync(exportSettings);
-            const base64Image = figma.base64Encode(bytes);
-
-            const iconData = {
-              id: component.id,
-              name: component.name,
-              thumbnail: base64Image,
-              category: categoryName
-            };
-
-            // Add to category's icons array
-            categorizedIcons[categoryName].icons.push(iconData);
-
-            // Add to all icons array
-            allIcons.push(iconData);
-
-            // Update progress every few icons
-            if (i % 3 === 0 || i === frameIcons.length - 1) {
-              figma.ui.postMessage({
-                syncfusionStatus: `${categoryName} (${i + 1}/${frameIcons.length})`
-              });
-            }
-
-            // Small delay between batches to prevent memory issues
-            if (i % 3 === 2) {
-              await new Promise(resolve => setTimeout(resolve, 100));
-            }
-          } catch (error) {
-            console.warn(`Failed to export icon ${component.name} from ${categoryName}:`, error);
-
-            // Create icon data with fallback
-            const iconData = {
-              id: component.id,
-              name: component.name,
-              colorHash: stringToColor(component.name),
-              firstChar: component.name.charAt(0).toUpperCase(),
-              category: categoryName
-            };
-
-            // Add to category's icons array
-            categorizedIcons[categoryName].icons.push(iconData);
-
-            // Add to all icons array
-            allIcons.push(iconData);
+          // Update UI with progress
+          if (i % 3 === 0 || i === frameIcons.length - 1) {
+            figma.ui.postMessage({
+              syncfusionStatus: `${categoryName} (${i + 1}/${frameIcons.length})`
+            });
           }
+
+          // Small delay to prevent memory issues
+          if (i % 3 === 2) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        } catch (error) {
+          console.warn(`Failed to export icon ${component.name}:`, error);
+          
+          // Use fallback without thumbnail
+          const iconData = {
+            id: component.id,
+            name: component.name,
+            colorHash: stringToColor(component.name),
+            firstChar: component.name.charAt(0).toUpperCase(),
+            category: categoryName
+          };
+          
+          categorizedIcons[categoryName].icons.push(iconData);
+          allIcons.push(iconData);
         }
       }
+      
+      console.log(`Added ${categorizedIcons[categoryName].icons.length} icons to General UI Icons`);
+    } else {
+      console.log("General UI Icons frame not found");
     }
+    
+    // --- STEP 3: Add Component Icons category as a placeholder (collapsed) ---
+    const componentIconsCategoryName = "Component Icons";
+    categorizedIcons[componentIconsCategoryName] = {
+      name: componentIconsCategoryName,
+      icons: [], // Empty array - will be loaded on demand
+      isPlaceholder: true // Flag to indicate this needs to be loaded
+    };
+    collapsedCategories[componentIconsCategoryName] = true; // Start collapsed
+    console.log(`Added Component Icons as collapsed placeholder`);
 
-    // Add visible but collapsed Component Icons category
-    for (const frameName of visibleCollapsedCategories) {
-      // Create category name (remove leading underscore)
-      const categoryName = frameName.startsWith('_') ? frameName.substring(1) : frameName;
-      // Mark as collapsed
-      collapsedCategories[categoryName] = true;
-
-      // Add empty placeholder for the category
-      categorizedIcons[categoryName] = {
-        name: categoryName,
-        icons: [], // Empty array - will be loaded on demand
-        isPlaceholder: true // Flag to indicate this needs to be loaded
-      };
-
-      console.log(`Added ${categoryName} as visible but collapsed category`);
-    }
-
-    // Don't send hidden categories to the UI
-    // We'll only send the visible categories initially - hidden ones will be loaded on demand if needed
-
-    // Create a filtered categories object that only includes the visible categories
-    const visibleCategorizedIcons = {};
-    Object.keys(categorizedIcons).forEach(categoryName => {
-      if (categoryName === "General UI Icons" || categoryName === "Component Icons") {
-        visibleCategorizedIcons[categoryName] = categorizedIcons[categoryName];
-      }
-    });
-
-    // Store all categories in cache for later access, but only send visible ones to UI
+    // --- STEP 4: Store data in cache and client storage ---
+    console.log("Storing categories in cache:", Object.keys(categorizedIcons));
+    
     cache.syncfusionIcons = allIcons;
-    cache.syncfusionCategories = categorizedIcons; // Store all categories in cache
-
-    // Save to client storage
+    cache.syncfusionCategories = categorizedIcons;
+    
     try {
       await saveToClientStorage('cachedSyncfusionIcons', allIcons);
       await saveToClientStorage('cachedSyncfusionCategories', categorizedIcons);
@@ -836,10 +793,11 @@ async function loadSyncfusionIcons() {
       figma.notify("icons were loaded but couldn't be cached (storage full)", { timeout: 2000 });
     }
 
+    // --- STEP 5: Send the data to the UI ---
     figma.ui.postMessage({
       syncfusionStatus: `Found ${allIcons.length} icons.`,
       syncfusionIcons: allIcons,
-      syncfusionCategories: visibleCategorizedIcons, // Only send visible categories to UI
+      syncfusionCategories: categorizedIcons,
       collapsedSyncfusionCategories: collapsedCategories
     });
   } catch (error) {
@@ -890,14 +848,14 @@ async function loadSyncfusionCategory(categoryName) {
   console.log(`Loading icons for category: ${categoryName}`);
   try {
     figma.ui.postMessage({ syncfusionStatus: `Loading ${categoryName} icons...` });
-
+    
     // Check if we have a cached version of the categories
     if (!cache.syncfusionCategories || !cache.syncfusionCategories[categoryName]) {
       throw new Error(`Category ${categoryName} not found in cache`);
     }
-
+    
     // If the category already has icons, just return them
-    if (cache.syncfusionCategories[categoryName].icons.length > 0 &&
+    if (cache.syncfusionCategories[categoryName].icons.length > 0 && 
         !cache.syncfusionCategories[categoryName].isPlaceholder) {
       figma.ui.postMessage({
         categoryLoaded: true,
@@ -906,39 +864,50 @@ async function loadSyncfusionCategory(categoryName) {
       });
       return;
     }
-
+    
     await figma.loadAllPagesAsync();
-
+    
     // Look for a page named "COMPONENTS"
     const componentsPage = figma.root.children.find(page => page.name === "COMPONENTS");
     if (!componentsPage) {
       throw new Error("No COMPONENTS page found in the current file.");
     }
-
+    
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
-
+    
     // Find the frame with the corresponding name
-    const frameName = `_${categoryName}`;
+    // Need to handle mapping of category name to frame name
+    let frameName;
+    
+    // Special handling for the Component Icons category
+    if (categoryName === "Component Icons") {
+      frameName = "_Component Icons";
+    } else {
+      frameName = `_${categoryName}`;
+    }
+    
+    console.log(`Looking for frame: ${frameName}`);
+    
     const iconFrame = componentsPage.findOne(node =>
       node.type === "FRAME" && node.name === frameName
     );
-
+    
     if (!iconFrame) {
       throw new Error(`Frame "${frameName}" not found on the COMPONENTS page.`);
     }
-
+    
     // Find all components within the frame
     const frameIcons = iconFrame.findAll(node =>
       node.type === "COMPONENT" || node.type === "COMPONENT_SET"
     );
-
+    
     if (frameIcons.length === 0) {
       throw new Error(`No icon components found in the "${frameName}" frame.`);
     }
-
+    
     // Process icons for this category
     const categoryIcons = [];
-
+    
     for (let i = 0; i < frameIcons.length; i++) {
       const component = frameIcons[i];
       try {
@@ -946,45 +915,45 @@ async function loadSyncfusionCategory(categoryName) {
         const targetComponent = component.type === "COMPONENT_SET"
           ? component.defaultVariant
           : component;
-
+          
         // Export the component
         const exportSettings = {
           format: "JPG",
           constraint: { type: "SCALE", value: 1 }
         };
-
+        
         const bytes = await targetComponent.exportAsync(exportSettings);
         const base64Image = figma.base64Encode(bytes);
-
+        
         const iconData = {
           id: component.id,
           name: component.name,
           thumbnail: base64Image,
           category: categoryName
         };
-
+        
         // Add to category icons
         categoryIcons.push(iconData);
-
+        
         // Add to all icons in the global cache
         if (cache.syncfusionIcons) {
           cache.syncfusionIcons.push(iconData);
         }
-
+        
         // Update progress
         if (i % 3 === 0 || i === frameIcons.length - 1) {
           figma.ui.postMessage({
             syncfusionStatus: `${categoryName} (${i + 1}/${frameIcons.length})`
           });
         }
-
+        
         // Small delay between batches
         if (i % 3 === 2) {
           await new Promise(resolve => setTimeout(resolve, 100));
         }
       } catch (error) {
         console.warn(`Failed to export icon ${component.name} from ${categoryName}:`, error);
-
+        
         // Create icon data with fallback
         const iconData = {
           id: component.id,
@@ -993,14 +962,14 @@ async function loadSyncfusionCategory(categoryName) {
           firstChar: component.name.charAt(0).toUpperCase(),
           category: categoryName
         };
-
+        
         categoryIcons.push(iconData);
         if (cache.syncfusionIcons) {
           cache.syncfusionIcons.push(iconData);
         }
       }
     }
-
+    
     // Update the category in cache
     if (cache.syncfusionCategories) {
       cache.syncfusionCategories[categoryName] = {
@@ -1008,7 +977,7 @@ async function loadSyncfusionCategory(categoryName) {
         icons: categoryIcons,
         isPlaceholder: false
       };
-
+      
       // Update client storage
       try {
         await saveToClientStorage('cachedSyncfusionCategories', cache.syncfusionCategories);
@@ -1017,16 +986,16 @@ async function loadSyncfusionCategory(categoryName) {
         console.error("Error updating client storage with new category data:", storageError);
       }
     }
-
+    
     // Notify UI that category is loaded
     figma.ui.postMessage({
       categoryLoaded: true,
       categoryName: categoryName,
       icons: categoryIcons
     });
-
+    
     console.log(`Loaded ${categoryIcons.length} icons for category ${categoryName}`);
-
+    
   } catch (error) {
     console.error(`Error loading category ${categoryName}:`, error);
     figma.ui.postMessage({
